@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 
 const regex = /(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}/gi;
 const baseurl = "https://www.worldanvil.com/api/aragorn/";
+
 const headers = {
     "x-application-key":process.env.APP_KEY,
     "ContentType":"application/json"
@@ -25,6 +26,11 @@ function getCurrentUser(authToken){
 
 function getUserWorlds(authToken, userId){
     return fetch(baseurl + "user/" + userId + "/worlds", {headers: getHeaders(authToken)})
+        .then(x => x.json())
+}
+
+function getWorld(authToken, worldId){
+    return fetch(baseurl + "world/" + worldId, {headers: getHeaders(authToken)})
         .then(x => x.json())
 }
 
@@ -56,7 +62,7 @@ async function enrichWithData(authToken, articles){
 function generateGraph(articles){
     var result = {nodes:[], links:[]};
     articles.forEach(article => {
-        result.nodes.push({"id":article.id, "name":article.title, "group":article.template_type})
+        result.nodes.push({"id":article.id, "name":article.title, "group":article.template_type, "public":!article.is_draft && article.state == "public", "wordcount":article.wordcount})
         if(!article.data)return;
         let connections = [];
         if(article.data.content){
@@ -70,7 +76,7 @@ function generateGraph(articles){
             } 
         }    
         [...new Set(connections)].forEach(connection => {
-            //result.links.push({"source":article.id, "target":connection, dashes:true, physics:false, width: 0.5, "group":"mention"});
+            result.links.push({"source":article.id, "target":connection, "group":"mention", "label":"mention"});
         });
         if(article.data.relations){
             for(let [key, value] of Object.entries(article.data.relations)){               
@@ -91,7 +97,7 @@ function generateGraph(articles){
     return result;
 }
 
-module.exports = {getCurrentUser,getUserWorlds, generateGraph, getAllWorldArticles, enrichWithData}
+module.exports = {getCurrentUser,getUserWorlds, generateGraph, getAllWorldArticles, enrichWithData, getWorld}
 // getCurrentUser(token)
 //     .then(x => getUserWorlds(token, x.id))
 //     .then(x => processWorld(token, x.worlds[0].id))

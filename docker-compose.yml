@@ -7,6 +7,8 @@ services:
     environment:
       APP_KEY: "${APP_KEY}"
       NODE_ENV: "production"
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
     deploy:
       # resources:
       #   limits:
@@ -21,7 +23,10 @@ services:
           delay: 5s
           max_attempts: 3
           window: 30s
-
+  redis:
+    image: "redis:6.0.0-alpine"
+    mem_limit: 500m
+    networks:
 
 networks:
   proxy:

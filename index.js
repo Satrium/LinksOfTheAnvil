@@ -1,9 +1,15 @@
-var worldanvil = require('./worldanvil.js');
 const path = require('path');
-var express = require('express');
-var app = express();
+const asyncRedis = require("async-redis");
+const client = asyncRedis.createClient({host: process.env.REDIS_HOST || "localhost", port: process.env.REDIS_PORT || 6379});
 
+var express = require('express');
+
+
+var worldanvil = require('./worldanvil.js');
+
+var app = express();
 app.use(express.static('public'));
+
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, 'index.html'))
 });
@@ -18,13 +24,23 @@ app.get('/api/user', (req, res) => {
     
 });
 
-app.get('/api/world/:id', (req, res) => {
+app.get('/api/world/:id', async (req, res) => {
     if(req.header("x-auth-token")){
-        worldanvil.getAllWorldArticles(req.header("x-auth-token"), req.params.id)
-            .then(x => worldanvil.enrichWithData(req.header("x-auth-token"), x))
-            .then(x => worldanvil.generateGraph(x))
-            .then(x => res.json(x))
-            .catch(x => {console.error(x); res.status(500)})
+        var cache = await client.get(req.header("x-auth-token") + "."+ req.params.id);
+        if(cache){
+            return res.json(JSON.parse(cache));
+        }else{
+            worldanvil.getAllWorldArticles(req.header("x-auth-token"), req.params.id)
+                .then(x => worldanvil.enrichWithData(req.header("x-auth-token"), x))
+                .then(x => worldanvil.generateGraph(x))
+                .then(async x => {
+                    await client.set(req.header("x-auth-token") + "." + req.params.id, JSON.stringify(x),'EX', 60 * 60);
+                    return x;
+                })
+                .then(x => res.json(x))
+                .catch(x => {console.error(x); res.status(500)})
+        }
+        
     }
 });
 
