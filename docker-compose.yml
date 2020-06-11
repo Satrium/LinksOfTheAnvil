@@ -24,8 +24,8 @@ services:
           max_attempts: 3
           window: 30s
   redis:
-    image: "redis:6.0.0-alpine"
-     deploy:
+    image: redis:6.0.0-alpine
+    deploy:
       resources:
         limits:
           cpus: '0.50'
