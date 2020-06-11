@@ -20,6 +20,7 @@ html, body{
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 2;
 }
 
 .center{
@@ -47,4 +48,22 @@ html, body{
 
 #step3{
     color: white;
+}
+
+#controls{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 400px;
+    height: 250px;
+    background: gray;
+    z-index: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#nodeOptions{
+    display: flex;
+    flex-wrap: wrap;
+    margin: 5px;
 }
