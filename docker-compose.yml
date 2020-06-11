@@ -25,8 +25,11 @@ services:
           window: 30s
   redis:
     image: "redis:6.0.0-alpine"
-    mem_limit: 500m
-    networks:
+     deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
 
 networks:
   proxy:
