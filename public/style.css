@@ -1,0 +1,30 @@
+html, body{
+    margin: 0;
+    overflow:hidden;
+    background: black;
+}
+#mynetwork {
+    width: 100vw;
+    height: 100vh;
+    border: 1px solid lightgray;
+    
+}
+
+#wrapper{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.center{
+    min-width: 300px;
+    min-height: 250px;
+    padding: 20px;
+    background: white;
+}

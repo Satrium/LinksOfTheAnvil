@@ -1,0 +1,29 @@
+services:
+- docker:dind
+
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHA
+
+before_script:
+- docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+
+build:
+  image: docker:latest
+  stage: build
+  script:
+    - docker build -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
+
+deploy:
+  stage: deploy
+  tags:
+    - deploy
+  only:
+    - master
+  environment:
+    name: production
+    url: https://linksoftheanvil.satrium.dev
+  script:
+    - docker pull $IMAGE_TAG
+    - docker stack deploy --with-registry-auth --compose-file=docker-compose.yml linksoftheanvil

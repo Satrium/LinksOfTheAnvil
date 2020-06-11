@@ -1,0 +1,28 @@
+version: '3'
+services:
+  linksoftheanvil:
+    image: "${IMAGE_TAG}"
+    networks:
+      - proxy
+    environment:
+      APP_KEY: "${APP_KEY}"
+      NODE_ENV: "production"
+    deploy:
+      # resources:
+      #   limits:
+      #     memory: 500M
+      labels:
+        - traefik.enable=true
+        - traefik.frontend.rule=Host:linksoftheanvil.satrium.dev
+        - traefik.docker.network=proxy
+        - traefik.port=3000
+      restart_policy:
+          condition: any
+          delay: 5s
+          max_attempts: 3
+          window: 30s
+
+
+networks:
+  proxy:
+    external: true

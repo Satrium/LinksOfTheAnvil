@@ -1,14 +1,11 @@
 const fetch = require('node-fetch');
-const fs = require('fs');
 
 const regex = /(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}/gi;
 const baseurl = "https://www.worldanvil.com/api/aragorn/";
 const headers = {
-    "x-application-key":"NQ5TPQ6EbZP74CusuwkcmTKvdZELMWvB",
+    "x-application-key":process.env.APP_KEY,
     "ContentType":"application/json"
 }
-
-const token = "yPLt45XY5c0Ordz5J6dVkBKEAPxh04zMEzIiNFFnXx3JiFSoH8prPBwDFHq3jkN3TU06mSIELJIOwJPegxw6MiJD0l1eAYvQCpZAo4ikX7l73WqcOTD4F5gvubgbbkjToIUkJ0qnu5tUgqA9jiJVc8JL4khVSgcDhLmR6QeGKAv3ShhUGQxW3jmr1rGGXckJeimNpDuIbC8Ngvh5RYRQxJClIzRPZsHBkxhcvaDZa7ji9C2OnpwArXBDG";
 
 function sleep(ms){
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -47,21 +44,13 @@ function getArticle(authToken, articleId){
         .then(x => x.json());
 }
 
-async function processWorld(authToken, worldId){
-    var articles = await getAllWorldArticles(authToken, worldId);
-    console.log(articles.length);
-    fs.writeFileSync('./articles.json', JSON.stringify(articles, null, 2) , 'utf-8');
-    for(let i=0; i < articles.length; i++){
-        try{
-            articles[i].data = await getArticle(authToken, articles[i].id);
-        }catch(e){
-            articles[i].data = "ERROR " + e;
-        }finally{
-            console.log(articles[i].title)
-            await sleep(100);
-        }
+async function enrichWithData(authToken, articles){
+    console.log(authToken, typeof(articles));
+    for(var article of articles){
+        article.data = await getArticle(authToken, article.id);
+        await sleep(10);
     }
-    fs.writeFileSync('./articles.json', JSON.stringify(articles, null, 2) , 'utf-8');
+    return articles;
 }
 
 function generateGraph(articles){
@@ -96,24 +85,24 @@ function generateGraph(articles){
             }
         }
     });
-    //console.log(result);
     var ids = []
     result.nodes.forEach(x => ids.push(x.id));
-    console.log(ids);
     result.links = result.links.filter(x => ids.includes(x.target));
     return result;
 }
+
+module.exports = {getCurrentUser,getUserWorlds, generateGraph, getAllWorldArticles, enrichWithData}
 // getCurrentUser(token)
 //     .then(x => getUserWorlds(token, x.id))
 //     .then(x => processWorld(token, x.worlds[0].id))
 //     .catch(error => console.error(error));
-var data = require("./articles.json").filter(x => typeof(x.data) == "string").map(x => [x.id, x.title, x.url, x.template_type]);
+// var data = require("./articles.json").filter(x => typeof(x.data) == "string").map(x => [x.id, x.title, x.url, x.template_type]);
 // var graph = generateGraph(data);
 // fs.writeFileSync('./graph.json', JSON.stringify(graph, null, 2) , 'utf-8');
-//console.log(data);
-result = data.reduce(function (r, a) {
-    r[a[3]] = r[a[3]] || [];
-    r[a[3]].push(a);
-    return r;
-}, Object.create(null));
-console.log(result);
+// //console.log(data);
+// result = data.reduce(function (r, a) {
+//     r[a[3]] = r[a[3]] || [];
+//     r[a[3]].push(a);
+//     return r;
+// }, Object.create(null));
+// console.log(result);
