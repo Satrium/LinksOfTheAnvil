@@ -1,0 +1,61 @@
+
+
+<mat-drawer-container class="example-container" autosize>
+    <mat-drawer #drawer class="example-sidenav" mode="over">
+        <mat-accordion>
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    General Settings
+                  </mat-panel-title>
+                </mat-expansion-panel-header>              
+                <p>Nothing here yet</p>              
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      Article Types
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>  
+                  <mat-list dense>
+                    <mat-list-item *ngFor="let key of keys(articleTypes)">                        
+                        <mat-button-toggle-group #group [name]="key" [(ngModel)]="articleTypes[key]" (ngModelChange)="update()">
+                            <mat-button-toggle value="0">Off</mat-button-toggle>
+                            <mat-button-toggle value="1">On</mat-button-toggle>
+                            <mat-button-toggle disabled value="2">High</mat-button-toggle>
+                          </mat-button-toggle-group>
+                          <span style="padding-left: 5px">{{key}}</span>
+                    </mat-list-item>
+                </mat-list>  
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      Link Types
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>  
+                  <mat-list dense>
+                    <mat-list-item *ngFor="let key of keys(linkTypes)">                        
+                        <mat-button-toggle-group #group [name]="key" [(ngModel)]="linkTypes[key]" (ngModelChange)="update()">
+                            <mat-button-toggle value="0">Off</mat-button-toggle>
+                            <mat-button-toggle value="1">On</mat-button-toggle>
+                            <mat-button-toggle disabled value="2">High</mat-button-toggle>
+                          </mat-button-toggle-group>
+                          <span style="padding-left: 5px">{{key}}</span>
+                    </mat-list-item>
+                </mat-list>                 
+                  
+            </mat-expansion-panel>
+        </mat-accordion>
+        
+    </mat-drawer>
+  
+    <div class="example-sidenav-content">
+        <div id="toolbar">
+            <button mat-raised-button  (click)="drawer.toggle()">Options</button>
+        </div>
+        <app-graph [nodes]="nodes" [links]="links"></app-graph>
+    </div>
+  
+  </mat-drawer-container>
+

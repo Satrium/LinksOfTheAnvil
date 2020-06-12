@@ -4,7 +4,10 @@
   "description": "A Visualization for connections between worldanvil articles",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "cd app && ng build --prod",    
+    "serve:angular":"cd app && ng serve",
+    "serve": "concurrently \"npm start\" \"npm run serve:angular\""
   },
   "author": "Anton Pohli",
   "license": "MIT",
@@ -13,5 +16,8 @@
     "express": "^4.17.1",
     "node-fetch": "^2.6.0",
     "ws": "^7.3.0"
+  },
+  "devDependencies": {
+    "concurrently": "^5.2.0"
   }
 }

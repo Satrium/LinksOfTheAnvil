@@ -139,7 +139,7 @@ function graph(worldId){
           );
         });
       }); 
-      Graph.d3Force('link').distance(link => link.group === "mention" ? 400: 40).d3Force('charge').strength(-120);
+      Graph.d3Force('link').distance(link => link.group === "mention" ? 200: 20).d3Force('charge').strength(-120);
 }
 
 

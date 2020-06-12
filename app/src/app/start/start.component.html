@@ -1,0 +1,13 @@
+<mat-card>
+    <mat-card-title>Login</mat-card-title>
+    <mat-card-content>
+        <mat-form-field>
+            <mat-label>API Key</mat-label>
+            <input matInput placeholder="API Key" [(ngModel)]="auth.authToken">
+          </mat-form-field>
+          <button mat-raised-button color="primary" (click)="loadWorlds()">Load Worlds</button>
+          <mat-list *ngIf="user">
+              <mat-list-item *ngFor="let world of user.worlds"><button mat-raised-button (click)="loadWorld(world.id)">Load</button> {{world.name}}</mat-list-item>
+          </mat-list>
+    </mat-card-content>
+</mat-card>

@@ -8,7 +8,7 @@ var express = require('express');
 var worldanvil = require('./worldanvil.js');
 
 var app = express();
-app.use(express.static('public'));
+app.use(express.static(process.cwd()+"/app/dist/app/"));
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, 'index.html'))
@@ -20,6 +20,8 @@ app.get('/api/user', (req, res) => {
             .then(x => worldanvil.getUserWorlds(req.header("x-auth-token"), x.id))
             .then(x => res.json(x))
             .catch(x => console.error(x));
+    }else{
+        res.status(401);
     }
     
 });
@@ -41,7 +43,13 @@ app.get('/api/world/:id', async (req, res) => {
                 .catch(x => {console.error(x); res.status(500)})
         }
         
+    }else{
+        res.status(401);
     }
+});
+
+app.use(function(req, res){
+    res.sendFile(process.cwd()+"/app/dist/app/index.html")
 });
 
 app.listen(3000, function () {
