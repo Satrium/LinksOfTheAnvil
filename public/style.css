@@ -23,6 +23,40 @@ html, body{
     z-index: 2;
 }
 
+#displaywrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+#sidebar{
+    min-width: 250px;
+    max-width: 250px;
+    background: white;
+    z-index: 1;
+    margin-left: -250px;
+    transition: margin-left 200ms ease-in-out;
+    height: 100vh;
+    overflow-y: scroll;
+    position:fixed;
+}
+
+#sidebar.active{
+    margin-left: 0;
+}
+
+#sidebarCollapse{
+    margin-left: 250px;
+    position:fixed;
+}
+
+#sidebarCollapse div{
+    width: 21px;
+    height: 3px;
+    background-color: black;
+    margin: 4px 0;
+}
+
 .center{
     min-width: 300px;
     min-height: 250px;
@@ -48,18 +82,6 @@ html, body{
 
 #step3{
     color: white;
-}
-
-#controls{
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 400px;
-    height: 250px;
-    background: gray;
-    z-index: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
 }
 
 #nodeOptions{

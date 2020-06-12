@@ -141,3 +141,14 @@ function graph(worldId){
       }); 
       Graph.d3Force('link').distance(link => link.group === "mention" ? 400: 40).d3Force('charge').strength(-120);
 }
+
+
+(function() {
+  window.onload = () => {
+    document.getElementById("sidebarCollapse").addEventListener("click", () => {
+      console.log("SIDEBAR")
+      document.getElementById("sidebar").classList.toggle('active');
+    });
+  }
+
+})();

@@ -4,7 +4,7 @@ const regex = /(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA
 const baseurl = "https://www.worldanvil.com/api/aragorn/";
 
 const headers = {
-    "x-application-key":process.env.APP_KEY,
+    "x-application-key":process.env.APP_KEY ||"NQ5TPQ6EbZP74CusuwkcmTKvdZELMWvB",
     "ContentType":"application/json"
 }
 
@@ -81,7 +81,7 @@ function generateGraph(articles){
         if(article.data.relations){
             for(let [key, value] of Object.entries(article.data.relations)){               
                 if(!value.items)continue;
-                if(value.type === 'singlular')value.items = [value.items];
+                if(value.type === 'singular')value.items = [value.items];
                 console.log("-->", key, value.items);
                 for(let item of value.items){
                     if(item.type === "image")continue;
