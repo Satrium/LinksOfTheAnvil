@@ -18,7 +18,7 @@
                     </mat-panel-title>
                   </mat-expansion-panel-header>  
                   <mat-list dense>
-                    <mat-list-item *ngFor="let key of keys(articleTypes)">                        
+                    <mat-list-item *ngFor="let key of keys(articleTypes).sort()">                        
                         <mat-button-toggle-group #group [name]="key" [(ngModel)]="articleTypes[key]" (ngModelChange)="update()">
                             <mat-button-toggle value="0">Off</mat-button-toggle>
                             <mat-button-toggle value="1">Hidden</mat-button-toggle>
@@ -36,7 +36,7 @@
                     </mat-panel-title>
                   </mat-expansion-panel-header>  
                   <mat-list dense>
-                    <mat-list-item *ngFor="let key of keys(linkTypes)">                        
+                    <mat-list-item *ngFor="let key of keys(linkTypes).sort()">                        
                         <mat-button-toggle-group #group [name]="key" [(ngModel)]="linkTypes[key]" (ngModelChange)="update()">
                             <mat-button-toggle value="0">Off</mat-button-toggle>
                             <mat-button-toggle value="1">Hidden</mat-button-toggle>

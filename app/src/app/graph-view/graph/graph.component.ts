@@ -18,6 +18,8 @@ export class GraphComponent implements OnInit {
   @Input() articleTypes = {};
   @Input() linkTypes = {};
 
+  linksHighlighted = false;
+
   @ViewChild("graph") graphElement:ElementRef;
 
   private Graph;
@@ -27,6 +29,18 @@ export class GraphComponent implements OnInit {
     
   }
 
+  getLinkWidth(link){
+    var width = 1;
+    if(this.linksHighlighted){
+      if(this.linkTypes[link.group] == 3){
+        width = 4;
+      }else{
+        width = 0.5;
+      }
+    }
+    return width / (link.group === "mention"?2:1);
+  }
+
   ngAfterViewInit(){
     this.Graph = ForceGraph3D()(this.graphElement.nativeElement)
       .graphData({nodes:this.nodes, links:this.links})
@@ -34,13 +48,13 @@ export class GraphComponent implements OnInit {
       .linkAutoColorBy('group')
       .linkDirectionalArrowLength(3.5)
       .linkCurvature(0.1)
-      .linkWidth((link:any) => this.linkTypes[link.group] === "3"?4:(link.group === "mention"?0:1))
+      .linkWidth((link:any) => this.getLinkWidth(link))
       .linkLabel('group')
       .linkDirectionalArrowRelPos(1)
       .linkVisibility((x:any)=> this.linkTypes[x.group] >= 2)
       .nodeVisibility((x:any)=> this.articleTypes[x.group] >= 2)
-      .linkDirectionalParticles((link:any) => this.linkTypes[link.group] === "3" ? 4 : 0)
-      .linkDirectionalParticleWidth(1)
+      .linkDirectionalParticles((link:any) => this.linkTypes[link.group] == 3 ? 4 : 0)
+      .linkDirectionalParticleWidth(2)
       .nodeThreeObject((node:any) => {
         // use a sphere as a drag handle
         const obj = new THREE.Mesh(
@@ -71,6 +85,8 @@ export class GraphComponent implements OnInit {
   }
 
   ngOnChanges(changes:SimpleChanges){    
+    this.linksHighlighted = Object.values(this.linkTypes).includes("3");
+    console.log(this.linksHighlighted);
     if(this.Graph){
       if(changes.nodes || changes.links)this.Graph.graphData({nodes:this.nodes, links:this.links});      
       this.Graph.d3Force('link').distance(link => link.group === "mention" ? this.mentionDistance: this.distance).d3Force('charge').strength(this.chargeStrength);

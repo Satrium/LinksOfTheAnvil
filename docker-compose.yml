@@ -11,9 +11,8 @@ services:
       REDIS_HOST: "redis"
       REDIS_PORT: 6379
     deploy:
-      # resources:
-      #   limits:
-      #     memory: 500M
+      update_config:
+        order: start-first
       labels:
         - traefik.enable=true
         - traefik.frontend.rule=Host:linksoftheanvil.satrium.dev
