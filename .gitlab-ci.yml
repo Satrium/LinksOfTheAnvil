@@ -20,7 +20,7 @@ cache:
 init:
   stage: init
   image: trion/ng-cli:${CLI_VERSION}
-  script: ""
+  script: ['']
   cache:
     policy: push
     key: ${CI_COMMIT_SHA}
