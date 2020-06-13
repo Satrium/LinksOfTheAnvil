@@ -3,6 +3,7 @@ const fetch = require('node-fetch');
 const regex = /(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}/gi;
 const baseurl = "https://www.worldanvil.com/api/aragorn/";
 
+
 const headers = {
     "x-application-key":process.env.APP_KEY ||"NQ5TPQ6EbZP74CusuwkcmTKvdZELMWvB",
     "ContentType":"application/json"
@@ -46,15 +47,18 @@ function getAllWorldArticles(authToken, worldId, offset=0){
 }
 
 function getArticle(authToken, articleId){
+    console.log(baseurl + "article/" + articleId);
     return fetch(baseurl + "article/" + articleId, {headers: getHeaders(authToken)})
         .then(x => x.json());
 }
 
+const concurrentRequests = 20;
 async function enrichWithData(authToken, articles){
-    console.log(authToken, typeof(articles));
-    for(var article of articles){
-        article.data = await getArticle(authToken, article.id);
-        await sleep(10);
+    for(var i=0; i < articles.length; i+=concurrentRequests){
+        await Promise.all(articles.slice(i, i+concurrentRequests).map(async(article) => {
+            article.data = await getArticle(authToken, article.id);
+        }));
+        console.log(i);
     }
     return articles;
 }
@@ -82,7 +86,6 @@ function generateGraph(articles){
             for(let [key, value] of Object.entries(article.data.relations)){               
                 if(!value.items)continue;
                 if(value.type === 'singular')value.items = [value.items];
-                console.log("-->", key, value.items);
                 for(let item of value.items){
                     if(item.type === "image")continue;
                     if(key === "children" || key == "childrenArticles")continue;

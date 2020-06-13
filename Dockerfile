@@ -1,4 +1,4 @@
-FROM node:12.0.0-alpine
+FROM node:14.4.0-alpine
 
 COPY . .
 
