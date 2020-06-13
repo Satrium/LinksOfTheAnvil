@@ -62,5 +62,6 @@ deploy:
     name: production
     url: https://linksoftheanvil.satrium.dev
   script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker pull $IMAGE_TAG
     - docker stack deploy --with-registry-auth --compose-file=docker-compose.yml linksoftheanvil
