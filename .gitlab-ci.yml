@@ -1,22 +1,58 @@
-services:
-- docker:dind
+stages:
+- init
+- build
+- docker
+- deploy
 
 variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHA
+  CLI_VERSION: 9.1.8
 
 before_script:
-- docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+- "[ -d node_modules ] || npm ci"
+- cd app
+- "[ -d node_modules ] || npm ci"
 
+cache:
+  key: ${CI_COMMIT_SHA}
+  paths: ['app/node_modules','node_modules']
+
+init:
+  stage: init
+  image: trion/ng-cli:${CLI_VERSION}
+  script: ""
+  cache:
+    policy: push
+    key: ${CI_COMMIT_SHA}
+    paths: ['app/node_modules','node_modules']
+    
 
 build:
-  image: docker:latest
+  image: trion/ng-cli-karma:${CLI_VERSION}
   stage: build
   script:
-    - docker build -t $IMAGE_TAG .
-    - docker push $IMAGE_TAG
+    - cd app
+    - npm run build:prod
+  artifacts:
+    expire_in: 1 day
+    paths:
+    - dist
+
+docker:
+  stage: docker
+  image: docker:stable
+  services:
+  - docker:dind
+  script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  - docker build -t $IMAGE_TAG .
+  - docker push $IMAGE_TAG
 
 deploy:
   stage: deploy
+  image: docker:stable
+  services: 
+  - docker:dind
   tags:
     - deploy
   only:

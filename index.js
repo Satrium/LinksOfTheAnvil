@@ -8,11 +8,7 @@ var express = require('express');
 var worldanvil = require('./worldanvil.js');
 
 var app = express();
-app.use(express.static(process.cwd()+"/app/dist/app/"));
-
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, 'index.html'))
-});
+app.use(express.static(process.cwd()+"/dist"));
 
 app.get('/api/user', (req, res) => {
     if(req.header("x-auth-token")){
@@ -49,7 +45,7 @@ app.get('/api/world/:id', async (req, res) => {
 });
 
 app.use(function(req, res){
-    res.sendFile(process.cwd()+"/app/dist/app/index.html")
+    res.sendFile(express.static(process.cwd()+"/dist/index.html"))
 });
 
 app.listen(3000, function () {

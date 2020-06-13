@@ -1,7 +1,9 @@
 version: '3'
 services:
   linksoftheanvil:
-    image: "${IMAGE_TAG}"
+    image: "worldlink"
+    ports:
+    - "3000:3000"
     networks:
       - proxy
       - worldanvil
