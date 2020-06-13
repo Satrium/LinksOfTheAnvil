@@ -30,12 +30,12 @@ export class GraphComponent implements OnInit {
   }
 
   getLinkWidth(link){
-    var width = 1;
+    var width = 2;
     if(this.linksHighlighted){
       if(this.linkTypes[link.group] == 3){
         width = 4;
       }else{
-        width = 0.5;
+        width = 1;
       }
     }
     return width / (link.group === "mention"?2:1);
@@ -46,10 +46,10 @@ export class GraphComponent implements OnInit {
       .graphData({nodes:this.nodes, links:this.links})
       .nodeAutoColorBy('group')
       .linkAutoColorBy('group')
-      .linkDirectionalArrowLength(3.5)
-      .linkCurvature(0.1)
+      .linkDirectionalArrowLength(link => link["bidirectional"]?0:3.5)
+      .linkCurvature(link => link["bidirectional"]?0:0.1)
       .linkWidth((link:any) => this.getLinkWidth(link))
-      .linkLabel('group')
+      .linkLabel((link:any) => link.bidirectional?Array.from(link.label).join("/"):link.group)
       .linkDirectionalArrowRelPos(1)
       .linkVisibility((x:any)=> this.linkTypes[x.group] >= 2)
       .nodeVisibility((x:any)=> this.articleTypes[x.group] >= 2)

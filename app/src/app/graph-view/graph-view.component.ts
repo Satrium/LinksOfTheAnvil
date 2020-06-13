@@ -19,6 +19,8 @@ export class GraphViewComponent implements OnInit {
   articleTypes = {};
   linkTypes = {};
 
+  linksCollapsed = true;
+
   showOptions = false;
 
   constructor(private data:DataService, private route: ActivatedRoute) { }
@@ -48,7 +50,27 @@ export class GraphViewComponent implements OnInit {
   update(){
     console.log(this.articleTypes, this.linkTypes);
     this.nodes = this.allNodes.filter(x => this.articleTypes[x.group] > 0);
-    this.links = this.allLinks.filter(x => this.linkTypes[x.group] > 0 && !(this.articleTypes[x.source.group] == 0 || this.articleTypes[x.target.group] == 0));
+    this.links = this.collapseLinks(this.allLinks.filter(x => this.linkTypes[x.group] > 0 && !(this.articleTypes[x.source.group] == 0 || this.articleTypes[x.target.group] == 0)));
+    console.log(this.links);
+  }
+
+  collapseLinks(linkList){
+    console.log(linkList);
+    if(!this.linksCollapsed)return linkList;
+    var newLinks = {};
+    for(let link of linkList){
+      let id = [typeof(link.source) === "string"?link.source:link.source.id, typeof(link.target) === "string"?link.target:link.target.id].sort().join("-");
+      if(newLinks[id]){
+        newLinks[id].group = [newLinks[id].group, link.group].sort()[0];
+        newLinks[id].label.add(link.label);
+        newLinks[id].bidirectional = true;
+      }else{
+        newLinks[id] = link;
+        newLinks[id].label = new Set([link.group]);
+      }      
+    }
+    console.log(newLinks);
+    return Object.values(newLinks);
   }
 
   keys(obj){

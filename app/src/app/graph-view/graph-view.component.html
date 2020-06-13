@@ -9,7 +9,7 @@
                     General Settings
                   </mat-panel-title>
                 </mat-expansion-panel-header>              
-                <p>Nothing here yet</p>              
+                <mat-slide-toggle [(ngModel)]="linksCollapsed" (ngModelChange)="update()" name="enableWifi">Collapse Links</mat-slide-toggle>            
             </mat-expansion-panel>
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
