@@ -33,12 +33,12 @@ export class GraphViewComponent implements OnInit {
       this.allLinks = x["links"];
       for(var node of this.allNodes){        
         if(!(node.group in this.articleTypes)){
-          this.articleTypes[node.group] = "1";
+          this.articleTypes[node.group] = "2";
         }
       }
       for(var link of this.allLinks){        
         if(!(link.group in this.linkTypes)){
-          this.linkTypes[link.group] = "1";
+          this.linkTypes[link.group] = "2";
         }
       }
       this.update();
@@ -46,9 +46,9 @@ export class GraphViewComponent implements OnInit {
   }
 
   update(){
-    console.log(this.articleTypes);
-    this.nodes = this.allNodes.filter(x => this.articleTypes[x.group] != 0);
-    this.links = this.allLinks.filter(x => this.linkTypes[x.group] != 0 && !(this.articleTypes[x.source.group] == 0 || this.articleTypes[x.target.group] == 0));
+    console.log(this.articleTypes, this.linkTypes);
+    this.nodes = this.allNodes.filter(x => this.articleTypes[x.group] > 0);
+    this.links = this.allLinks.filter(x => this.linkTypes[x.group] > 0 && !(this.articleTypes[x.source.group] == 0 || this.articleTypes[x.target.group] == 0));
   }
 
   keys(obj){
