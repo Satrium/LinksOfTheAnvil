@@ -12,6 +12,7 @@ before_script:
 - "[ -d node_modules ] || npm ci"
 - cd app
 - "[ -d node_modules ] || npm ci"
+- cd ..
 
 cache:
   key: ${CI_COMMIT_SHA}
