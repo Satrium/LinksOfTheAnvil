@@ -17,4 +17,8 @@ export class DataService {
     console.log(worldId);
     return this.http.get("/api/world/" + worldId);
   }
+
+  public getPresets(){
+    return this.http.get("/assets/presets.json");
+  }
 }

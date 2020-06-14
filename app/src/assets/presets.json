@@ -1,0 +1,25 @@
+[
+    {
+        "name":"Tag cloud with articles",
+        "addRootTag":true,
+        "dagMode":"td",
+        "displayArticlesWithoutLinks": false,
+        "linkTypes":{
+            "_default": "0",
+            "tagged": "2"
+        },"articleTypes":{
+            "_default": "2"
+        }
+    },{
+        "name":"Tag cloud",
+        "addRootTag":true,
+        "dagMode":"radialout",
+        "linkTypes":{
+            "_default": "0",
+            "tagged": "2"
+        },"articleTypes":{
+            "_default": "0",
+            "tag": "2"
+        }
+    }
+]

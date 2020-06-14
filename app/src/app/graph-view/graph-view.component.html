@@ -8,9 +8,22 @@
                   <mat-panel-title>
                     General Settings
                   </mat-panel-title>
-                </mat-expansion-panel-header>              
-                <mat-slide-toggle [(ngModel)]="linksCollapsed" (ngModelChange)="update()" name="enableWifi">Collapse Links</mat-slide-toggle>            
-            </mat-expansion-panel>
+                </mat-expansion-panel-header>        
+                <mat-form-field *ngIf="presets$ | async as presets">
+                  <mat-label>Presets</mat-label>
+                  <mat-select [(ngModel)]="selectedPreset">
+                    <mat-option *ngFor="let preset of presets" [value]="preset">
+                      {{preset.name}}
+                    </mat-option>
+                  </mat-select>
+                  <button mat-stroked-button matSuffix  (click)="applyPreset()">Apply</button>
+                </mat-form-field> <br>
+                <mat-slide-toggle [(ngModel)]="linksCollapsed" (ngModelChange)="update()" name="collapse links">Collapse Links</mat-slide-toggle><br>     
+                <mat-slide-toggle [(ngModel)]="addRootTag" (ngModelChange)="update()" name="add root tag">Add root tag</mat-slide-toggle><br>
+                 <mat-slide-toggle [(ngModel)]="displayArticlesWithoutLinks" (ngModelChange)="update()" name="add root tag">Display articles without links</mat-slide-toggle>
+                
+                
+              </mat-expansion-panel>
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -48,7 +61,23 @@
                 </mat-list>                 
                   
             </mat-expansion-panel>
-        </mat-accordion>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Advanced Options
+                  </mat-panel-title>
+                </mat-expansion-panel-header>              
+                <mat-form-field>
+                  <mat-label>Dag Mode</mat-label>
+                  <mat-select [(ngModel)]="dagMode">
+                    <mat-option *ngFor="let key of keys(DagModes)" [value]="DagModes[key]">
+                      {{key}}
+                    </mat-option>
+                    <mat-hint align="start">This option will only work, if the graph as no cyclic dependencies</mat-hint>
+                  </mat-select>                  
+                </mat-form-field>
+          </mat-expansion-panel>
+          </mat-accordion>
         
     </mat-drawer>
   
@@ -66,7 +95,11 @@
               </mat-autocomplete>
             </mat-form-field>
         </div>
-        <app-graph #graph [nodes]="nodes" [links]="links" [articleTypes]="articleTypes" [linkTypes]="linkTypes"></app-graph>
+        <app-graph #graph [nodes]="nodes" 
+                          [links]="links" 
+                          [articleTypes]="articleTypes" 
+                          [linkTypes]="linkTypes"
+                          [dagMode]="dagMode"></app-graph>
     </div>
   
   </mat-drawer-container>

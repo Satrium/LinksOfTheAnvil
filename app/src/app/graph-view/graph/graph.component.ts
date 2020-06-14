@@ -18,6 +18,7 @@ export class GraphComponent implements OnInit {
   @Input() mentionDistance = 150;
   @Input() articleTypes = {};
   @Input() linkTypes = {};
+  @Input() dagMode = null;
 
   linksHighlighted = false;
 
@@ -44,7 +45,8 @@ export class GraphComponent implements OnInit {
 
   ngAfterViewInit(){
     this.Graph = ForceGraph3D()(this.graphElement.nativeElement)
-      .graphData({nodes:this.nodes, links:this.links})
+      .graphData({nodes:this.nodes, links:this.links})      
+      .dagMode(this.dagMode)
       .nodeAutoColorBy('group')
       .linkAutoColorBy('group')
       .linkDirectionalArrowLength(link => link["bidirectional"]?0:3.5)
@@ -65,7 +67,12 @@ export class GraphComponent implements OnInit {
         // add text sprite as child
         const sprite = new SpriteText(node.name);
         sprite.color = node.color;
-        sprite.textHeight = Math.max(2, 10 * (Math.min(node.wordcount, 1000) / 1000));
+        if(node.group === "tag"){
+          sprite.textHeight = 5;
+        }else{
+          sprite.textHeight = Math.max(2, 10 * (Math.min(node.wordcount, 1000) / 1000));
+        }
+        
         obj.add(sprite);
             
 
@@ -90,11 +97,14 @@ export class GraphComponent implements OnInit {
   }
 
   ngOnChanges(changes:SimpleChanges){    
+    console.log(changes);
     this.linksHighlighted = Object.values(this.linkTypes).includes("3");
     console.log(this.linksHighlighted);
     if(this.Graph){
       if(changes.nodes || changes.links)this.Graph.graphData({nodes:this.nodes, links:this.links});      
-      this.Graph.d3Force('link').distance(link => link.group === "mention" ? this.mentionDistance: this.distance).d3Force('charge').strength(this.chargeStrength);
+      this.Graph.dagMode(this.dagMode);
+      //this.Graph.d3Force('link').distance(link => link.group === "mention" ? this.mentionDistance: this.distance).d3Force('charge').strength(this.chargeStrength);
+      
     }
   }
 

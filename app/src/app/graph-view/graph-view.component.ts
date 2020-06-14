@@ -6,17 +6,40 @@ import { Observable, Subject } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+const DagModes = {
+  "None": null,
+  "Top-Down": "td",
+  "Bottom-Up": "bu",
+  "Left-Right": "lr",
+  "Right-Left": "rl",
+  "Near-to-Far": "zour",
+  "Far-to-Near":"zin",
+  "Radially outwards":"radialout",
+  "Radially inwards":"radialin"
+};
+
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
   styleUrls: ['./graph-view.component.sass']
 })
 export class GraphViewComponent implements OnInit {
+  DagModes = DagModes
+
+  presets$: Observable<any>;
+  selectedPreset = null;
 
   searchField = new FormControl();
   nodes: any = [];
   searchFilteredNodes: Observable<any[]>;
   graphFocus =  new Subject<string>();
+  
+  dagMode = null;
+
+  // Adds a root for all tags
+  addRootTag = false;
+
+  displayArticlesWithoutLinks = true;
 
   links:any = [];
 
@@ -33,6 +56,7 @@ export class GraphViewComponent implements OnInit {
   constructor(private data:DataService, private route: ActivatedRoute, private _snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
+    this.presets$ = this.data.getPresets();
     this.searchFilteredNodes = this.searchField.valueChanges
       .pipe(
         startWith(''),
@@ -71,8 +95,20 @@ export class GraphViewComponent implements OnInit {
   }
 
   update(){
-    this.nodes = this.allNodes.filter(x => this.articleTypes[x.group] > 0);
+    console.log(this.articleTypes);
+    var nodesWithLinks = new Set();    
     this.links = this.collapseLinks(this.allLinks.filter(x => this.linkTypes[x.group] > 0 && !(this.articleTypes[x.source.group] == 0 || this.articleTypes[x.target.group] == 0)));
+    this.links.forEach(x => {
+      nodesWithLinks.add(x.source.id);
+      nodesWithLinks.add(x.target.id);
+    });
+    this.nodes = this.allNodes.filter(x => this.articleTypes[x.group] > 0 && (this.displayArticlesWithoutLinks || nodesWithLinks.has(x.id)));    
+    if(this.addRootTag){      
+      this.nodes.filter(x => x.group === "tag").forEach(x => {
+        this.links.push({"source":"Tagged", "target":x.id, "group":"tagged"});
+      });
+      this.nodes.push({"id":"Tagged"})
+    }
   }
 
   collapseLinks(linkList){
@@ -104,5 +140,39 @@ export class GraphViewComponent implements OnInit {
     this._snackBar.open(message, action, {
       duration: duration,
     });
+  }
+
+  applyPreset(){
+    if(this.selectedPreset){
+      console.log("Applying preset", this.selectedPreset)
+      this.addRootTag = this.selectedPreset.addRootTag != null?this.selectedPreset.addRootTag:false;
+      this.dagMode = this.selectedPreset.dagMode || null;
+      this.displayArticlesWithoutLinks = this.selectedPreset.displayArticlesWithoutLinks != null?this.selectedPreset.displayArticlesWithoutLinks:true;
+
+      if(this.selectedPreset.articleTypes){
+        for(let type of Object.keys(this.articleTypes)){
+          if(this.selectedPreset.articleTypes[type]){
+            this.articleTypes[type] = this.selectedPreset.articleTypes[type];
+          }else if(this.selectedPreset.articleTypes["_default"]){
+            this.articleTypes[type] = this.selectedPreset.articleTypes["_default"];
+          }else{
+            this.articleTypes[type] = true;
+          }
+        }
+      }
+      if(this.selectedPreset.linkTypes){
+        for(let type of Object.keys(this.linkTypes)){
+          if(this.selectedPreset.linkTypes[type]){
+            this.linkTypes[type] = this.selectedPreset.linkTypes[type];
+          }else if(this.selectedPreset.linkTypes["_default"]){
+            this.linkTypes[type] = this.selectedPreset.linkTypes["_default"];
+          }else{
+            this.linkTypes[type] = true;
+          }
+        }
+      }
+      this.update();
+    }
+    
   }
 }
