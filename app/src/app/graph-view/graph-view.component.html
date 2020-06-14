@@ -54,9 +54,19 @@
   
     <div class="example-sidenav-content">
         <div id="toolbar">
-            <button mat-raised-button  (click)="drawer.toggle()">Options</button>
+            
+            <mat-form-field class="searchbar" appearance="fill">
+              <mat-label>Search</mat-label>
+              <input type="text" matInput [formControl]="searchField" [matAutocomplete]="auto">
+              <button mat-raised-button matPrefix  (click)="drawer.toggle()">Options</button>
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="searchBarDisplay">
+                <mat-option *ngFor="let option of searchFilteredNodes | async" [value]="option" (click)="graph.focusNode(option)">
+                  {{option.name}}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
         </div>
-        <app-graph [nodes]="nodes" [links]="links" [articleTypes]="articleTypes" [linkTypes]="linkTypes"></app-graph>
+        <app-graph #graph [nodes]="nodes" [links]="links" [articleTypes]="articleTypes" [linkTypes]="linkTypes"></app-graph>
     </div>
   
   </mat-drawer-container>

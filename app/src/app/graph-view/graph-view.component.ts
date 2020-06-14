@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { ActivatedRoute } from '@angular/router';
-import {switchMap, map, flatMap, tap} from 'rxjs/operators';
+import {switchMap, map, flatMap, tap, startWith} from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-graph-view',
@@ -10,7 +12,11 @@ import {switchMap, map, flatMap, tap} from 'rxjs/operators';
 })
 export class GraphViewComponent implements OnInit {
 
+  searchField = new FormControl();
   nodes: any = [];
+  searchFilteredNodes: Observable<any[]>;
+  graphFocus =  new Subject<string>();
+
   links:any = [];
 
   allNodes: any[] = [];
@@ -26,6 +32,12 @@ export class GraphViewComponent implements OnInit {
   constructor(private data:DataService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.searchFilteredNodes = this.searchField.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => typeof value === 'string' ? value : value.label),
+        map(name => name ? this.nodes.filter(option => option.name.toLowerCase().indexOf(name.toLowerCase()) === 0).slice(0,20) : this.nodes.slice(0, 20))
+      )
     this.route.params.pipe(
       tap(console.log),
       switchMap(x => this.data.getGraph(x?.world).pipe(tap(x => console.log(x)))),
@@ -45,6 +57,11 @@ export class GraphViewComponent implements OnInit {
       }
       this.update();
     });
+  }
+
+  
+  searchBarDisplay(node): string {
+    return node && node.label ? node.label : '';
   }
 
   update(){
