@@ -19,6 +19,7 @@ export class GraphComponent implements OnInit {
   @Input() articleTypes = {};
   @Input() linkTypes = {};
   @Input() dagMode = null;
+  @Input() numDimensions:string = "3";
 
   linksHighlighted = false;
 
@@ -49,6 +50,7 @@ export class GraphComponent implements OnInit {
       .dagMode(this.dagMode)
       .nodeAutoColorBy('group')
       .linkAutoColorBy('group')
+      .numDimensions(<any>this.numDimensions)
       .linkDirectionalArrowLength(link => link["bidirectional"]?0:3.5)
       .linkCurvature(link => link["bidirectional"]?0:0.1)
       .linkWidth((link:any) => this.getLinkWidth(link))
@@ -102,7 +104,7 @@ export class GraphComponent implements OnInit {
     console.log(this.linksHighlighted);
     if(this.Graph){
       if(changes.nodes || changes.links)this.Graph.graphData({nodes:this.nodes, links:this.links});      
-      this.Graph.dagMode(this.dagMode);
+      this.Graph.dagMode(this.dagMode).numDimensions(<any>this.numDimensions);
       //this.Graph.d3Force('link').distance(link => link.group === "mention" ? this.mentionDistance: this.distance).d3Force('charge').strength(this.chargeStrength);
       
     }

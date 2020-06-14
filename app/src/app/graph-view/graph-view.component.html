@@ -20,7 +20,7 @@
                 </mat-form-field> <br>
                 <mat-slide-toggle [(ngModel)]="linksCollapsed" (ngModelChange)="update()" name="collapse links">Collapse Links</mat-slide-toggle><br>     
                 <mat-slide-toggle [(ngModel)]="addRootTag" (ngModelChange)="update()" name="add root tag">Add root tag</mat-slide-toggle><br>
-                 <mat-slide-toggle [(ngModel)]="displayArticlesWithoutLinks" (ngModelChange)="update()" name="add root tag">Display articles without links</mat-slide-toggle>
+                <mat-slide-toggle [(ngModel)]="displayArticlesWithoutLinks" (ngModelChange)="update()" name="add root tag">Display articles without links</mat-slide-toggle>
                 
                 
               </mat-expansion-panel>
@@ -72,9 +72,18 @@
                   <mat-select [(ngModel)]="dagMode">
                     <mat-option *ngFor="let key of keys(DagModes)" [value]="DagModes[key]">
                       {{key}}
-                    </mat-option>
-                    <mat-hint align="start">This option will only work, if the graph as no cyclic dependencies</mat-hint>
-                  </mat-select>                  
+                    </mat-option>                    
+                  </mat-select>   
+                  <mat-hint align="start">This option will only work, if the graph as no cyclic dependencies</mat-hint>               
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Dimensions</mat-label>
+                  <mat-select [(ngModel)]="numDimensions" (ngModelChange)="update()">
+                    <mat-option [value]="1">One Dimension</mat-option>     
+                    <mat-option [value]="2">Two Dimensions</mat-option>  
+                    <mat-option [value]="3">Three Dimensions</mat-option>                 
+                  </mat-select>               
+                  <mat-hint align="start">Change the number of dimension the graph is simulated in</mat-hint>   
                 </mat-form-field>
           </mat-expansion-panel>
           </mat-accordion>
@@ -99,7 +108,8 @@
                           [links]="links" 
                           [articleTypes]="articleTypes" 
                           [linkTypes]="linkTypes"
-                          [dagMode]="dagMode"></app-graph>
+                          [dagMode]="dagMode"
+                          [numDimensions]="numDimensions"></app-graph>
     </div>
   
   </mat-drawer-container>

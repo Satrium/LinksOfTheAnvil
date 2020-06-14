@@ -35,6 +35,7 @@ export class GraphViewComponent implements OnInit {
   graphFocus =  new Subject<string>();
   
   dagMode = null;
+  numDimensions = 3;
 
   // Adds a root for all tags
   addRootTag = false;
