@@ -65,11 +65,17 @@ async function enrichWithData(authToken, articles){
 }
 
 function generateGraph(articles){
+    var tags = new Set();
     var result = {nodes:[], links:[]};
     articles.forEach(article => {
-        result.nodes.push({"id":article.id, "name":article.title, "group":article.template_type, "public":!article.is_draft && article.state == "public", "wordcount":article.wordcount})
+        result.nodes.push({"id":article.id, "name":article.title, "group":article.template_type, "public":!article.is_draft && article.state == "public", "wordcount":article.wordcount, "link":article.url})        
         if(!article.data)return;
         let connections = [];
+        if(article.data.tags) article.data.tags.split(",").forEach(tag => {
+            tags.add(tag);
+            result.links.push({"source":tag, "target":article.id, "group":"tagged", "label":"tagged"});
+        });
+        
         if(article.data.content){
             connections = connections.concat(article.data.content.match(regex) || []);
                     
@@ -95,6 +101,10 @@ function generateGraph(articles){
             }
         }
     });
+    console.log(tags);
+    tags.forEach(x => {
+        result.nodes.push({"id":x, "name":x, "group":"tag", wordcount:1000})
+    })
     var ids = []
     result.nodes.forEach(x => ids.push(x.id));
     result.links = result.links.filter(x => ids.includes(x.target));
