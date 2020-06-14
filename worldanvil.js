@@ -9,8 +9,9 @@ const headers = {
     "ContentType":"application/json"
 }
 
-function sleep(ms){
-    return new Promise(resolve => setTimeout(resolve, ms))
+function handleResponse(res){
+    if(res.status != 200)throw new WorldAnvilError("An error occured while connecting to the World Anvil API", res.status);
+    return res.json();
 }
 
 function getHeaders(authToken){
@@ -22,7 +23,7 @@ function getHeaders(authToken){
 
 function getCurrentUser(authToken){
     return fetch(baseurl + "user", {headers:getHeaders(authToken)})
-        .then(x => x.json());
+        .then(handleResponse)
 }
 
 function getUserWorlds(authToken, userId){
@@ -100,18 +101,19 @@ function generateGraph(articles){
     return result;
 }
 
-module.exports = {getCurrentUser,getUserWorlds, generateGraph, getAllWorldArticles, enrichWithData, getWorld}
-// getCurrentUser(token)
-//     .then(x => getUserWorlds(token, x.id))
-//     .then(x => processWorld(token, x.worlds[0].id))
-//     .catch(error => console.error(error));
-// var data = require("./articles.json").filter(x => typeof(x.data) == "string").map(x => [x.id, x.title, x.url, x.template_type]);
-// var graph = generateGraph(data);
-// fs.writeFileSync('./graph.json', JSON.stringify(graph, null, 2) , 'utf-8');
-// //console.log(data);
-// result = data.reduce(function (r, a) {
-//     r[a[3]] = r[a[3]] || [];
-//     r[a[3]].push(a);
-//     return r;
-// }, Object.create(null));
-// console.log(result);
+class WorldAnvilError extends Error{
+    constructor(message, statusCode, exception) {
+        super(message);
+       // Ensure the name of this error is the same as the class name
+        this.name = this.constructor.name;
+       // This clips the constructor invocation from the stack trace.
+       // It's not absolutely essential, but it does make the stack trace a little nicer.
+       //  @see Node.js reference (bottom)
+        Error.captureStackTrace(this, this.constructor);
+        this.statusCode = statusCode;
+        this.exception = exception;
+      }
+}
+
+module.exports = {getCurrentUser,getUserWorlds, generateGraph, getAllWorldArticles, enrichWithData, getWorld, WorldAnvilError}
+

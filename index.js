@@ -15,7 +15,7 @@ app.get('/api/user', (req, res) => {
         worldanvil.getCurrentUser(req.header("x-auth-token"))
             .then(x => worldanvil.getUserWorlds(req.header("x-auth-token"), x.id))
             .then(x => res.json(x))
-            .catch(x => console.error(x));
+            .catch(x => {console.error(x); res.status(500).send(x.message);});
     }else{
         res.status(401);
     }
@@ -36,16 +36,15 @@ app.get('/api/world/:id', async (req, res) => {
                     return x;
                 })
                 .then(x => res.json(x))
-                .catch(x => {console.error(x); res.status(500)})
-        }
-        
+                .catch(x => {console.error(x); res.status(500).send(x.message);});
+        }        
     }else{
         res.status(401);
     }
 });
 
 app.use(function(req, res){
-    res.sendFile(express.static(process.cwd()+"/dist/index.html"))
+    res.sendFile(process.cwd()+"/dist/index.html");
 });
 
 app.listen(3000, function () {

@@ -79,7 +79,7 @@ export class GraphComponent implements OnInit {
 
   focusNode(node){
     // Aim at node from outside it
-    const distance = 200;
+    const distance = 300;
     const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
 
     this.Graph.cameraPosition(

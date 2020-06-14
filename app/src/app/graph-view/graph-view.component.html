@@ -59,8 +59,8 @@
               <mat-label>Search</mat-label>
               <input type="text" matInput [formControl]="searchField" [matAutocomplete]="auto">
               <button mat-raised-button matPrefix  (click)="drawer.toggle()">Options</button>
-              <mat-autocomplete #auto="matAutocomplete" [displayWith]="searchBarDisplay">
-                <mat-option *ngFor="let option of searchFilteredNodes | async" [value]="option" (click)="graph.focusNode(option)">
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="searchBarDisplay" (optionSelected)="graph.focusNode($event.option.value)">
+                <mat-option *ngFor="let option of searchFilteredNodes | async" [value]="option">
                   {{option.name}}
                 </mat-option>
               </mat-autocomplete>
