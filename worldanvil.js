@@ -5,7 +5,7 @@ const baseurl = "https://www.worldanvil.com/api/aragorn/";
 
 
 const headers = {
-    "x-application-key":process.env.APP_KEY ||"NQ5TPQ6EbZP74CusuwkcmTKvdZELMWvB",
+    "x-application-key":process.env.APP_KEY,
     "ContentType":"application/json"
 }
 
@@ -59,7 +59,6 @@ async function enrichWithData(authToken, articles){
         await Promise.all(articles.slice(i, i+concurrentRequests).map(async(article) => {
             article.data = await getArticle(authToken, article.id);
         }));
-        console.log(i);
     }
     return articles;
 }
@@ -101,7 +100,6 @@ function generateGraph(articles){
             }
         }
     });
-    console.log(tags);
     tags.forEach(x => {
         result.nodes.push({"id":x, "name":x, "group":"tag", wordcount:1000})
     })
