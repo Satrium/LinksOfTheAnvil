@@ -1,8 +1,10 @@
 const fetch = require('node-fetch');
 const Bottleneck = require('bottleneck');
 
-const regex = /(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}/gi;
+
 const baseurl = "https://www.worldanvil.com/api/aragorn/";
+
+const version = 1;
 
 const limiter = new Bottleneck({
     id: "link-of-the-anvil",
@@ -79,51 +81,6 @@ async function enrichWithData(authToken, articles){
     return articles;
 }
 
-function generateGraph(articles){
-    var tags = new Set();
-    var result = {nodes:[], links:[]};
-    articles.forEach(article => {
-        result.nodes.push({"id":article.id, "name":article.title, "group":article.template_type, "public":!article.is_draft && article.state == "public", "wordcount":article.wordcount, "link":article.url})        
-        if(!article.data)return;
-        let connections = [];
-        if(article.data.tags) article.data.tags.split(",").forEach(tag => {
-            tags.add(tag);
-            result.links.push({"source":tag, "target":article.id, "group":"tagged", "label":"tagged"});
-        });
-        
-        if(article.data.content){
-            connections = connections.concat(article.data.content.match(regex) || []);
-                    
-        } 
-        if(article.data.sections){
-            for(var section of Object.values(article.data.sections ||{})){
-                if(!section.content || typeof(section.content) != "string")continue;
-                connections = connections.concat(section.content.match(regex) || [])
-            } 
-        }    
-        [...new Set(connections)].forEach(connection => {
-            result.links.push({"source":article.id, "target":connection, "group":"mention", "label":"mention"});
-        });
-        if(article.data.relations){
-            for(let [key, value] of Object.entries(article.data.relations)){               
-                if(!value.items)continue;
-                if(value.type === 'singular')value.items = [value.items];
-                for(let item of value.items){
-                    if(item.type === "image")continue;
-                    if(key === "children" || key == "childrenArticles")continue;
-                    result.links.push({'source':article.id, "target": item.id, "label":key, "group":key})
-                }
-            }
-        }
-    });
-    tags.forEach(x => {
-        result.nodes.push({"id":x, "name":x, "group":"tag", wordcount:1000})
-    })
-    var ids = []
-    result.nodes.forEach(x => ids.push(x.id));
-    result.links = result.links.filter(x => ids.includes(x.target));
-    return result;
-}
 
 class WorldAnvilError extends Error{
     constructor(message, statusCode, exception) {
@@ -139,5 +96,5 @@ class WorldAnvilError extends Error{
       }
 }
 
-module.exports = {getCurrentUser,getUserWorlds, generateGraph, getAllWorldArticles, enrichWithData, getWorld, WorldAnvilError}
+module.exports = {getCurrentUser,getUserWorlds, getAllWorldArticles, enrichWithData, getWorld, WorldAnvilError}
 

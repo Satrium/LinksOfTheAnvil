@@ -11,8 +11,13 @@ services:
       REDIS_HOST: "redis"
       REDIS_PORT: 6379
     deploy:
+      mode: replicated
+      replicas: 2
       update_config:
         order: start-first
+        parallelism: 1
+        monitor: 5s
+        failure_action: rollback
       labels:
         - traefik.enable=true
         - traefik.frontend.rule=Host:linksoftheanvil.satrium.dev
@@ -32,6 +37,10 @@ services:
         limits:
           cpus: '0.50'
           memory: 50M
+  rethinkdb:
+    image: rethinkdb:2.4.0
+    network:
+      - worldanvil      
 
 networks:
   proxy:

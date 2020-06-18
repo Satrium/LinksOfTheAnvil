@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "debug": "node index.js --trace-warning",
     "build": "cd app && ng build --prod",
     "serve:angular": "cd app && ng serve",
     "serve": "concurrently \"npm start\" \"npm run serve:angular\""
@@ -16,6 +17,7 @@
     "bottleneck": "^2.19.5",
     "express": "^4.17.1",
     "node-fetch": "^2.6.0",
+    "rethinkdb": "^2.4.2",
     "ws": "^7.3.0"
   },
   "devDependencies": {

@@ -10,7 +10,7 @@ export class DataService {
   constructor(private auth:AuthService, private http:HttpClient) { }
 
   public getWorlds(){
-    return this.http.get("/api/user");
+    return this.http.get("/api/user/worlds");
   }
 
   public getGraph(worldId){
