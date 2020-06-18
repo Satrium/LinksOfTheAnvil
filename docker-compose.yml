@@ -39,7 +39,7 @@ services:
           memory: 50M
   rethinkdb:
     image: rethinkdb:2.4.0
-    network:
+    networks:
       - worldanvil      
 
 networks:
