@@ -30,7 +30,7 @@ apiRouter.get('/user/worlds', (req, res) => {
 
 
 apiRouter.get('/world/:id', async (req, res) => {
-    r.connect({"host":"localhost", "port":28015, "db":"linksOfTheAnvil"})
+    r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"})
         .then(conn => {
             r.table('worlds').get(req.params.id).run(conn).then(async x => {
                 if(x){

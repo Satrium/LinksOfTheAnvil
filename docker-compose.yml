@@ -10,6 +10,7 @@ services:
       NODE_ENV: "production"
       REDIS_HOST: "redis"
       REDIS_PORT: 6379
+      RETHINK_DB_HOST: "rethinkdb"
     deploy:
       mode: replicated
       replicas: 2

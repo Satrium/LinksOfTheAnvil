@@ -1,7 +1,7 @@
 const r = require('rethinkdb');
 
 function connectDatabase(callback){
-    r.connect({"host":"localhost", "port":28015, "db":"linksOfTheAnvil"}, (err, conn) => onStartup(err, conn, callback));
+    r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"}, (err, conn) => onStartup(err, conn, callback));
 }
 
 function onStartup(err, conn, callback){
