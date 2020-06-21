@@ -1,0 +1,6 @@
+<div *ngIf="worlds$ | async as worlds" class="worlds">
+    <div *ngFor="let world of worlds.worlds" class="world">
+        <h1>{{world.name}}</h1>
+        <button mat-raised-button (click)="selectedWorld.emit(world)">Select</button>
+    </div>
+</div>

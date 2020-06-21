@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -7,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class DataService {
 
-  constructor(private auth:AuthService, private http:HttpClient) { }
+  constructor(private http:HttpClient) { }
 
   public getWorlds(){
     return this.http.get("/api/user/worlds");

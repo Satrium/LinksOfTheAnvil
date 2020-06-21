@@ -1,0 +1,16 @@
+<mat-card-title>
+    Login
+</mat-card-title>
+<mat-card-content>
+    <p>Please sign in using a World Anvil API Token</p>
+    <mat-form-field>
+        <mat-label>API Token</mat-label>
+        <input matInput type="text" [(ngModel)]="authService.authToken">
+        <button mat-raised-button matSuffix color="primary" [disabled]="!authService.authToken" (click)="authenticate()">Login</button>       
+    </mat-form-field>
+    <mat-card-footer>
+        <p class="help">
+            Do you need help, getting a WorldAnvil API Token? There is a quick explanation over at my github repository: <a href="https://github.com/Satrium/LinksOfTheAnvil">https://github.com/Satrium/LinksOfTheAnvil</a>
+        </p>        
+    </mat-card-footer>
+</mat-card-content>

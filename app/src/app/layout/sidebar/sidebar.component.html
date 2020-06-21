@@ -1,0 +1,24 @@
+<div class="sidebar" [ngClass]="{collapsed:collapsed}">
+    <div class="button-wrapper">
+        <button mat-icon-button aria-label="Toggle Menu" (click)="collapsed = !collapsed">
+            <mat-icon>menu</mat-icon>
+          </button>
+    </div>    
+    <div *ngIf="user$ | async as user" class="user">        
+        <img id="avatar" [src]="user.avatar?.url || 'https://www.worldanvil.com/images/placeholder-avatar.png'">
+        <h1 class="name">{{user.username}}</h1>
+        <h6 class="membership">{{user.membership_type}}</h6>
+    </div>
+    <div class="navigation">
+        <mat-nav-list>
+            <mat-list-item routerLink="/dashboard" routerLinkActive="active">
+                <mat-icon>dashboard</mat-icon>
+                <span class="description" matLine >Dashboard</span>
+            </mat-list-item>
+            <mat-list-item routerLink="/explore" routerLinkActive="active">
+                <mat-icon>explore</mat-icon>
+                <span class="description" matLine>Explore</span>
+            </mat-list-item>
+        </mat-nav-list>
+    </div>
+</div>

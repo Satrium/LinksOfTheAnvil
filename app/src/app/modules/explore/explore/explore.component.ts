@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from '../data.service';
+import { DataService } from '@data/service/data.service';
 import { ActivatedRoute } from '@angular/router';
 import {switchMap, map, flatMap, tap, startWith} from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
@@ -19,11 +19,11 @@ const DagModes = {
 };
 
 @Component({
-  selector: 'app-graph-view',
-  templateUrl: './graph-view.component.html',
-  styleUrls: ['./graph-view.component.sass']
+  selector: 'app-explore',
+  templateUrl: './explore.component.html',
+  styleUrls: ['./explore.component.sass']
 })
-export class GraphViewComponent implements OnInit {
+export class ExploreComponent implements OnInit {
   DagModes = DagModes
 
   presets$: Observable<any>;

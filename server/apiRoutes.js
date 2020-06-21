@@ -22,6 +22,11 @@ apiRouter.use(async (req, res, next) => {
     }
 });
 
+apiRouter.get('/auth', (req,res) => {
+    res.json(req.user);
+
+});
+
 apiRouter.get('/user/worlds', (req, res) => {
     req.app.get("worldanvil").getUserWorlds(req.userToken, req.user.id)
         .then(x => res.json(x))

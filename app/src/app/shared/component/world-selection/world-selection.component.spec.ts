@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GraphViewComponent } from './graph-view.component';
+import { WorldSelectionComponent } from './world-selection.component';
 
-describe('GraphViewComponent', () => {
-  let component: GraphViewComponent;
-  let fixture: ComponentFixture<GraphViewComponent>;
+describe('WorldSelectionComponent', () => {
+  let component: WorldSelectionComponent;
+  let fixture: ComponentFixture<WorldSelectionComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GraphViewComponent ]
+      declarations: [ WorldSelectionComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GraphViewComponent);
+    fixture = TestBed.createComponent(WorldSelectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
