@@ -136,6 +136,7 @@ export class GraphComponent implements OnInit {
     const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
 
     this.highlightLinks.clear();
+    this.highlightNodes.clear();
     this.linksHighlighted = true;
     this.nodesHiglighted = true;
     this.nodeSelected = true;
