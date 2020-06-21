@@ -44,7 +44,7 @@ export class ExploreComponent implements OnInit {
 
   links:any = [];
 
-  allNodes: any[] = [];
+  allNodes:{[key:string]:any} = {};
   allLinks: any[] = [];
 
   articleTypes = {};
@@ -71,9 +71,11 @@ export class ExploreComponent implements OnInit {
     ).subscribe((x:any) => {
       this._snackBar.dismiss();
       console.log("Loaded", x);
-      this.allNodes = x["nodes"]; 
+      x["nodes"].forEach(x => {
+        this.allNodes[x.id] = x;
+      });
       this.allLinks = x["links"];
-      for(var node of this.allNodes){        
+      for(var node of Object.values(this.allNodes)){        
         if(!(node.group in this.articleTypes)){
           this.articleTypes[node.group] = "2";
         }
@@ -98,12 +100,13 @@ export class ExploreComponent implements OnInit {
   update(){
     console.log(this.articleTypes);
     var nodesWithLinks = new Set();    
-    this.links = this.collapseLinks(this.allLinks.filter(x => this.linkTypes[x.group] > 0 && !(this.articleTypes[x.source.group] == 0 || this.articleTypes[x.target.group] == 0)));
+    console.log(Object.keys(this.allNodes).length);
+    this.links = this.collapseLinks(this.allLinks.filter(x => this.linkTypes[x.group] > 0 && this.articleTypes[this.allNodes[x.source.id || x.source].group] > 0 && this.articleTypes[this.allNodes[x.target.id ||x.target].group] > 0));
     this.links.forEach(x => {
       nodesWithLinks.add(x.source.id);
       nodesWithLinks.add(x.target.id);
     });
-    this.nodes = this.allNodes.filter(x => this.articleTypes[x.group] > 0 && (this.displayArticlesWithoutLinks || nodesWithLinks.has(x.id)));    
+    this.nodes = Object.values(this.allNodes).filter(x => this.articleTypes[x.group] > 0 && (this.displayArticlesWithoutLinks || nodesWithLinks.has(x.id)));    
     if(this.addRootTag){      
       this.nodes.filter(x => x.group === "tag").forEach(x => {
         this.links.push({"source":"Tagged", "target":x.id, "group":"tagged"});

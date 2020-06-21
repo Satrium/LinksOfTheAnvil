@@ -20,8 +20,16 @@ export class GraphComponent implements OnInit {
   @Input() linkTypes = {};
   @Input() dagMode = null;
   @Input() numDimensions:string = "3";
+  @Input() highlightSelectedNodes = true;
 
+
+  // highlights
   linksHighlighted = false;
+  nodesHiglighted = false;
+  nodeSelected = false;
+  highlightLinks = new Set();
+  highlightNodes = new Set();
+  hoverNode = null;
 
   @ViewChild("graph") graphElement:ElementRef;
 
@@ -35,10 +43,10 @@ export class GraphComponent implements OnInit {
   getLinkWidth(link){
     var width = 2;
     if(this.linksHighlighted){
-      if(this.linkTypes[link.group] == 3){
+      if(this.linkTypes[link.group] == 3 || this.highlightLinks.has(link)){
         width = 4;
       }else{
-        width = 1;
+        width = 0.5;
       }
     }
     return width / (link.group === "mention"?2:1);
@@ -58,7 +66,7 @@ export class GraphComponent implements OnInit {
       .linkDirectionalArrowRelPos(1)
       .linkVisibility((x:any)=> this.linkTypes[x.group] >= 2)
       .nodeVisibility((x:any)=> this.articleTypes[x.group] >= 2)
-      .linkDirectionalParticles((link:any) => this.linkTypes[link.group] == 3 ? 4 : 0)
+      .linkDirectionalParticles((link:any) => (this.linkTypes[link.group] == 3 || this.highlightLinks.has(link)) ? 4 : 0)
       .linkDirectionalParticleWidth(2)
       .nodeThreeObject((node:any) => {
         // use a sphere as a drag handle
@@ -68,42 +76,97 @@ export class GraphComponent implements OnInit {
         );
         // add text sprite as child
         const sprite = new SpriteText(node.name);
-        sprite.color = node.color;
+        sprite.color = node.color + "bb";      
         if(node.group === "tag"){
-          sprite.textHeight = 5;
+          sprite.textHeight = 4;
         }else{
-          sprite.textHeight = Math.max(2, 10 * (Math.min(node.wordcount, 1000) / 1000));
+          sprite.textHeight = Math.max(2, 5 * (Math.min(node.wordcount, 1000) / 1000));
         }
-        
+        if(this.highlightNodes.has(node)){
+          sprite.textHeight *= 2;
+          sprite.backgroundColor = "#ffffff44";
+          sprite.borderColor = "#ffffff66"
+        }else if(this.nodesHiglighted){
+          sprite.textHeight /= 2;
+        }
         obj.add(sprite);
-            
-
         return obj;
       })
       .onNodeClick((node:any) => {
         this.focusNode(node);
-      });
+      }).onBackgroundClick(() => {
+        this.nodeSelected = false;
+      }).onNodeHover((node:any) => {
+        // no state change
+        if (node && this.hoverNode === node || this.nodeSelected) return;
+
+        this.highlightLinks.clear();
+        this.highlightNodes.clear();
+        if (node) {
+          node.links?.forEach(link => this.highlightLinks.add(link));
+          this.linksHighlighted = true;
+          this.nodesHiglighted = true;
+        }else{
+          this.linksHighlighted = false;
+          this.nodesHiglighted = false;
+        }
+
+        this.hoverNode = node || null;
+        this.Graph
+          .nodeColor(this.Graph.nodeColor())
+          .linkWidth(this.Graph.linkWidth())
+          .linkDirectionalParticles(this.Graph.linkDirectionalParticles());
+      }).enableNodeDrag(false);
+      window["test"] = this.Graph;
       this.Graph.d3Force('link').distance(link => link.group === "mention" ? this.mentionDistance: this.distance).d3Force('charge').strength(this.chargeStrength);
   }
 
   focusNode(node){
+    console.log(node);
     // Aim at node from outside it
-    const distance = 300;
+    const distance = 500;
     const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
 
+    this.highlightLinks.clear();
+    this.linksHighlighted = true;
+    this.nodesHiglighted = true;
+    this.nodeSelected = true;
+    this.highlightNodes.add(node);
+    node.neighbors?.forEach(link => this.highlightNodes.add(link));
+    node.links?.forEach(link => this.highlightLinks.add(link));
+    this.Graph.refresh();
     this.Graph.cameraPosition(
       { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, // new position
       node, // lookAt ({ x, y, z })
       3000  // ms transition duration
     );
+          
   }
 
   ngOnChanges(changes:SimpleChanges){    
-    console.log(changes);
     this.linksHighlighted = Object.values(this.linkTypes).includes("3");
-    console.log(this.linksHighlighted);
     if(this.Graph){
-      if(changes.nodes || changes.links)this.Graph.graphData({nodes:this.nodes, links:this.links});      
+      if(changes.nodes || changes.links){
+        this.Graph.graphData({nodes:this.nodes, links:this.links});
+        var gData = this.Graph.graphData();
+        let nodeDict = {};
+        gData.nodes.forEach(x => nodeDict[x.id] = x);
+        gData.links.forEach(link => {
+          const a = nodeDict[link.source];
+          const b = nodeDict[link.target];
+          if(!a || !b)return;
+          !a.neighbors && (a.neighbors = []);
+          !b.neighbors && (b.neighbors = []);
+          a.neighbors.push(b);
+          b.neighbors.push(a);
+    
+          !a.links && (a.links = []);
+          !b.links && (b.links = []);
+          a.links.push(link);
+          b.links.push(link);
+        });
+      }      
+      console.log(gData);
       this.Graph.dagMode(this.dagMode).numDimensions(<any>this.numDimensions);
       //this.Graph.d3Force('link').distance(link => link.group === "mention" ? this.mentionDistance: this.distance).d3Force('charge').strength(this.chargeStrength);
       

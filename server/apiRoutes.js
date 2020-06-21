@@ -40,7 +40,7 @@ apiRouter.get('/world/:id', async (req, res) => {
             r.table('worlds').get(req.params.id).run(conn).then(async x => {
                 if(x){
                     if(x.author === req.user.id){
-                        if(new Date().getTime() - new Date(x.last_update).getTime() > 1000 * 60 * 5) // 5 Minuten
+                        if(new Date().getTime() - new Date(x.last_update).getTime() > 1000) // 5 Minuten
                         {
                             let graph = await req.app.get("worldanvil").getAllWorldArticles(req.userToken, req.params.id)
                                 .then(async articles => await updateGraph(x, articles,req.app.get("worldanvil"),req.userToken));
