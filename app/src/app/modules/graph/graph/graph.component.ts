@@ -84,7 +84,7 @@ export class GraphComponent implements OnInit {
         }
         if(this.highlightNodes.has(node)){
           sprite.textHeight *= 2;
-          sprite.backgroundColor = "#ffffff44";
+          sprite.backgroundColor = "#ffffff2f";
           sprite.borderColor = "#ffffff66"
         }else if(this.nodesHiglighted){
           sprite.textHeight /= 2;
@@ -95,7 +95,15 @@ export class GraphComponent implements OnInit {
       .onNodeClick((node:any) => {
         this.focusNode(node);
       }).onBackgroundClick(() => {
-        this.nodeSelected = false;
+        if(this.nodeSelected){
+          this.highlightLinks.clear();
+          this.highlightNodes.clear();
+          this.nodeSelected = false;
+          this.linksHighlighted = false;
+          this.nodesHiglighted = false;
+          this.Graph.refresh();          
+        }
+        
       }).onNodeHover((node:any) => {
         // no state change
         if (node && this.hoverNode === node || this.nodeSelected) return;
