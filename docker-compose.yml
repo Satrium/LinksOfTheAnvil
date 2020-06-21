@@ -17,7 +17,7 @@ services:
       update_config:
         order: start-first
         parallelism: 1
-        monitor: 5s
+        monitor: 35s
         failure_action: rollback
       labels:
         - traefik.enable=true
