@@ -1,39 +1,14 @@
 [
     {
-        "name":"Tag cloud with articles",
-        "addRootTag":true,
-        "dagMode":"td",
-        "displayArticlesWithoutLinks": false,
-        "linkTypes":{
-            "_default": "0",
-            "tagged": "2"
-        },"articleTypes":{
-            "_default": "2"
-        }
-    },{
+        "id":"tagcloud",
         "name":"Tag cloud",
-        "addRootTag":true,
+        "image": "tag-cloud.png",
         "dagMode":"radialout",
         "linkTypes":{
-            "_default": "0",
-            "tagged": "2"
+            "_default": "0"
         },"articleTypes":{
             "_default": "0",
             "tag": "2"
-        }
-    },{
-        "name":"Character Relations",
-        "linkTypes":{
-            "_default":"2",
-            "mention": "0",
-            "articleParent": "0",
-            "articleNext": "0",
-            "articlePrevious": "0"
-        },"articleTypes":{
-            "_default": "0",
-            "rank":"2",
-            "organization":"2",
-            "person":"2"
         }
     }
 ]

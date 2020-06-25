@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-explore-select',
@@ -8,13 +8,21 @@ import { Router } from '@angular/router';
 })
 export class ExploreSelectComponent implements OnInit {
 
-  constructor(private router:Router) { }
+  private preset;
+
+  constructor(private router:Router, private active:ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.active.queryParams.subscribe(x => this.preset = x["preset"]);
   }
 
   selectedWorld(world){
-    this.router.navigate(["explore", world.id]);
+    if(this.preset){
+      this.router.navigate(["explore", world.id],{queryParams:{"preset":this.preset}});
+    }else{
+      this.router.navigate(["explore", world.id]);
+    }
+    
   }
 
 }

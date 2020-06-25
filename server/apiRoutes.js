@@ -83,6 +83,15 @@ apiRouter.get('/world/:id', async (req, res) => {
     
 });
 
+apiRouter.get('/world/:id/presets', async (req, res) => {
+    r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"})
+        .then(conn => {
+            r.table('presets').filter(x => x.worldId === req.params.id).run(conn).then(async presets => {
+                return res.json(presets || []);
+            })
+        });
+});
+
 async function updateGraph(graph, articles, worldanvil, userToken){
     console.log("Updating Graph ", graph.id);
     const tags = graph.nodes.filter(x => x.group === "tag").map(x => x.name);

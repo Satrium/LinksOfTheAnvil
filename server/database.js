@@ -64,6 +64,7 @@ function onStartup(err, conn, callback){
         }
         console.log("Initializing Database");
         r.dbCreate("linksOfTheAnvil").run(conn).finally(() => {
+            r.tableCreate("presets").run(conn);
             return r.tableCreate("worlds").run(conn);
         }).then(result => {
             console.log("Database is initialized, starting web server");

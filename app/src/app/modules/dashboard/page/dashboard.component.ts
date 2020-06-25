@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { DataService } from '@data/service/data.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,9 +9,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor() { }
+  globalPresets = {};
+
+  constructor(private data:DataService, private router:Router) { }
 
   ngOnInit(): void {
+    this.data.getGlobalPresets().subscribe(x => this.globalPresets = x);
+  }
+
+  openGlobalPreset(preset){
+    this.router.navigate(["/explore"], {queryParams:{preset:preset.id}})
   }
 
 }

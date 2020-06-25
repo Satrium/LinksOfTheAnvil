@@ -53,7 +53,7 @@ export class GraphComponent implements OnInit {
   }
 
   ngAfterViewInit(){
-    this.Graph = ForceGraph3D()(this.graphElement.nativeElement)
+    this.Graph = ForceGraph3D({controlType: "orbit"})(this.graphElement.nativeElement)
       .graphData({nodes:this.nodes, links:this.links})      
       .dagMode(this.dagMode)
       .nodeAutoColorBy('group')

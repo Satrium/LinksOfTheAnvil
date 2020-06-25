@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '@data/service/data.service';
 import { ActivatedRoute } from '@angular/router';
-import {switchMap, map, flatMap, tap, startWith} from 'rxjs/operators';
-import { Observable, Subject } from 'rxjs';
+import {switchMap, map, flatMap, tap, startWith, delay} from 'rxjs/operators';
+import { Observable, Subject, combineLatest } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -57,18 +57,31 @@ export class ExploreComponent implements OnInit {
   constructor(private data:DataService, private route: ActivatedRoute, private _snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
-    this.presets$ = this.data.getPresets();
+    this.presets$ = this.data.getGlobalPresets();
     this.searchFilteredNodes = this.searchField.valueChanges
       .pipe(
         startWith(''),
         map(value => typeof value === 'string' ? value : value.label),
         map(name => name ? this.nodes.filter(option => option.name.toLowerCase().includes(name.toLowerCase())).slice(0,20) : this.nodes.slice(0, 20))
       )
-    this.route.params.pipe(
+    const tmp = this.route.params.pipe(
       tap(console.log),
       tap(x => this.openSnackBar("We are loading your world. This might take up to a few minutes for large worlds", null, 0)),
       switchMap(x => this.data.getGraph(x?.world).pipe(tap(x => console.log(x)))),
-    ).subscribe((x:any) => {
+    );
+    combineLatest(this.presets$, this.route.queryParams, tmp)
+      .pipe(
+        tap(console.log),
+        delay(500) // TODO: Figure out a better solutiobn
+      )
+      .subscribe(x => {
+        if("preset" in x[1] && x[0].filter(y => y.id===x[1]["preset"]).length > 0){          
+          this.selectedPreset = x[0].filter(y => y.id===x[1]["preset"])[0];
+          console.log("Applying preset", this.selectedPreset);
+          this.applyPreset();
+        }
+      });
+    tmp.subscribe((x:any) => {
       this._snackBar.dismiss();
       console.log("Loaded", x);
       x["nodes"].forEach(x => {
@@ -97,8 +110,7 @@ export class ExploreComponent implements OnInit {
     return node && node.label ? node.label : '';
   }
 
-  update(){
-    console.log(this.articleTypes);
+  update(){    
     var nodesWithLinks = new Set();    
     console.log(Object.keys(this.allNodes).length);
     this.links = this.collapseLinks(this.allLinks.filter(x => this.linkTypes[x.group] > 0 && this.articleTypes[this.allNodes[x.source.id || x.source].group] > 0 && this.articleTypes[this.allNodes[x.target.id ||x.target].group] > 0));
@@ -149,8 +161,7 @@ export class ExploreComponent implements OnInit {
   applyPreset(){
     if(this.selectedPreset){
       console.log("Applying preset", this.selectedPreset)
-      this.addRootTag = this.selectedPreset.addRootTag != null?this.selectedPreset.addRootTag:false;
-      this.dagMode = this.selectedPreset.dagMode || null;
+      this.addRootTag = this.selectedPreset.addRootTag != null?this.selectedPreset.addRootTag:false;      
       this.displayArticlesWithoutLinks = this.selectedPreset.displayArticlesWithoutLinks != null?this.selectedPreset.displayArticlesWithoutLinks:true;
 
       if(this.selectedPreset.articleTypes){
@@ -176,6 +187,7 @@ export class ExploreComponent implements OnInit {
         }
       }
       this.update();
+      this.dagMode = this.selectedPreset.dagMode || null;
     }
     
   }
