@@ -23,6 +23,7 @@
     "@angular/platform-browser": "~9.1.11",
     "@angular/platform-browser-dynamic": "~9.1.11",
     "@angular/router": "~9.1.11",
+    "distinct-colors": "^3.0.0",
     "rxjs": "~6.5.4",
     "three": "^0.117.1",
     "three-spritetext": "^1.5.1",

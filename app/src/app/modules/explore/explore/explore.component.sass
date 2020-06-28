@@ -1,13 +1,20 @@
-#toolbar
-    position: absolute
-    top: 5px
-    left: 5px
-    z-index: 1
+#controls
+  position: absolute
+  z-index: 10
+  top: 10px
+  right: 10px
 
-    ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex
-        background-color: white
-    ::ng-deep .mat-form-field-flex
-        align-items: stretch
-        padding-left: 0
-    ::ng-deep .mat-form-field-prefix
-        margin-right: 5px
+#options
+  display: flex
+  justify-content: center
+  align-items: center
+  position: absolute
+  background: rgba(black, 0.5)
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  z-index: 20
+  &[hidden]
+    display: none !important
+

@@ -1,185 +1,111 @@
-import { Component, OnInit, Input, ElementRef, ViewChild, SimpleChange, SimpleChanges } from '@angular/core';
-import ForceGraph3D from '3d-force-graph';
-import * as THREE from 'three';
+import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, SimpleChanges } from '@angular/core';
+import { GraphConfig } from '../graph.object';
+import ForceGraph3D, { ForceGraph3DInstance } from '3d-force-graph';
+import { Observable, Subscription } from 'rxjs';
+import { GraphData, GraphNode, Visibility, LinkColorScheme, NodeColorScheme, GraphLink } from '../graph.model';
+import distinctColors from 'distinct-colors';
 import SpriteText from 'three-spritetext';
-import { Observable } from 'rxjs';
+import { Sprite } from 'three';
+
 
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.sass']
 })
-export class GraphComponent implements OnInit {
+export class GraphComponent implements OnInit, AfterViewInit {
 
-  @Input() nodes:any = [];
-  @Input() links:any = [];
-  @Input() chargeStrength:number = -120;
-  @Input() distance = 40;
-  @Input() mentionDistance = 150;
-  @Input() articleTypes = {};
-  @Input() linkTypes = {};
-  @Input() dagMode = null;
-  @Input() numDimensions:string = "3";
-  @Input() highlightSelectedNodes = true;
+  @Input() config$: Observable<GraphConfig>;
 
+  private nodeColors = {};
+  private linkColors = {};
 
-  // highlights
-  linksHighlighted = false;
-  nodesHiglighted = false;
-  nodeSelected = false;
-  highlightLinks = new Set();
-  highlightNodes = new Set();
-  hoverNode = null;
+  private config: GraphConfig;
+  private Graph: ForceGraph3DInstance;
 
-  @ViewChild("graph") graphElement:ElementRef;
+  private configSubscription:Subscription;
 
-  private Graph;
+  @ViewChild("graph") graphContainer:ElementRef;
+
   constructor() { }
 
-  ngOnInit(): void {
-    
+  ngOnInit(): void{
+
   }
 
-  getLinkWidth(link){
-    var width = 2;
-    if(this.linksHighlighted){
-      if(this.linkTypes[link.group] == 3 || this.highlightLinks.has(link)){
-        width = 4;
-      }else{
-        width = 0.5;
-      }
-    }
-    return width / (link.group === "mention"?2:1);
-  }
-
-  ngAfterViewInit(){
-    this.Graph = ForceGraph3D({controlType: "orbit"})(this.graphElement.nativeElement)
-      .graphData({nodes:this.nodes, links:this.links})      
-      .dagMode(this.dagMode)
-      .nodeAutoColorBy('group')
-      .linkAutoColorBy('group')
-      .numDimensions(<any>this.numDimensions)
-      .linkDirectionalArrowLength(link => link["bidirectional"]?0:3.5)
-      .linkCurvature(link => link["bidirectional"]?0:0.1)
-      .linkWidth((link:any) => this.getLinkWidth(link))
-      .linkLabel((link:any) => link.bidirectional?Array.from(link.label).join("/"):link.group)
-      .linkDirectionalArrowRelPos(1)
-      .linkVisibility((x:any)=> this.linkTypes[x.group] >= 2)
-      .nodeVisibility((x:any)=> this.articleTypes[x.group] >= 2)
-      .linkDirectionalParticles((link:any) => (this.linkTypes[link.group] == 3 || this.highlightLinks.has(link)) ? 4 : 0)
-      .linkDirectionalParticleWidth(2)
-      .nodeThreeObject((node:any) => {
-        // use a sphere as a drag handle
-        const obj = new THREE.Mesh(
-          new THREE.SphereGeometry(15),
-          new THREE.MeshBasicMaterial({ depthWrite: false, transparent: true, opacity: 0 })
-        );
-        // add text sprite as child
-        const sprite = new SpriteText(node.name);
-        sprite.color = node.color + "bb";      
-        if(node.group === "tag"){
-          sprite.textHeight = 4;
-        }else{
-          sprite.textHeight = Math.max(2, 5 * (Math.min(node.wordcount, 1000) / 1000));
-        }
-        if(this.highlightNodes.has(node)){
-          sprite.textHeight *= 2;
-          sprite.backgroundColor = "#ffffff2f";
-          sprite.borderColor = "#ffffff66"
-        }else if(this.nodesHiglighted){
-          sprite.textHeight /= 2;
-        }
-        obj.add(sprite);
+  ngAfterViewInit(): void {
+    this.Graph = ForceGraph3D({controlType: "orbit"})(this.graphContainer.nativeElement)
+      .graphData({nodes:[], links:[]})
+      .nodeVisibility(node => (<GraphNode>node).visibility != Visibility.HIDDEN)
+      .linkVisibility(link => (<GraphLink>link).visibility != Visibility.HIDDEN)
+      .enableNodeDrag(false)
+      .nodeThreeObjectExtend(true)
+      .nodeVal(node => node["wordcount"] || 100)
+      .nodeRelSize(0.75)
+      .nodeThreeObject((node:any)=>{
+        const obj = new SpriteText(node.name);
+        obj.textHeight = 3;
         return obj;
-      })
-      .onNodeClick((node:any) => {
+      }).onNodeClick((node:any) => {
         this.focusNode(node);
-      }).onBackgroundClick(() => {
-        if(this.nodeSelected){
-          this.highlightLinks.clear();
-          this.highlightNodes.clear();
-          this.nodeSelected = false;
-          this.linksHighlighted = false;
-          this.nodesHiglighted = false;
-          this.Graph.refresh();          
-        }
-        
-      }).onNodeHover((node:any) => {
-        // no state change
-        if (node && this.hoverNode === node || this.nodeSelected) return;
-
-        this.highlightLinks.clear();
-        this.highlightNodes.clear();
-        if (node) {
-          node.links?.forEach(link => this.highlightLinks.add(link));
-          this.linksHighlighted = true;
-          this.nodesHiglighted = true;
-        }else{
-          this.linksHighlighted = false;
-          this.nodesHiglighted = false;
-        }
-
-        this.hoverNode = node || null;
-        this.Graph
-          .nodeColor(this.Graph.nodeColor())
-          .linkWidth(this.Graph.linkWidth())
-          .linkDirectionalParticles(this.Graph.linkDirectionalParticles());
-      }).enableNodeDrag(false);
-      window["test"] = this.Graph;
-      this.Graph.d3Force('link').distance(link => link.group === "mention" ? this.mentionDistance: this.distance).d3Force('charge').strength(this.chargeStrength);
+      });
   }
 
-  focusNode(node){
+  @Input()
+  public set graphData(graphData:GraphData){
+    console.log(graphData);
+    if(this.configSubscription)this.configSubscription.unsubscribe();
+    this.configSubscription = this.config$.subscribe(x =>{
+      let data = x.apply(graphData)
+      console.log(x, graphData);
+       // Get distinct groups for coloring
+      this.generateColors(data.nodes, data.links, x.nodes.colorScheme, x.links.colorScheme);
+      data.nodes.forEach(node => node["color"] = this.nodeColors[x.nodes.colorScheme === NodeColorScheme.CLUSTER?node["cluster"]:node["group"]]?.hex())
+      this.config = x;
+      this.Graph.graphData({nodes: data.nodes.filter(x => x.visibility != Visibility.OFF), links: data.links.filter(x => x.visibility != Visibility.OFF)});
+      this.Graph
+        .dagMode(<any>x.dagMode?.toString() || null)
+        .linkColor(link => x.links.colorScheme === LinkColorScheme.GROUP?this.linkColors[link["group"]]:
+          (x.links.colorScheme === LinkColorScheme.SOURCE?link.source["color"]:link.target["color"])
+        );
+    });
+  }
+  private focusNode(node){
     console.log(node);
     // Aim at node from outside it
     const distance = 500;
     const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
 
-    this.highlightLinks.clear();
-    this.highlightNodes.clear();
-    this.linksHighlighted = true;
-    this.nodesHiglighted = true;
-    this.nodeSelected = true;
-    this.highlightNodes.add(node);
-    node.neighbors?.forEach(link => this.highlightNodes.add(link));
-    node.links?.forEach(link => this.highlightLinks.add(link));
-    this.Graph.refresh();
     this.Graph.cameraPosition(
       { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, // new position
       node, // lookAt ({ x, y, z })
       3000  // ms transition duration
     );
-          
   }
 
-  ngOnChanges(changes:SimpleChanges){    
-    this.linksHighlighted = Object.values(this.linkTypes).includes("3");
-    if(this.Graph){
-      if(changes.nodes || changes.links){
-        this.Graph.graphData({nodes:this.nodes, links:this.links});
-        var gData = this.Graph.graphData();
-        let nodeDict = {};
-        gData.nodes.forEach(x => nodeDict[x.id] = x);
-        gData.links.forEach(link => {
-          const a = nodeDict[link.source];
-          const b = nodeDict[link.target];
-          if(!a || !b)return;
-          !a.neighbors && (a.neighbors = []);
-          !b.neighbors && (b.neighbors = []);
-          a.neighbors.push(b);
-          b.neighbors.push(a);
-    
-          !a.links && (a.links = []);
-          !b.links && (b.links = []);
-          a.links.push(link);
-          b.links.push(link);
-        });
-      }      
-      console.log(gData);
-      this.Graph.dagMode(this.dagMode).numDimensions(<any>this.numDimensions);
-      //this.Graph.d3Force('link').distance(link => link.group === "mention" ? this.mentionDistance: this.distance).d3Force('charge').strength(this.chargeStrength);
-      
+  private generateColors(nodes, links, nodeScheme:NodeColorScheme, linkScheme:LinkColorScheme){
+    // Nodes
+    let nodeGroups = new Set();
+    nodes.forEach(node => nodeGroups.add(nodeScheme === NodeColorScheme.GROUP?node["group"]:node["cluster"]));
+    nodeGroups.delete(undefined);
+    if(nodeGroups.size > Object.keys(this.nodeColors).length){
+      let colors = distinctColors({count: nodeGroups.size, chromaMin: 20, lightMin: 20});
+      nodeGroups.forEach((x:any, i:number) => {
+        this.nodeColors[x] = colors[i];
+      })
     }
-  }
 
+    //Links
+    let linkGroups = new Set();
+    links.forEach(link => linkGroups.add(link["group"]));
+    linkGroups.delete(undefined);
+    if(linkGroups.size > Object.keys(this.linkColors).length){
+      let colors = distinctColors({count: linkGroups.size, chromaMin: 20, lightMin: 20});
+      let counter = 0;
+      linkGroups.forEach((x:any) => {
+        this.linkColors[x] = colors[counter++];
+      });
+    }
+    console.log(nodeGroups, this.nodeColors, linkGroups, this.linkColors);
+  }
 }

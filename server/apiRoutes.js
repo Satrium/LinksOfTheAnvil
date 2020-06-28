@@ -194,6 +194,7 @@ function getConnections(article){
 
 function generateGraph(articles){
     var tags = new Set();
+    var categories = new Set();
     var result = {nodes:[], links:[], last_article_update:{}, version:1};
     articles.forEach(article => {
         result.last_article_update[article.id] = article.last_update.date;
