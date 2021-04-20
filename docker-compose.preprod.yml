@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  linksoftheanvil:
+    image: "${IMAGE_TAG}"
+    networks:
+      - proxy
+      - worldanvil
+    environment:
+      APP_KEY: "${APP_KEY}"
+      NODE_ENV: "production"
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
+      RETHINK_DB_HOST: "rethinkdb"
+    deploy:
+      mode: replicated
+      replicas: 2
+      update_config:
+        order: start-first
+        parallelism: 1
+        monitor: 35s
+        failure_action: rollback
+      labels:
+        - traefik.enable=true
+        - traefik.frontend.rule=Host:preprod.linksoftheanvil.satrium.dev
+        - traefik.docker.network=proxy
+        - traefik.port=3000
+      restart_policy:
+          condition: any
+          delay: 5s
+          max_attempts: 3
+          window: 30s
+  redis:
+    image: redis:6.0.0-alpine
+    networks:
+      - worldanvil
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+  rethinkdb:
+    image: rethinkdb:2.4.0
+    networks:
+      - worldanvil      
+    volumes:
+      - /mnt/linksOfTheAnvil/rethinkdb:/data
+
+networks:
+  proxy:
+    external: true
+  worldanvil:
+    external: true

@@ -63,11 +63,12 @@ apiRouter.get('/world/:id', async (req, res) => {
                             return x;
                         }).then(() => req.app.get("worldanvil").getAllWorldArticles(req.userToken, req.params.id))
                         .then(async articles => {
-                            await Promise.all(
-                                articles.map(async(article) => {
+                            await Promise.allSettled(
+                                articles.map(async(article, index) => {                                    
                                     article.data = await req.app.get("worldanvil").getArticle(req.userToken, article.id);
+                                    console.log(index + "/", articles.length)
                                 })
-                            )
+                            ).then(x => console.log("Article loading done")).catch(x => console.log("Article loading failed"))
                             return articles;
                         }).then(articles => generateGraph(articles))
                         .then(graph => {
@@ -194,6 +195,7 @@ function getConnections(article){
 
 function generateGraph(articles){
     var tags = new Set();
+    var categories = new Set();
     var result = {nodes:[], links:[], last_article_update:{}, version:1};
     articles.forEach(article => {
         result.last_article_update[article.id] = article.last_update.date;
