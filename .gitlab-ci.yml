@@ -9,21 +9,12 @@ variables:
   CLI_VERSION: 9.1.8
 
 cache:
-  key: ${CI_COMMIT_SHA}
-  paths: ['app/node_modules','node_modules']
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm/ 
 
-init:
-  stage: init
-  image: trion/ng-cli:${CLI_VERSION}
-  script: 
-    - npm install
-    - cd app
-    - npm install
-  cache:
-    policy: push
-    key: ${CI_COMMIT_SHA}
-    paths: ['app/node_modules','node_modules']
-    
+before_script:
+  - npm ci --cache .npm --prefer-offline
 
 build:
   image: trion/ng-cli-karma:${CLI_VERSION}
