@@ -12,8 +12,8 @@ const { connectDatabase } = require('./server/database.js');
 
 var app = express();
 app.set("worldanvil", new WorldAnvil(process.env.APP_KEY, {
-    id: "link-of-the-anvil",
-    reservoir: 100,
+    id: "link-of-the-anvil-2",
+    reservoir: 150,
     reservoirIncreaseInterval: 250,
     reservoirIncreaseAmount: 10,
     maxConcurrent: 10,

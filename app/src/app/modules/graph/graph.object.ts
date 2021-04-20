@@ -8,11 +8,11 @@ export class GraphConfig extends GraphConfigModel{
   nodes:NodeOptions = {
     defaultVisibility: Visibility.ON,
     displayNodesWithNoLinks: true,
-    colorScheme: NodeColorScheme.CLUSTER
+    colorScheme: NodeColorScheme.GROUP
   };
   links:LinkOptions = {
     defaultVisibility: Visibility.ON,
-    colorScheme: LinkColorScheme.SOURCE
+    colorScheme: LinkColorScheme.GROUP
   };
 
 
