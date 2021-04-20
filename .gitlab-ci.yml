@@ -17,6 +17,7 @@ before_script:
   - npm ci --cache .npm --prefer-offline
   - cd app
   - npm ci --cache .npm --prefer-offline
+  - cd ..
 
 build:
   image: trion/ng-cli-karma:${CLI_VERSION}
