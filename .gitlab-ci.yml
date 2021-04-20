@@ -8,12 +8,6 @@ variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHA
   CLI_VERSION: 9.1.8
 
-before_script:
-- "[ -d node_modules ] || npm ci"
-- cd app
-- "[ -d node_modules ] || npm ci"
-- cd ..
-
 cache:
   key: ${CI_COMMIT_SHA}
   paths: ['app/node_modules','node_modules']
@@ -21,7 +15,7 @@ cache:
 init:
   stage: init
   image: trion/ng-cli:${CLI_VERSION}
-  script: ['']
+  script: ['npm install']
   cache:
     policy: push
     key: ${CI_COMMIT_SHA}
