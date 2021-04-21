@@ -145,7 +145,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     this.nodesHiglighted = true;
     this.nodeSelected = true;
     this.data.nodes.filter(x => x.group === type).forEach(node =>  this.highlightNodes.add(node));
-    this.data.links.filter(x => this.highlightNodes.has(x.source) || this.highlightNodes.has(x.target)).forEach(link => this.highlightLinks.add(link));
+    //this.data.links.filter(x => this.highlightNodes.has(x.source) || this.highlightNodes.has(x.target)).forEach(link => this.highlightLinks.add(link));
     this.Graph.refresh();
   }
 
@@ -217,7 +217,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
       if(this.highlightLinks.has(link)){
         width = 4;
       }else{
-        width = 0.5;
+        width = 0.1;
       }
     }
     return width / (link.group === "mention"?2:1);
