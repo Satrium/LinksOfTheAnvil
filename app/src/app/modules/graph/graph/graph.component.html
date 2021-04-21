@@ -1,1 +1,15 @@
-<div #graph></div>
+<div id="wrapper">
+    <div #graph></div>
+    <div id="sidebar">
+        <mat-form-field class="searchbar" appearance="fill">
+            <mat-label>Search Articles</mat-label>
+            <input type="text" matInput [formControl]="searchField" [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="searchBarDisplay" (optionSelected)="focusNode($event.option.value)">
+              <mat-option *ngFor="let option of searchFilteredNodes | async" [value]="option">
+                {{option.name}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        <ng-container *ngTemplateOutlet="sidebarTemplate.template"></ng-container>
+    </div>
+</div>
