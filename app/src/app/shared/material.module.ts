@@ -24,6 +24,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [],

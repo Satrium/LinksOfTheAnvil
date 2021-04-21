@@ -1,17 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GraphComponent } from './graph/graph.component';
-
+import { GraphSidebarDirective } from './graph/sidebar.directive';
+import { SharedModule } from '@shared/shared.module';
 
 
 @NgModule({
   declarations: [
-    GraphComponent
+    GraphComponent,
+    GraphSidebarDirective
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    SharedModule
   ],exports: [
-    GraphComponent
+    GraphComponent,
+    GraphSidebarDirective
   ]
 })
 export class GraphModule { }

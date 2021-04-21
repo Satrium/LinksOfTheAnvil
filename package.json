@@ -17,6 +17,7 @@
     "bottleneck": "^2.19.5",
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
+    "jlouvain": "^2.0.0",
     "rethinkdb": "^2.4.2",
     "ws": "^7.3.0"
   },

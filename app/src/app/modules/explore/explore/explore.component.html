@@ -1,116 +1,12 @@
-
-
-<mat-drawer-container class="example-container" autosize>
-    <mat-drawer #drawer class="example-sidenav" mode="over">
-        <mat-accordion>
-            <mat-expansion-panel [expanded]="true">
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    General Settings
-                  </mat-panel-title>
-                </mat-expansion-panel-header>        
-                <mat-form-field *ngIf="presets$ | async as presets">
-                  <mat-label>Presets</mat-label>
-                  <mat-select [(ngModel)]="selectedPreset">
-                    <mat-option *ngFor="let preset of presets" [value]="preset">
-                      {{preset.name}}
-                    </mat-option>
-                  </mat-select>
-                  <button mat-stroked-button matSuffix  (click)="applyPreset()">Apply</button>
-                </mat-form-field> <br>
-                <mat-slide-toggle [(ngModel)]="linksCollapsed" (ngModelChange)="update()" name="collapse links">Collapse Links</mat-slide-toggle><br>     
-                <mat-slide-toggle [(ngModel)]="addRootTag" (ngModelChange)="update()" name="add root tag">Add root tag</mat-slide-toggle><br>
-                <mat-slide-toggle [(ngModel)]="displayArticlesWithoutLinks" (ngModelChange)="update()" name="add root tag">Display articles without links</mat-slide-toggle>
-                
-                
-              </mat-expansion-panel>
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      Article Types
-                    </mat-panel-title>
-                  </mat-expansion-panel-header>  
-                  <mat-list dense>
-                    <mat-list-item *ngFor="let key of keys(articleTypes).sort()">                        
-                        <mat-button-toggle-group #group [name]="key" [(ngModel)]="articleTypes[key]" (ngModelChange)="update()">
-                            <mat-button-toggle value="0">Off</mat-button-toggle>
-                            <mat-button-toggle value="1">Hidden</mat-button-toggle>
-                            <mat-button-toggle value="2">On</mat-button-toggle>
-                            <mat-button-toggle disabled value="3">High</mat-button-toggle>
-                          </mat-button-toggle-group>
-                          <span style="padding-left: 5px">{{key}}</span>
-                    </mat-list-item>
-                </mat-list>  
-            </mat-expansion-panel>
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      Link Types
-                    </mat-panel-title>
-                  </mat-expansion-panel-header>  
-                  <mat-list dense>
-                    <mat-list-item *ngFor="let key of keys(linkTypes).sort()">                        
-                        <mat-button-toggle-group #group [name]="key" [(ngModel)]="linkTypes[key]" (ngModelChange)="update()">
-                            <mat-button-toggle value="0">Off</mat-button-toggle>
-                            <mat-button-toggle value="1">Hidden</mat-button-toggle>
-                            <mat-button-toggle value="2">On</mat-button-toggle>
-                            <mat-button-toggle value="3">High</mat-button-toggle>
-                          </mat-button-toggle-group>
-                          <span style="padding-left: 5px">{{key}}</span>
-                    </mat-list-item>
-                </mat-list>                 
-                  
-            </mat-expansion-panel>
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    Advanced Options
-                  </mat-panel-title>
-                </mat-expansion-panel-header>              
-                <mat-form-field>
-                  <mat-label>Dag Mode</mat-label>
-                  <mat-select [(ngModel)]="dagMode">
-                    <mat-option *ngFor="let key of keys(DagModes)" [value]="DagModes[key]">
-                      {{key}}
-                    </mat-option>                    
-                  </mat-select>   
-                  <mat-hint align="start">This option will only work, if the graph as no cyclic dependencies</mat-hint>               
-                </mat-form-field>
-                <mat-form-field>
-                  <mat-label>Dimensions</mat-label>
-                  <mat-select [(ngModel)]="numDimensions" (ngModelChange)="update()">
-                    <mat-option [value]="1">One Dimension</mat-option>     
-                    <mat-option [value]="2">Two Dimensions</mat-option>  
-                    <mat-option [value]="3">Three Dimensions</mat-option>                 
-                  </mat-select>               
-                  <mat-hint align="start">Change the number of dimension the graph is simulated in</mat-hint>   
-                </mat-form-field>
-          </mat-expansion-panel>
-          </mat-accordion>
-        
-    </mat-drawer>
-  
-    <div class="example-sidenav-content">
-        <div id="toolbar">
-            
-            <mat-form-field class="searchbar" appearance="fill">
-              <mat-label>Search</mat-label>
-              <input type="text" matInput [formControl]="searchField" [matAutocomplete]="auto">
-              <button mat-raised-button matPrefix  (click)="drawer.toggle()">Options</button>
-              <mat-autocomplete #auto="matAutocomplete" [displayWith]="searchBarDisplay" (optionSelected)="graph.focusNode($event.option.value)">
-                <mat-option *ngFor="let option of searchFilteredNodes | async" [value]="option">
-                  {{option.name}}
-                </mat-option>
-              </mat-autocomplete>
-            </mat-form-field>
-        </div>
-        <app-graph #graph [nodes]="nodes" 
-                          [links]="links" 
-                          [articleTypes]="articleTypes" 
-                          [linkTypes]="linkTypes"
-                          [dagMode]="dagMode"
-                          [numDimensions]="numDimensions"></app-graph>
-    </div>
-  
-  </mat-drawer-container>
-
+<div id="options" [hidden]="!isConfigOpen" (click)="isConfigOpen = false">
+  <app-graph-options [config]="this.config" [config$]="this.config$" (click)="$event.stopPropagation()" #options></app-graph-options>
+</div>
+<app-graph #graph
+  [config$]="config$"
+  [graphData]="graphData">
+  <div *sidebar>
+    <mat-list-item (click)="isConfigOpen = !isConfigOpen">
+      <mat-icon matTooltip="Settings">settings</mat-icon>
+    </mat-list-item>
+  </div>
+</app-graph>
