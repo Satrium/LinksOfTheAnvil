@@ -1,4 +1,5 @@
 .sidebar
+    position: relative
     z-index: 10
     height: 100%
     background: #001f3f
@@ -28,6 +29,14 @@
             color: white
             &.active
                 background: #7FDBFF
+        
+        height: 100%
+        .version-info
+            position: absolute
+            bottom: 0
+            left: 0
+            right: 0
+            text-align: center
 .sidebar.collapsed
     width: 50px    
     .user
