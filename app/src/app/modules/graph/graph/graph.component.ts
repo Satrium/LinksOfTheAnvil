@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, HostListener, ContentChild, TemplateRef } from '@angular/core';
 import { GraphConfig } from '../graph.object';
 import ForceGraph3D, { ForceGraph3DInstance } from '3d-force-graph';
 import { Observable, Subscription } from 'rxjs';
@@ -6,6 +6,9 @@ import { GraphData, GraphNode, Visibility, LinkColorScheme, NodeColorScheme, Gra
 import distinctColors from 'distinct-colors';
 import SpriteText from 'three-spritetext';
 import { Sprite, Vector3 } from 'three';
+import { GraphSidebarDirective } from './sidebar.directive';
+import { FormControl } from '@angular/forms';
+import { map, startWith } from 'rxjs/operators';
 
 
 @Component({
@@ -15,6 +18,7 @@ import { Sprite, Vector3 } from 'three';
 })
 export class GraphComponent implements OnInit, AfterViewInit {
 
+  @ContentChild(GraphSidebarDirective) sidebarTemplate;
   @Input() config$: Observable<GraphConfig>;
 
   private nodeColors = {};
@@ -33,12 +37,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
   highlightNodes = new Set();
   hoverNode = null;
 
+  // search
+  searchField = new FormControl();
+  searchFilteredNodes: Observable<any[]>;
+  
+
   @ViewChild("graph") graphContainer:ElementRef;
 
   constructor() { }
 
   ngOnInit(): void{
-
+    
   }
 
   ngAfterViewInit(): void {
@@ -92,9 +101,16 @@ export class GraphComponent implements OnInit, AfterViewInit {
         .linkColor(link => this.config.links.colorScheme === LinkColorScheme.GROUP?this.linkColors[link["group"]].hex():
           (this.config.links.colorScheme === LinkColorScheme.SOURCE?link.source["color"]:link.target["color"])
         );
+      this.searchFilteredNodes = this.searchField.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => typeof value === 'string' ? value : value.label),
+        map(name => name ? data.nodes.filter(option => option.name.toLowerCase().includes(name.toLowerCase())).slice(0,20) : data.nodes.slice(0, 20))
+      )
     });
   }
-  private focusNode(node){
+  
+  focusNode(node){
     console.log(node);
     // Aim at node from outside it  
     const distance = 250;
@@ -174,5 +190,9 @@ export class GraphComponent implements OnInit, AfterViewInit {
       }
     }
     return width / (link.group === "mention"?2:1);
+  }
+
+  searchBarDisplay(node): string {
+    return node && node.label ? node.label : '';
   }
 }

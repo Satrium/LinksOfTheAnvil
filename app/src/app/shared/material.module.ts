@@ -52,8 +52,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatFormFieldModule,
     MatAutocompleteModule,
     MatExpansionModule,
-    MatButtonToggleModule,
-    MatDialogModule
+    MatButtonToggleModule
   ],
   exports: [
     MatButtonModule,
@@ -79,8 +78,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatFormFieldModule,
     MatAutocompleteModule,
     MatExpansionModule,
-    MatButtonToggleModule,
-    MatDialogModule
+    MatButtonToggleModule
   ]
 })
 export class MaterialModule {}

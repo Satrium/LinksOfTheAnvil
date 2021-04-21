@@ -2,15 +2,11 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-const defaultGraphConfig = {
-
-};
+import { environment as def} from "./environment.default";
 
 export const environment = {
-  production: false,
-  defaultConfig: defaultGraphConfig
-};
-
+  ...def
+}
 
 
 /*

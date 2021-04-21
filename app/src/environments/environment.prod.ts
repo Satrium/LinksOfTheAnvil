@@ -1,8 +1,6 @@
-const defaultGraphConfig = {
-
-};
+import {environment as dev} from "./environment.default";
 
 export const environment = {
-  production: true,
-  defaultConfig: defaultGraphConfig
+  ...dev,
+  production: true
 };

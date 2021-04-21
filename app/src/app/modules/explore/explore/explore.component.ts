@@ -32,8 +32,7 @@ export class ExploreComponent implements OnInit {
 
   ngOnInit(): void {
     this.config = new GraphConfig(<any> environment.defaultConfig);
-    this.config$ = new BehaviorSubject(this.config);
-
+    this.config$ = new BehaviorSubject(this.config);    
     this.route.params.pipe(
       tap(x => this.openSnackBar("We are loading your world. This might take up to a few minutes for large worlds", null, 0)),
       switchMap(x => this.data.getGraph(x?.world).pipe(tap(x => console.log(x)))),

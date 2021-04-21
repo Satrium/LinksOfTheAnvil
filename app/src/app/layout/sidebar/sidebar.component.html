@@ -10,7 +10,7 @@
         <h6 class="membership">{{user.membership_type}}</h6>
     </div>
     <div class="navigation">
-        <mat-nav-list>
+        <mat-nav-list class="navigation-list">
             <mat-list-item routerLink="/dashboard" routerLinkActive="active">
                 <mat-icon>dashboard</mat-icon>
                 <span class="description" matLine >Dashboard</span>
@@ -20,5 +20,6 @@
                 <span class="description" matLine>Explore</span>
             </mat-list-item>
         </mat-nav-list>
+        <div class="version-info">Version: {{version}}</div>
     </div>
 </div>
