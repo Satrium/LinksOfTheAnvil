@@ -21,7 +21,7 @@ services:
         failure_action: rollback
       labels:
         - traefik.enable=true
-        - traefik.frontend.rule=Host:preprod.linksoftheanvil.satrium.dev
+        - traefik.frontend.rule=Host:linksdev.satrium.dev
         - traefik.docker.network=proxy
         - traefik.port=3000
       restart_policy:
