@@ -13,7 +13,7 @@ services:
       RETHINK_DB_HOST: "rethinkdb"
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
       update_config:
         order: start-first
         parallelism: 1
