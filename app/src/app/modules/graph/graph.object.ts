@@ -1,6 +1,6 @@
 import { NodeOptions, Visibility, GraphConfigModel, GraphData, GraphNode, NodeColorScheme, LinkOptions, LinkColorScheme } from './graph.model';
 
-import { jLouvain } from 'jLouvain';
+import { jLouvain } from 'jlouvain';
 
 export class GraphConfig extends GraphConfigModel{
 
