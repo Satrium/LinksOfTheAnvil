@@ -20,8 +20,6 @@ build:
     - npm ci --cache .npm --prefer-offline
     - cd app
     - npm ci --cache .npm --prefer-offline
-    - cd ..
-    - cd app
     - npm run build:prod
   artifacts:
     expire_in: 1 day
@@ -68,4 +66,4 @@ dev-deploy:
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker pull $IMAGE_TAG
-    - docker stack deploy --with-registry-auth --compose-file=docker-compose-preprod.yml linksoftheanvil-preprod
+    - docker stack deploy --with-registry-auth --compose-file=docker-compose.dev.yml linksoftheanvil-preprod
