@@ -1,5 +1,4 @@
 stages:
-- init
 - build
 - docker
 - deploy
@@ -13,16 +12,15 @@ cache:
   paths:
     - .npm/ 
 
-before_script:
-  - npm ci --cache .npm --prefer-offline
-  - cd app
-  - npm ci --cache .npm --prefer-offline
-  - cd ..
 
 build:
   image: trion/ng-cli-karma:${CLI_VERSION}
   stage: build
   script:
+    - npm ci --cache .npm --prefer-offline
+    - cd app
+    - npm ci --cache .npm --prefer-offline
+    - cd ..
     - cd app
     - npm run build:prod
   artifacts:
