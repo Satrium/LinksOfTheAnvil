@@ -144,7 +144,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
     this.linksHighlighted = true;
     this.nodesHiglighted = true;
     this.nodeSelected = true;
-    this.data.nodes.filter(x => x.group === type).forEach(node =>  this.highlightNodes.add(node))
+    this.data.nodes.filter(x => x.group === type).forEach(node =>  this.highlightNodes.add(node));
+    this.data.links.filter(x => this.highlightNodes.has(x.source) || this.highlightNodes.has(x.target)).forEach(link => this.highlightLinks.add(link));
     this.Graph.refresh();
   }
 
