@@ -1,6 +1,3 @@
-<div id="controls">
-  <button mat-raised-button color="primary" (click)="isConfigOpen = !isConfigOpen">Options</button>
-</div>
 <div id="options" [hidden]="!isConfigOpen" (click)="isConfigOpen = false">
   <app-graph-options [config]="this.config" [config$]="this.config$" (click)="$event.stopPropagation()" #options></app-graph-options>
 </div>
@@ -8,5 +5,8 @@
   [config$]="config$"
   [graphData]="graphData">
   <div *sidebar>
+    <mat-list-item (click)="isConfigOpen = !isConfigOpen">
+      <mat-icon>settings</mat-icon>
+    </mat-list-item>
   </div>
 </app-graph>

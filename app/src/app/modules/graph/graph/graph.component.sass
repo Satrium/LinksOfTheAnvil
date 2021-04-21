@@ -1,5 +1,6 @@
 #wrapper
     position: relative
+    width: 100%
 
 #sidebar
     position: absolute
@@ -10,6 +11,19 @@
     background: #001f3f
     height: 50px
     color: white
+    display: flex
+    .button-list
+        padding: 0
+        display: flex
+        color: white
+        mat-list-item
+            &.active
+                background: white
+                mat-icon
+                    color: black
+            mat-icon
+                color: white
+                cursor: pointer
 
     ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex
         background-color: white
@@ -18,3 +32,28 @@
         min-width: 300px
     ::ng-deep .mat-form-field-prefix
         margin-right: 5px
+
+#legend
+    position: absolute
+    bottom: 0
+    left: 0
+    max-width: 500px
+    min-width: 150px
+    background: white
+    .legend-list
+        display: flex
+        justify-content: flex-start
+        flex-wrap: wrap
+        padding: 0 5px
+        border: 1px solid white
+        background: #001f3f
+        color: white    
+        .legend-list-element
+            margin: 5px
+            cursor: pointer
+            .color-box
+                margin-right: 5px
+                display: inline-block
+                height: 1em
+                width: 1em
+                border-radius: 50%
