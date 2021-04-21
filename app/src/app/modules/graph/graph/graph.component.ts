@@ -21,11 +21,16 @@ export class GraphComponent implements OnInit, AfterViewInit {
   @ContentChild(GraphSidebarDirective) sidebarTemplate;
   @Input() config$: Observable<GraphConfig>;
 
-  private nodeColors = {};
-  private linkColors = {};
+  nodeColors = {};
+  linkColors = {};
+
+  displayNodeLegend = false;
+  displayLinkLegend = false;
 
   private config: GraphConfig;
   private Graph: ForceGraph3DInstance;
+
+  private data: GraphData;
 
   private configSubscription:Subscription;
 
@@ -88,14 +93,14 @@ export class GraphComponent implements OnInit, AfterViewInit {
     console.log(graphData);
     if(this.configSubscription)this.configSubscription.unsubscribe();
     this.configSubscription = this.config$.subscribe(x =>{
-      let data = x.apply(graphData)
+      this.data = x.apply(graphData)
       console.log("Graph Update", x, graphData);
        // Get distinct groups for coloring
-      this.generateColors(data.nodes, data.links, x.nodes.colorScheme, x.links.colorScheme);
+      this.generateColors(this.data.nodes, this.data.links, x.nodes.colorScheme, x.links.colorScheme);
       console.log("Colors", this.nodeColors, this.linkColors);
-      data.nodes.forEach(node => node["color"] = this.nodeColors[x.nodes.colorScheme === NodeColorScheme.CLUSTER?node["cluster"]:node["group"]]?.hex())
+      this.data.nodes.forEach(node => node["color"] = this.nodeColors[x.nodes.colorScheme === NodeColorScheme.CLUSTER?node["cluster"]:node["group"]]?.hex())
       this.config = x;
-      this.Graph.graphData({nodes: data.nodes.filter(x => x.visibility != Visibility.OFF), links: data.links.filter(x => x.visibility != Visibility.OFF)});
+      this.Graph.graphData({nodes: this.data.nodes.filter(x => x.visibility != Visibility.OFF), links: this.data.links.filter(x => x.visibility != Visibility.OFF)});
       this.Graph
         .dagMode(<any>x.dagMode?.toString() || null)
         .linkColor(link => this.config.links.colorScheme === LinkColorScheme.GROUP?this.linkColors[link["group"]].hex():
@@ -105,7 +110,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
       .pipe(
         startWith(''),
         map(value => typeof value === 'string' ? value : value.label),
-        map(name => name ? data.nodes.filter(option => option.name.toLowerCase().includes(name.toLowerCase())).slice(0,20) : data.nodes.slice(0, 20))
+        map(name => name ? this.data.nodes.filter(option => option.name.toLowerCase().includes(name.toLowerCase())).slice(0,20) : this.data.nodes.slice(0, 20))
       )
     });
   }
@@ -132,6 +137,31 @@ export class GraphComponent implements OnInit, AfterViewInit {
       3000  // ms transition duration
     );
   }
+
+  focusNodeType(type){
+    this.highlightLinks.clear();
+    this.highlightNodes.clear();
+    this.linksHighlighted = true;
+    this.nodesHiglighted = true;
+    this.nodeSelected = true;
+    this.data.nodes.filter(x => x.group === type).forEach(node =>  this.highlightNodes.add(node))
+    this.Graph.refresh();
+  }
+
+  focusLinkType(type){
+    this.highlightLinks.clear();
+    this.highlightNodes.clear();
+    this.linksHighlighted = true;
+    this.nodesHiglighted = true;
+    this.nodeSelected = true;
+    this.data.links.filter(x => x.group === type).forEach(link => {
+      this.highlightNodes.add(link.source);
+      this.highlightNodes.add(link.target);
+      this.highlightLinks.add(link);
+    })
+    this.Graph.refresh();
+  }
+
 
   @HostListener('window:keydown', ['$event'])
   doSomething($event) {

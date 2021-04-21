@@ -10,6 +10,22 @@
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
-        <ng-container *ngTemplateOutlet="sidebarTemplate.template"></ng-container>
+        <mat-list class="button-list">    
+          <mat-list-item (click)="displayNodeLegend = !displayNodeLegend" [class.active]="displayNodeLegend">
+            <mat-icon>description</mat-icon>
+          </mat-list-item>      
+          <mat-list-item (click)="displayLinkLegend = !displayLinkLegend" [class.active]="displayLinkLegend">
+            <mat-icon>link</mat-icon>
+          </mat-list-item>      
+          <ng-container *ngTemplateOutlet="sidebarTemplate.template"></ng-container>
+        </mat-list>        
+    </div>
+    <div id="legend" *ngIf="displayNodeLegend || displayLinkLegend">
+      <div class="articles legend-list" *ngIf="displayNodeLegend">        
+        <span class="legend-list-element" *ngFor="let color of nodeColors | keyvalue" (click)="focusNodeType(color.key)"><span class="color-box" [style.background]="color.value.hex()"></span>{{color.key}}</span>
+      </div>
+      <div class="links legend-list" *ngIf="displayLinkLegend">        
+        <span class="legend-list-element" *ngFor="let color of linkColors | keyvalue" (click)="focusLinkType(color.key)"><span class="color-box" [style.background]="color.value.hex()"></span>{{color.key}}</span>
+      </div>
     </div>
 </div>
