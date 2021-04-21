@@ -12,17 +12,17 @@ const { connectDatabase } = require('./server/database.js');
 
 var app = express();
 app.set("worldanvil", new WorldAnvil(process.env.APP_KEY, {
-    id: "link-of-the-anvil-2",
+    id: "link-of-the-anvil",
     reservoir: 150,
     reservoirIncreaseInterval: 250,
     reservoirIncreaseAmount: 10,
     maxConcurrent: 10,
     minTime: 50,
-    datastore: "redis",
-    clientOptions: {
-        host: process.env.REDIS_HOST || "localhost", 
-        port: process.env.REDIS_PORT || 6379
-    }
+    // datastore: "redis",
+    // clientOptions: {
+    //     host: process.env.REDIS_HOST || "localhost", 
+    //     port: process.env.REDIS_PORT || 6379
+    // }
 }));
 app.use(express.static(process.cwd()+"/dist"));
 app.use('/api', apiRouter);
