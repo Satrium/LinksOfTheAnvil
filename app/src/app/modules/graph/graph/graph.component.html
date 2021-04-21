@@ -12,15 +12,16 @@
           </mat-form-field>
         <mat-list class="button-list">    
           <mat-list-item (click)="displayNodeLegend = !displayNodeLegend" [class.active]="displayNodeLegend">
-            <mat-icon>description</mat-icon>
+            <mat-icon matTooltip="Toggle Article Legend">description</mat-icon>
           </mat-list-item>      
           <mat-list-item (click)="displayLinkLegend = !displayLinkLegend" [class.active]="displayLinkLegend">
-            <mat-icon>link</mat-icon>
+            <mat-icon matTooltip="Toggle Link Legend">link</mat-icon>
           </mat-list-item>      
           <ng-container *ngTemplateOutlet="sidebarTemplate.template"></ng-container>
         </mat-list>        
     </div>
     <div id="legend" *ngIf="displayNodeLegend || displayLinkLegend">
+      <div class="text-center"><i>Click on an element in the legend to highlight them in the graph</i></div>
       <div class="articles legend-list" *ngIf="displayNodeLegend">        
         <span class="legend-list-element" *ngFor="let color of nodeColors | keyvalue" (click)="focusNodeType(color.key)"><span class="color-box" [style.background]="color.value.hex()"></span>{{color.key}}</span>
       </div>
@@ -28,4 +29,5 @@
         <span class="legend-list-element" *ngFor="let color of linkColors | keyvalue" (click)="focusLinkType(color.key)"><span class="color-box" [style.background]="color.value.hex()"></span>{{color.key}}</span>
       </div>
     </div>
+    <div id="highlight-notice" *ngIf="nodesHiglighted || linksHighlighted">Press ESC to stop highlighting parts of the graph</div>
 </div>
