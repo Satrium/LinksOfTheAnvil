@@ -42,8 +42,6 @@ services:
     image: rethinkdb:2.4.0
     networks:
       - worldanvil      
-    volumes:
-      - /mnt/linksOfTheAnvil/rethinkdb:/data
 
 networks:
   proxy:
