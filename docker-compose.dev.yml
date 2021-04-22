@@ -4,7 +4,7 @@ services:
     image: "${IMAGE_TAG}"
     networks:
       - proxy
-      - worldanvil
+      - worldanvil-dev
     environment:
       APP_KEY: "${APP_KEY}"
       NODE_ENV: "production"
@@ -32,7 +32,7 @@ services:
   redis:
     image: redis:6.0.0-alpine
     networks:
-      - worldanvil
+      - worldanvil-dev
     deploy:
       resources:
         limits:
@@ -41,12 +41,10 @@ services:
   rethinkdb:
     image: rethinkdb:2.4.0
     networks:
-      - worldanvil      
-    volumes:
-      - /mnt/linksOfTheAnvil/rethinkdb:/data
+      - worldanvil-dev
 
 networks:
   proxy:
     external: true
-  worldanvil:
+  worldanvil-dev:
     external: true

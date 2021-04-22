@@ -1,4 +1,4 @@
-import { NodeOptions, Visibility, GraphConfigModel, GraphData, GraphNode, NodeColorScheme, LinkOptions, LinkColorScheme } from './graph.model';
+import { NodeOptions, Visibility, GraphConfigModel, GraphData, GraphNode, NodeColorScheme, LinkOptions, LinkColorScheme, VisualSettings } from './graph.model';
 
 import { jLouvain } from 'jlouvain';
 
@@ -17,6 +17,12 @@ export class GraphConfig extends GraphConfigModel{
     defaultVisibility: Visibility.ON,
     colorScheme: LinkColorScheme.GROUP
   };
+  visuals:VisualSettings = {
+    nodeRelSize: 0.75,
+    linkOpacity: 0.6,
+    nodeOpacity: 0.7,
+    textHeight: 4,
+  }
 
 
   constructor(data:GraphConfig){

@@ -34,6 +34,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
   private configSubscription:Subscription;
 
+  private textHeight:number = null;
+
   // highlights
   linksHighlighted = false;
   nodesHiglighted = false;
@@ -52,7 +54,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
   constructor() { }
 
   ngOnInit(): void{
-    
+    this.textHeight = this.config?.visuals?.textHeight || 4;
   }
 
   ngAfterViewInit(): void {
@@ -62,15 +64,15 @@ export class GraphComponent implements OnInit, AfterViewInit {
       .linkVisibility(link => (<GraphLink>link).visibility != Visibility.HIDDEN)
       .nodeColor(node => this.nodesHiglighted && !this.highlightNodes.has(node)?"#808080":node["color"])
       .linkWidth((link:any) => this.getLinkWidth(link))
-      .linkOpacity(0.8)
       .enableNodeDrag(false)
       .nodeThreeObjectExtend(true)
-      .nodeVal(node => node["wordcount"] || 100)
-      .nodeRelSize(0.75)
+      .nodeVal(node => node["wordcount"] || 50)
+      .linkDirectionalArrowLength(link => link["bidirectional"]?0:3.5)
+      .linkDirectionalArrowRelPos(1)      
       .nodeThreeObject((node:any)=>{
         const obj = new SpriteText(node.name);
         obj.position.add(new Vector3(0, 8, 0));
-        obj.textHeight = 3;        
+        obj.textHeight = this.config?.visuals?.textHeight || 4;        
         if(this.highlightNodes.has(node)){
           obj.textHeight *= 2;
           obj.backgroundColor = "#808080";
@@ -110,7 +112,12 @@ export class GraphComponent implements OnInit, AfterViewInit {
         startWith(''),
         map(value => typeof value === 'string' ? value : value.label),
         map(name => name ? this.data.nodes.filter(option => option.name.toLowerCase().includes(name.toLowerCase())).slice(0,20) : this.data.nodes.slice(0, 20))
-      )
+      );
+      // apply visual settings
+      if(this.Graph.linkOpacity() != x.visuals?.linkOpacity)this.Graph.linkOpacity(x.visuals?.linkOpacity);
+      if(this.Graph.nodeOpacity() != x.visuals?.nodeOpacity)this.Graph.nodeOpacity(x.visuals?.nodeOpacity);
+      if(this.Graph.nodeRelSize() != x.visuals?.nodeRelSize)this.Graph.nodeRelSize(x.visuals?.nodeRelSize);
+      if(this.textHeight != x.visuals.textHeight)this.Graph.refresh();
     });
   }
   
@@ -232,7 +239,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     var width = 1;
     if(this.linksHighlighted){
       if(this.highlightLinks.has(link)){
-        width = 4;
+        width = 2;
       }else{
         width = 0.1;
       }
