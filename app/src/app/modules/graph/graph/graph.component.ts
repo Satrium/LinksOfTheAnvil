@@ -208,7 +208,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
   private clearFocus(){
     console.log("Clearing Focus", this.nodeSelected);
-    if(this.nodeSelected){
+    if(this.nodeSelected || this.linksHighlighted || this.nodesHiglighted){
       this.highlightLinks.clear();
       this.highlightNodes.clear();
       this.nodeSelected = false;
