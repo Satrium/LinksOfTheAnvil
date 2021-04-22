@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const config = require("../config.json")
 
 class WorldAnvil{
 
@@ -14,7 +15,7 @@ class WorldAnvil{
 
     request(url, userToken){
         console.debug("Starting: ", this.baseurl + url);
-        let headers = {"x-application-key": this._appToken,"x-auth-token": userToken,"ContentType":"application/json"};
+        let headers = {"x-application-key": this._appToken,"x-auth-token": userToken,"ContentType":"application/json", "User-Agent": `${config['name']} (${config['url']}, ${config['version']})`};
         if(this._limiter){
             return this._limiter.schedule(() => fetch(this.baseurl + url,{headers}))
                 .then(res => {

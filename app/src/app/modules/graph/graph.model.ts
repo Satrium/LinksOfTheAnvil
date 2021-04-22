@@ -10,6 +10,9 @@ export interface NodeOptions{
   typeVisibility?: {[key:string]:Visibility}
   displayNodesWithNoLinks?: boolean;
   colorScheme?:NodeColorScheme;
+  displayDrafts?: boolean;
+  displayWip?: boolean;
+  displayPrivate?: boolean;
 }
 
 export interface LinkOptions{
@@ -44,6 +47,14 @@ export interface GraphNode{
   name: string;
   visibility?: Visibility;
   neighbors?: GraphNode[];
+  wip: boolean;
+  draft: boolean;
+  public: boolean;
+  cluster?: string;
+  x?: number;
+  y?: number;
+  z?: number;
+  links?: any;
 }
 
 export interface GraphLink{

@@ -1,6 +1,11 @@
 <div id="options" [hidden]="!isConfigOpen" (click)="isConfigOpen = false">
   <app-graph-options [config]="this.config" [config$]="this.config$" (click)="$event.stopPropagation()" #options></app-graph-options>
 </div>
+<div id="loading" *ngIf="loading">
+  <div class="outer-wrapper">
+    <div class="inner-wrapper">We are loading your world, this might take a few minutes for big worlds.<mat-spinner [diameter]="25"></mat-spinner></div>
+  </div>
+</div>
 <app-graph #graph
   [config$]="config$"
   [graphData]="graphData">
