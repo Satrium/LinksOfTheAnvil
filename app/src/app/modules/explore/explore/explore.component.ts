@@ -25,6 +25,8 @@ export class ExploreComponent implements OnInit {
   @ViewChild('graph') graph;
   @ViewChild('options') options:OptionsComponent;
 
+  loading = false;
+
   graphData:GraphData;
 
   constructor(private data:DataService, private route: ActivatedRoute,
@@ -34,10 +36,10 @@ export class ExploreComponent implements OnInit {
     this.config = new GraphConfig(<any> environment.defaultConfig);
     this.config$ = new BehaviorSubject(this.config);    
     this.route.params.pipe(
-      tap(x => this.openSnackBar("We are loading your world. This might take up to a few minutes for large worlds", null, 0)),
+      tap(x => this.loading = true),
       switchMap(x => this.data.getGraph(x?.world).pipe(tap(x => console.log(x)))),
     ).subscribe(graph => {
-      this._snackBar.dismiss();
+      this.loading = false;
       if(!this.config.nodes.typeVisibility)this.config.nodes.typeVisibility = {};
       graph['nodes'].forEach(node => {
         if(node.group != "tag" && !(node.group in this.config.nodes.typeVisibility)){

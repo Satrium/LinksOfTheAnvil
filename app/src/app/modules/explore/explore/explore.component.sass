@@ -21,3 +21,26 @@
 mat-icon
   color: white
   cursor: pointer 
+
+#loading
+  display: flex
+  justify-content: center
+  align-items: center
+  position: absolute
+  background: rgba(black, 0.5)
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  z-index: 20
+  .outer-wrapper
+    color: black
+    background: white
+    padding: 20px
+    border-radius: 25px
+    .inner-wrapper
+      display: flex
+      align-items: center
+      .mat-spinner
+        display: inline-block
+        margin-left: 15px
