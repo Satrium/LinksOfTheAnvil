@@ -8,7 +8,10 @@ export class GraphConfig extends GraphConfigModel{
   nodes:NodeOptions = {
     defaultVisibility: Visibility.ON,
     displayNodesWithNoLinks: true,
-    colorScheme: NodeColorScheme.GROUP
+    colorScheme: NodeColorScheme.GROUP,
+    displayDrafts: true,
+    displayWip: true,
+    displayPrivate: true
   };
   links:LinkOptions = {
     defaultVisibility: Visibility.ON,
@@ -46,6 +49,9 @@ export class GraphConfig extends GraphConfigModel{
         if(this.showTags)x.visibility = Visibility.ON;
         else x.visibility = Visibility.OFF;
       }
+      else if(!this.nodes.displayDrafts && x.draft)x.visibility = Visibility.OFF
+      else if(!this.nodes.displayWip && x.wip)x.visibility = Visibility.OFF
+      else if(!this.nodes.displayPrivate && !x.public)x.visibility = Visibility.OFF
       else if(!this.nodes.displayNodesWithNoLinks && (x.neighbors?.filter(x => x.visibility != Visibility.OFF)?.length ?? 0) === 0)x.visibility = Visibility.OFF;
       else if(x.group in (this.nodes?.typeVisibility ?? {})){
         x.visibility = this.nodes.typeVisibility[x.group];
@@ -63,10 +69,15 @@ export class GraphConfig extends GraphConfigModel{
       .nodes(data.nodes.filter(x => x.visibility != Visibility.OFF && x.group != "tag").map(x => x.id))
       .edges(<any>data.links.filter(x => x.visibility != Visibility.OFF && x.group != "tagged")
         .map(x => {return{"source": (<any>x.source).id || x.source, "target":(<any>x.target).id || x.target}}));
-    let communityResult = community();
-    console.log(communityResult);
+    let communityResult = community() as {[key:string]: number};
+    let counts = Object.entries(communityResult).reduce((sums, entry) => {sums[entry[1]] = (sums[entry[1]] || 0) + 1; return sums;}, {});
+    console.log("Community Result", communityResult, counts);
     for(let key in communityResult){
-      nodeDict[key].cluster = communityResult[key];
+      if(counts[communityResult[key]] <= 1){
+        nodeDict[key].cluster = "Single"
+      }else{
+        nodeDict[key].cluster = "Cluster " + communityResult[key];
+      }      
     }
     return data;
   }

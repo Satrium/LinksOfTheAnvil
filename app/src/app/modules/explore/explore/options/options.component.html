@@ -13,8 +13,23 @@
             Display Nodes with no links
           </mat-slide-toggle>
         </div>
+        <div>
+          <mat-slide-toggle [(ngModel)]="config.nodes.displayDrafts" (change)="this.config$.next(this.config)">
+            Display Drafts
+          </mat-slide-toggle>
+        </div>
+        <div>
+          <mat-slide-toggle [(ngModel)]="config.nodes.displayWip" (change)="this.config$.next(this.config)">
+            Display Wip articles
+          </mat-slide-toggle>
+        </div>
+        <div>
+          <mat-slide-toggle [(ngModel)]="config.nodes.displayPrivate" (change)="this.config$.next(this.config)">
+            Display private articles
+          </mat-slide-toggle>
+        </div>
       </mat-tab>
-      <mat-tab label="Nodes">
+      <mat-tab label="Articles">
         <div>
           <mat-form-field>
             <mat-label>Node Coloring</mat-label>
