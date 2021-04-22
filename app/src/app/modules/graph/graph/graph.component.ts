@@ -68,7 +68,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
       .nodeThreeObjectExtend(true)
       .nodeVal(node => (this.nodesHiglighted && !this.highlightNodes.has(node)?node["wordcount"]/4:node["wordcount"]) || 50)
       .linkDirectionalArrowLength(link => link["bidirectional"]?0:3.5)
-      .linkDirectionalArrowRelPos(1)      
+      .linkDirectionalArrowRelPos(1)     
+      .onNodeRightClick(node => {if(node.hasOwnProperty("link"))window.open(node["link"], "_blank");}) 
       .nodeThreeObject((node:any)=>{
         const obj = new SpriteText(node.name);
         obj.position.add(new Vector3(0, 8, 0));
