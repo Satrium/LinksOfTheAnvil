@@ -80,7 +80,7 @@ export class GraphConfig extends GraphConfigModel{
     console.log("Community Result", communityResult, counts);
     for(let key in communityResult){
       if(counts[communityResult[key]] <= 1){
-        nodeDict[key].cluster = "Single"
+        nodeDict[key].cluster = "Orphans"
       }else{
         nodeDict[key].cluster = "Cluster " + communityResult[key];
       }      
