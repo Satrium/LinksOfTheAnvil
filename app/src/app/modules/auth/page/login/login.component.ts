@@ -10,6 +10,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class LoginComponent implements OnInit {
 
+  bigimage = false;
+
   constructor(public authService:AuthService, private router:Router, private _snackBar: MatSnackBar) { }
 
   ngOnInit(): void {

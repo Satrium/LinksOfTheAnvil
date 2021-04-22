@@ -10,7 +10,13 @@
     </mat-form-field>
     <mat-card-footer>
         <p class="help">
-            Do you need help, getting a WorldAnvil API Token? There is a quick explanation over at my github repository: <a href="https://github.com/Satrium/LinksOfTheAnvil">https://github.com/Satrium/LinksOfTheAnvil</a>
+            <b>Where do I get an API Key?</b><br>
+            <b>1. </b>Log into Worldanvil<br>
+            <b>2. </b>Head over to <a href="https://www.worldanvil.com/api/auth/key">https://www.worldanvil.com/api/auth/key</a><br>
+            <b>3. </b>Add a Title to the "Nickname/Title" field and click "Create new Key"<br>
+            <b>4. </b>Paste the generated Key into the field above and click "Login"<br>
+            <br>                       
         </p>        
+        <div class="apikey-image" [class.big]="bigimage" (click)="bigimage = !bigimage" ><img  src="/assets/apikey.png"></div> 
     </mat-card-footer>
 </mat-card-content>

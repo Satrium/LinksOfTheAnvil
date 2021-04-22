@@ -13,9 +13,9 @@ const { connectDatabase } = require('./server/database.js');
 var app = express();
 app.set("worldanvil", new WorldAnvil(process.env.APP_KEY, {
     id: "link-of-the-anvil",
-    reservoir: 150,
-    reservoirIncreaseInterval: 250,
-    reservoirIncreaseAmount: 10,
+    reservoir: 100,
+    reservoirIncreaseInterval: 500,
+    reservoirIncreaseAmount: 5,
     maxConcurrent: 10,
     minTime: 50,
     // datastore: "redis",
