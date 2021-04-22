@@ -17,8 +17,8 @@
           <mat-list-item (click)="displayLinkLegend = !displayLinkLegend" [class.active]="displayLinkLegend">
             <mat-icon matTooltip="Toggle Link Legend">link</mat-icon>
           </mat-list-item>      
-          <mat-list-item (click)="highlightDrafts()">
-            <mat-icon matTooltip="Highlight Drafts">construction</mat-icon>
+          <mat-list-item (click)="highlightStubs()">
+            <mat-icon matTooltip="Highlight Stubs">construction</mat-icon>
           </mat-list-item>     
           <ng-container *ngTemplateOutlet="sidebarTemplate.template"></ng-container>
         </mat-list>        
