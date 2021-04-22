@@ -3,6 +3,7 @@ export class GraphConfigModel{
   nodes:NodeOptions;
   links?:LinkOptions;
   dagMode?:DagMode;
+  visuals: VisualSettings;
 }
 
 export interface NodeOptions{
@@ -19,6 +20,13 @@ export interface LinkOptions{
   defaultVisibility: Visibility;
   typeVisibility?: {[key:string]:Visibility}
   colorScheme?:LinkColorScheme;
+}
+
+export interface VisualSettings{
+  linkOpacity: number;
+  nodeOpacity: number;
+  nodeRelSize: number;
+  textHeight: number;
 }
 
 export enum NodeColorScheme{
