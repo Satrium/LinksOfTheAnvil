@@ -186,16 +186,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
     this.Graph.refresh();
   }
 
-  highlightDrafts(){
+  highlightStubs(){
     this.highlightLinks.clear();
     this.highlightNodes.clear();
-    this.linksHighlighted = false;
+    this.linksHighlighted = true;
     this.nodesHiglighted = true;
-    this.data.nodes.filter(x => x.draft === true).forEach(link => {
+    this.data.nodes.filter(node => node["wordcount"] <= 50).forEach(link => {
       this.highlightNodes.add(link);
     });
     this.Graph.refresh();
   }
+  
 
 
   @HostListener('window:keydown', ['$event'])
