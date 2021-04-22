@@ -62,11 +62,11 @@ export class GraphComponent implements OnInit, AfterViewInit {
       .graphData({nodes:[], links:[]})
       .nodeVisibility(node => (<GraphNode>node).visibility != Visibility.HIDDEN)
       .linkVisibility(link => (<GraphLink>link).visibility != Visibility.HIDDEN)
-      .nodeColor(node => this.nodesHiglighted && !this.highlightNodes.has(node)?"#808080":node["color"])
+      .nodeColor(node => this.nodesHiglighted && !this.highlightNodes.has(node)?"#242424":node["color"])
       .linkWidth((link:any) => this.getLinkWidth(link))
       .enableNodeDrag(false)
       .nodeThreeObjectExtend(true)
-      .nodeVal(node => node["wordcount"] || 50)
+      .nodeVal(node => (this.nodesHiglighted && !this.highlightNodes.has(node)?node["wordcount"]/4:node["wordcount"]) || 50)
       .linkDirectionalArrowLength(link => link["bidirectional"]?0:3.5)
       .linkDirectionalArrowRelPos(1)      
       .nodeThreeObject((node:any)=>{
@@ -183,6 +183,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
       this.highlightNodes.add(link.target);
       this.highlightLinks.add(link);
     })
+    this.Graph.refresh();
+  }
+
+  highlightDrafts(){
+    this.highlightLinks.clear();
+    this.highlightNodes.clear();
+    this.linksHighlighted = false;
+    this.nodesHiglighted = true;
+    this.data.nodes.filter(x => x.draft === true).forEach(link => {
+      this.highlightNodes.add(link);
+    });
     this.Graph.refresh();
   }
 
