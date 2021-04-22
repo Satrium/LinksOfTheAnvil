@@ -3,6 +3,7 @@ export class GraphConfigModel{
   nodes:NodeOptions;
   links?:LinkOptions;
   dagMode?:DagMode;
+  visuals: VisualSettings;
 }
 
 export interface NodeOptions{
@@ -10,12 +11,22 @@ export interface NodeOptions{
   typeVisibility?: {[key:string]:Visibility}
   displayNodesWithNoLinks?: boolean;
   colorScheme?:NodeColorScheme;
+  displayDrafts?: boolean;
+  displayWip?: boolean;
+  displayPrivate?: boolean;
 }
 
 export interface LinkOptions{
   defaultVisibility: Visibility;
   typeVisibility?: {[key:string]:Visibility}
   colorScheme?:LinkColorScheme;
+}
+
+export interface VisualSettings{
+  linkOpacity: number;
+  nodeOpacity: number;
+  nodeRelSize: number;
+  textHeight: number;
 }
 
 export enum NodeColorScheme{
@@ -44,6 +55,14 @@ export interface GraphNode{
   name: string;
   visibility?: Visibility;
   neighbors?: GraphNode[];
+  wip: boolean;
+  draft: boolean;
+  public: boolean;
+  cluster?: string;
+  x?: number;
+  y?: number;
+  z?: number;
+  links?: any;
 }
 
 export interface GraphLink{

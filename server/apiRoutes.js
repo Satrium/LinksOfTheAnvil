@@ -141,7 +141,7 @@ async function updateGraph(graph, articles, worldanvil, userToken){
             graph.nodes.push(getNode(dictionary[id]));
             const {links, articleTags} = getConnections(article);
             articleTags.forEach(t => {
-                if(!tags.includes(t))result.nodes.push({"id":x, "name":x, "group":"tag"});
+                if(!tags.includes(t))graph.nodes.push({"id":x, "name":x, "group":"tag"});
             });
             graph.links.push(...links);
         }));
@@ -154,7 +154,17 @@ async function updateGraph(graph, articles, worldanvil, userToken){
 }
 
 function getNode(article){
-    return {"id":article.id, "name":article.title, "group":article.template_type, "public":!article.is_draft && article.state == "public", "wordcount":article.wordcount, "link":article.url}
+    return {
+        "id":article.id, 
+        "name":article.title, 
+        "group":article.template_type, 
+        "public":article.state == "public", 
+        "draft":article.is_draft,
+        "wip":article.is_wip, 
+        "wordcount":article.wordcount, 
+        "link":article.url,
+        "tags": article.tag?article.tags.split(","):[]
+    }
 }
 
 function getConnections(article){

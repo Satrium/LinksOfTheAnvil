@@ -3,6 +3,7 @@
   <mat-card-content *ngIf="config">
     <mat-tab-group mat-align-tabs="center" [(selectedIndex)]="selectedTab" dynamicHeight>
       <mat-tab label="General">
+        <h3>General Settings</h3>
         <div>
           <mat-slide-toggle [(ngModel)]="config.showTags" (change)="this.config$.next(this.config)">
             Display Tags
@@ -13,8 +14,45 @@
             Display Nodes with no links
           </mat-slide-toggle>
         </div>
+        <div>
+          <mat-slide-toggle [(ngModel)]="config.nodes.displayDrafts" (change)="this.config$.next(this.config)">
+            Display Drafts
+          </mat-slide-toggle>
+        </div>
+        <div>
+          <mat-slide-toggle [(ngModel)]="config.nodes.displayWip" (change)="this.config$.next(this.config)">
+            Display Wip articles
+          </mat-slide-toggle>
+        </div>
+        <div>
+          <mat-slide-toggle [(ngModel)]="config.nodes.displayPrivate" (change)="this.config$.next(this.config)">
+            Display private articles
+          </mat-slide-toggle>
+        </div>
+        <mat-divider></mat-divider>
+        <h3>Visuals</h3>
+        <div class="slider-list">
+          <div>
+            <mat-slider min="0" max="1" step="0.01" value="0.75" thumbLabel [(ngModel)]="config.visuals.nodeRelSize" (ngModelChange)="this.config$.next(this.config)"></mat-slider>
+            <span> Node Size</span>
+          </div>
+          <div>
+            <mat-slider min="0" max="1" step="0.01" value="0.6" thumbLabel [(ngModel)]="config.visuals.nodeOpacity" (ngModelChange)="this.config$.next(this.config)"></mat-slider>
+            <span> Node Opacity</span>
+          </div>
+          <div>
+            <mat-slider min="0" max="1" step="0.01" value="0.7" thumbLabel [(ngModel)]="config.visuals.linkOpacity" (ngModelChange)="this.config$.next(this.config)"></mat-slider>
+            <span> Link Opacity</span>
+          </div>
+          <mat-form-field>
+            <mat-label>Font size</mat-label>
+            <input matNativeControl type="number" [(ngModel)]="config.visuals.textHeight" (ngModelChange)="this.config$.next(this.config)">            
+          </mat-form-field>
+        </div>
+        
+       
       </mat-tab>
-      <mat-tab label="Nodes">
+      <mat-tab label="Articles">
         <div>
           <mat-form-field>
             <mat-label>Node Coloring</mat-label>

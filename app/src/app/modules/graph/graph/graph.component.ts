@@ -34,6 +34,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
   private configSubscription:Subscription;
 
+  private textHeight:number = null;
+
   // highlights
   linksHighlighted = false;
   nodesHiglighted = false;
@@ -52,7 +54,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
   constructor() { }
 
   ngOnInit(): void{
-    
+    this.textHeight = this.config?.visuals?.textHeight || 4;
   }
 
   ngAfterViewInit(): void {
@@ -60,18 +62,18 @@ export class GraphComponent implements OnInit, AfterViewInit {
       .graphData({nodes:[], links:[]})
       .nodeVisibility(node => (<GraphNode>node).visibility != Visibility.HIDDEN)
       .linkVisibility(link => (<GraphLink>link).visibility != Visibility.HIDDEN)
-      .nodeColor(node => this.nodesHiglighted && !this.highlightNodes.has(node)?"#808080":node["color"])
+      .nodeColor(node => this.nodesHiglighted && !this.highlightNodes.has(node)?"#242424":node["color"])
       .linkWidth((link:any) => this.getLinkWidth(link))
-      .linkOpacity(0.8)
       .enableNodeDrag(false)
       .nodeThreeObjectExtend(true)
-      .nodeVal(node => node["wordcount"] || 100)
-      .nodeRelSize(0.75)
+      .nodeVal(node => (this.nodesHiglighted && !this.highlightNodes.has(node)?node["wordcount"]/4:node["wordcount"]) || 50)
+      .linkDirectionalArrowLength(link => link["bidirectional"]?0:3.5)
+      .linkDirectionalArrowRelPos(1)     
+      .onNodeRightClick(node => {if(node.hasOwnProperty("link"))window.open(node["link"], "_blank");}) 
       .nodeThreeObject((node:any)=>{
         const obj = new SpriteText(node.name);
-        console.log(obj.position)
         obj.position.add(new Vector3(0, 8, 0));
-        obj.textHeight = 3;        
+        obj.textHeight = this.config?.visuals?.textHeight || 4;        
         if(this.highlightNodes.has(node)){
           obj.textHeight *= 2;
           obj.backgroundColor = "#808080";
@@ -111,15 +113,37 @@ export class GraphComponent implements OnInit, AfterViewInit {
         startWith(''),
         map(value => typeof value === 'string' ? value : value.label),
         map(name => name ? this.data.nodes.filter(option => option.name.toLowerCase().includes(name.toLowerCase())).slice(0,20) : this.data.nodes.slice(0, 20))
-      )
+      );
+      // apply visual settings
+      if(this.Graph.linkOpacity() != x.visuals?.linkOpacity)this.Graph.linkOpacity(x.visuals?.linkOpacity);
+      if(this.Graph.nodeOpacity() != x.visuals?.nodeOpacity)this.Graph.nodeOpacity(x.visuals?.nodeOpacity);
+      if(this.Graph.nodeRelSize() != x.visuals?.nodeRelSize)this.Graph.nodeRelSize(x.visuals?.nodeRelSize);
+      if(this.textHeight != x.visuals.textHeight)this.Graph.refresh();
     });
   }
   
-  focusNode(node){
-    console.log(node);
+  focusNode(node : GraphNode){
+    const minDistance = 200;
+    const maxDistance = 600;
+
     // Aim at node from outside it  
-    const distance = 250;
-    const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);    
+    let camPos = this.Graph.cameraPosition();
+    let camPosVector = new Vector3(camPos.x, camPos.y, camPos.z);
+    let nodePosVector = new Vector3(node.x, node.y, node.z);
+    console.log(camPosVector.distanceTo(nodePosVector));
+    if(camPosVector.distanceTo(nodePosVector) > maxDistance){
+      camPosVector.normalize();
+      camPosVector.multiplyScalar(maxDistance);
+    }else if (camPosVector.distanceTo(nodePosVector) < minDistance){
+      camPosVector.normalize();
+      camPosVector.multiplyScalar(minDistance);
+    }
+
+    this.Graph.cameraPosition(
+      camPosVector, // new position
+      node as any, // lookAt ({ x, y, z })
+      2000  // ms transition duration
+    );
 
     this.highlightLinks.clear();
     this.highlightNodes.clear();
@@ -131,11 +155,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     node.links?.forEach(link => this.highlightLinks.add(link));
     this.Graph.refresh();
 
-    this.Graph.cameraPosition(
-      { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, // new position
-      node, // lookAt ({ x, y, z })
-      3000  // ms transition duration
-    );
+    
   }
 
   focusNodeType(type){
@@ -144,8 +164,12 @@ export class GraphComponent implements OnInit, AfterViewInit {
     this.linksHighlighted = true;
     this.nodesHiglighted = true;
     this.nodeSelected = true;
-    this.data.nodes.filter(x => x.group === type).forEach(node =>  this.highlightNodes.add(node));
-    //this.data.links.filter(x => this.highlightNodes.has(x.source) || this.highlightNodes.has(x.target)).forEach(link => this.highlightLinks.add(link));
+    if(this.config.nodes.colorScheme === NodeColorScheme.CLUSTER){
+      this.data.nodes.filter(x => x.cluster === type).forEach(node =>  this.highlightNodes.add(node));
+      this.data.links.filter(x => this.highlightNodes.has(x.source)).forEach(link => this.highlightLinks.add(link));
+    }else{
+      this.data.nodes.filter(x => x.group === type).forEach(node =>  this.highlightNodes.add(node));
+    }
     this.Graph.refresh();
   }
 
@@ -163,6 +187,18 @@ export class GraphComponent implements OnInit, AfterViewInit {
     this.Graph.refresh();
   }
 
+  highlightStubs(){
+    this.highlightLinks.clear();
+    this.highlightNodes.clear();
+    this.linksHighlighted = true;
+    this.nodesHiglighted = true;
+    this.data.nodes.filter(node => node["wordcount"] <= 50).forEach(link => {
+      this.highlightNodes.add(link);
+    });
+    this.Graph.refresh();
+  }
+  
+
 
   @HostListener('window:keydown', ['$event'])
   doSomething($event) {
@@ -174,7 +210,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
   private clearFocus(){
     console.log("Clearing Focus", this.nodeSelected);
-    if(this.nodeSelected){
+    if(this.nodeSelected || this.linksHighlighted || this.nodesHiglighted){
       this.highlightLinks.clear();
       this.highlightNodes.clear();
       this.nodeSelected = false;
@@ -187,6 +223,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
   private generateColors(nodes, links, nodeScheme:NodeColorScheme, linkScheme:LinkColorScheme){
     // Nodes
     let nodeGroups = new Set();    
+    this.nodeColors = {}
     nodes.forEach(node => nodeGroups.add(nodeScheme === NodeColorScheme.GROUP?node["group"]:node["cluster"]));
     nodeGroups.delete(undefined);
     let colors = distinctColors({count: nodeGroups.size, chromaMin: 20, lightMin: 20});
@@ -198,12 +235,12 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
     //Links
     let linkGroups = new Set();
+    this.linkColors = {}
     links.forEach(link => linkGroups.add(link["group"]));
     linkGroups.delete(undefined);
     colors = distinctColors({count: linkGroups.size, chromaMin: 20, lightMin: 20});
     counter = 0;
     linkGroups.forEach((x:any) => {
-      console.log(x, counter, colors[counter])
       this.linkColors[x] = colors[counter];
       counter++;
     });
@@ -215,7 +252,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     var width = 1;
     if(this.linksHighlighted){
       if(this.highlightLinks.has(link)){
-        width = 4;
+        width = 2;
       }else{
         width = 0.1;
       }
