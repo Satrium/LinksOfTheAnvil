@@ -51,6 +51,10 @@ export interface GraphNode{
   draft: boolean;
   public: boolean;
   cluster?: string;
+  x?: number;
+  y?: number;
+  z?: number;
+  links?: any;
 }
 
 export interface GraphLink{

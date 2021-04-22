@@ -114,11 +114,28 @@ export class GraphComponent implements OnInit, AfterViewInit {
     });
   }
   
-  focusNode(node){
-    console.log(node);
+  focusNode(node : GraphNode){
+    const minDistance = 200;
+    const maxDistance = 600;
+
     // Aim at node from outside it  
-    const distance = 250;
-    const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);    
+    let camPos = this.Graph.cameraPosition();
+    let camPosVector = new Vector3(camPos.x, camPos.y, camPos.z);
+    let nodePosVector = new Vector3(node.x, node.y, node.z);
+    console.log(camPosVector.distanceTo(nodePosVector));
+    if(camPosVector.distanceTo(nodePosVector) > maxDistance){
+      camPosVector.normalize();
+      camPosVector.multiplyScalar(maxDistance);
+    }else if (camPosVector.distanceTo(nodePosVector) < minDistance){
+      camPosVector.normalize();
+      camPosVector.multiplyScalar(minDistance);
+    }
+
+    this.Graph.cameraPosition(
+      camPosVector, // new position
+      node as any, // lookAt ({ x, y, z })
+      2000  // ms transition duration
+    );
 
     this.highlightLinks.clear();
     this.highlightNodes.clear();
@@ -130,11 +147,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     node.links?.forEach(link => this.highlightLinks.add(link));
     this.Graph.refresh();
 
-    this.Graph.cameraPosition(
-      { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, // new position
-      node, // lookAt ({ x, y, z })
-      3000  // ms transition duration
-    );
+    
   }
 
   focusNodeType(type){
