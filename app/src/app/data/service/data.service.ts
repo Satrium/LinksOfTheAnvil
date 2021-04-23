@@ -19,10 +19,14 @@ export class DataService {
   }
 
   public getGlobalPresets():Observable<Array<any>>{
-    return this.http.get<Array<any>>("/assets/presets.json");
+    return this.http.get<Array<any>>("/api/preset");
   }
 
   public getPresets(worldId){
     return this.http.get("/api/world/" + worldId + "/presets");
+  }
+
+  public getPreset(id){
+    return this.http.get("/api/preset/" + id);
   }
 }

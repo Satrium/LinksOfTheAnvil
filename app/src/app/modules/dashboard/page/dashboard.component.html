@@ -1,12 +1,14 @@
 <div class="row">
-    <h1>Presets</h1>
-    <p>These are default presets, to help you get started and showcase the possibilities of this tool. Feel free to use and modify them as you see fit.</p>
-    <p><b>Not yet implemented</b></p>
-    <!-- <div class="list">
+    <div class="text-center">
+        <h1>Presets</h1>
+        <p>These are default presets, to help you get started and showcase the possibilities of this tool. Feel free to use and modify them as you see fit.</p>
+    </div>
+    <div class="list">
         <div class="list-entry" *ngFor="let preset of globalPresets" [ngStyle]="{ 'background-image': 'url(assets/' + preset.image + ')'}" (click)="openGlobalPreset(preset)">
             <h3>{{preset.name}}</h3>
+            <span class="blurb">{{preset.blurb}}</span>
         </div>
-    </div> -->
+    </div>
 </div>
 
 <div class="row">
@@ -14,6 +16,6 @@
     <div style="text-align: center;">
         <h2>Coming Soon!</h2>
         <h4>In the future you will be able to create sharable Graphs from here.</h4>
-        <h4>In the meantime check out the <a routerLink="/explore">explore</a> feature</h4>
+        <h4>In the meantime check out the presets above or the <a routerLink="/explore">explore</a> feature</h4>
     </div>
 </div>
