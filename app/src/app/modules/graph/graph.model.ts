@@ -1,5 +1,6 @@
 export class GraphConfigModel{
   showTags:boolean;
+  addRootTag:boolean;
   nodes:NodeOptions;
   links?:LinkOptions;
   dagMode?:DagMode;
@@ -19,7 +20,7 @@ export interface NodeOptions{
 export interface LinkOptions{
   defaultVisibility: Visibility;
   typeVisibility?: {[key:string]:Visibility}
-  colorScheme?:LinkColorScheme;
+  colorScheme?:LinkColorScheme;  
 }
 
 export interface VisualSettings{
@@ -34,7 +35,7 @@ export enum NodeColorScheme{
 }
 
 export enum LinkColorScheme{
-  GROUP, SOURCE, TARGET
+  GROUP = "group", SOURCE ="source", TARGET = "target"
 }
 
 export enum Visibility{

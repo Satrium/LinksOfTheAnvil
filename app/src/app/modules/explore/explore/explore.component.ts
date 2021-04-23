@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { GraphConfig } from '@modules/graph/graph.object';
-import { Observable, from, BehaviorSubject } from 'rxjs';
+import { Observable, from, BehaviorSubject, of, combineLatest } from 'rxjs';
 import { environment } from '@env';
 import { DataService } from '@data/service/data.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { tap, switchMap } from 'rxjs/operators';
+import { tap, switchMap, startWith, map, catchError } from 'rxjs/operators';
 import { GraphData } from '@modules/graph/graph.model';
 import { MatDialog } from '@angular/material/dialog';
 import { OptionsComponent } from './options/options.component';
@@ -34,35 +34,24 @@ export class ExploreComponent implements OnInit {
 
   ngOnInit(): void {
     this.config = new GraphConfig(<any> environment.defaultConfig);
-    this.config$ = new BehaviorSubject(this.config);    
-    this.route.params.pipe(
-      tap(x => this.loading = true),
-      switchMap(x => this.data.getGraph(x?.world).pipe(tap(x => console.log(x)))),
-    ).subscribe(graph => {
-      this.loading = false;
-      if(!this.config.nodes.typeVisibility)this.config.nodes.typeVisibility = {};
-      graph['nodes'].forEach(node => {
-        if(node.group != "tag" && !(node.group in this.config.nodes.typeVisibility)){
-          this.config.nodes.typeVisibility[node.group] = this.config.nodes.defaultVisibility;
-        }
-      });
-      if(!this.config.links.typeVisibility)this.config.links.typeVisibility = {};
-      graph['links'].forEach(link => {
-        if(link.group != "tagged" && !(link.group in this.config.links.typeVisibility)){
-          this.config.links.typeVisibility[link.group] = this.config.links.defaultVisibility;
-        }
-      });
-      this.graphData = {nodes: graph['nodes'], links:graph['links']}
-    });
-  }
-
-  test(){
-    this.config$.next(this.config);
-  }
-
-  private openSnackBar(message: string, action: string=null, duration:number = 2000) {
-    this._snackBar.open(message, action, {
-      duration: duration,
+    this.config$ = new BehaviorSubject(this.config);   
+    
+    combineLatest([this.route.params, this.route.queryParams]).pipe(
+      map(x => ({"params":x[0], "query":x[1]})),
+      tap(x => console.log("Query params", x)),
+      switchMap(query => combineLatest(
+        [
+          this.data.getGraph(query.params?.world).pipe(tap(x => console.log("Graph", x))), 
+          query.query?.preset?
+            this.data.getPreset(query.query?.preset).pipe(tap(console.log, console.error),catchError(x => of(this.config))):
+            of(this.config)
+        ]))
+    ).subscribe(data => {
+      console.log("Test", data);
+      let graph = data[0]; let config = data[1];      
+      this.loading = false;     
+      this.config$.next(new GraphConfig(<any> config)); 
+      this.graphData = {nodes: graph['nodes'], links:graph['links']}      
     });
   }
 }

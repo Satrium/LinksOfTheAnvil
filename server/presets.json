@@ -1,0 +1,14 @@
+[
+    {
+        "id":"default",
+        "name": "Types",
+        "blurb": "Display all articles, their types and connections",
+        "image": "default.png"
+    },{
+        "id":"cluster",
+        "name":"Clusters",
+        "blurb": "Find clusters of related articles in your world",
+        "description":"This presets helps you to find clusters of related articles in your world, and will color them for you. This is helpful if you want to see which areas you have covered and how they interlink with each other",
+        "image": "cluster.png"        
+    }
+]

@@ -3,6 +3,12 @@ const asyncRedis = require("async-redis");
 const r = require('rethinkdb');
 const { WorldAnvilError } = require('./worldanvil');
 
+const presetList = require('./presets.json');
+const presets = {}
+
+presetList.forEach(element => {
+    if(element["id"] !== "default") presets[element['id']] = require(`./presets/${element['id']}.json`)
+});
 
 const regex = /(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}/gi;
 const client = asyncRedis.createClient({host: process.env.REDIS_HOST || "localhost", port: process.env.REDIS_PORT || 6379});
@@ -24,7 +30,6 @@ apiRouter.use(async (req, res, next) => {
 
 apiRouter.get('/auth', (req,res) => {
     res.json(req.user);
-
 });
 
 apiRouter.get('/user/worlds', (req, res) => {
@@ -40,7 +45,7 @@ apiRouter.get('/world/:id', async (req, res) => {
             r.table('worlds').get(req.params.id).run(conn).then(async x => {
                 if(x){
                     if(x.author === req.user.id){
-                        if(new Date().getTime() - new Date(x.last_update).getTime() > 1000) // 5 Minuten
+                        if(new Date().getTime() - new Date(x.last_update).getTime() > 5 * 60 * 1000) // 5 Minuten
                         {
                             let graph = await req.app.get("worldanvil").getAllWorldArticles(req.userToken, req.params.id)
                                 .then(async articles => await updateGraph(x, articles,req.app.get("worldanvil"),req.userToken));
@@ -50,8 +55,6 @@ apiRouter.get('/world/:id', async (req, res) => {
                         }else{
                             return res.json(x);
                         }
-                            
-                        
                     } 
                     else return res.status(403);
                 }else{
@@ -82,6 +85,18 @@ apiRouter.get('/world/:id', async (req, res) => {
             });
         });        
     
+});
+
+apiRouter.get('/preset', async (req, res) => {
+    return res.json(presetList);
+});
+
+apiRouter.get('/preset/:id', async (req, res) => {
+    if(req.params.id in presets){
+        return res.json(presets[req.params.id]);
+    }else{
+        return res.status(404).send();
+    }
 });
 
 apiRouter.get('/world/:id/presets', async (req, res) => {
@@ -141,7 +156,7 @@ async function updateGraph(graph, articles, worldanvil, userToken){
             graph.nodes.push(getNode(dictionary[id]));
             const {links, articleTags} = getConnections(article);
             articleTags.forEach(t => {
-                if(!tags.includes(t))result.nodes.push({"id":x, "name":x, "group":"tag"});
+                if(!tags.includes(t))graph.nodes.push({"id":x, "name":x, "group":"tag"});
             });
             graph.links.push(...links);
         }));

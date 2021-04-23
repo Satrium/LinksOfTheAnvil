@@ -18,7 +18,8 @@ export class DashboardComponent implements OnInit {
   }
 
   openGlobalPreset(preset){
-    this.router.navigate(["/explore"], {queryParams:{preset:preset.id}})
+    if(preset.id === "default")this.router.navigate(["/explore"])
+    else this.router.navigate(["/explore"], {queryParams:{preset:preset.id}})
   }
 
 }
