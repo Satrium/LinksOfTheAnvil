@@ -38,7 +38,7 @@ export class ExploreComponent implements OnInit {
     
     combineLatest([this.route.params, this.route.queryParams]).pipe(
       map(x => ({"params":x[0], "query":x[1]})),
-      tap(x => console.log("Query params", x)),
+      tap(x => this.loading = true),
       switchMap(query => combineLatest(
         [
           this.data.getGraph(query.params?.world).pipe(tap(x => console.log("Graph", x))), 
@@ -51,7 +51,8 @@ export class ExploreComponent implements OnInit {
       let graph = data[0]; let config = data[1];      
       this.loading = false;     
       this.config$.next(new GraphConfig(<any> config)); 
-      this.graphData = {nodes: graph['nodes'], links:graph['links']}      
+      this.graphData = {nodes: graph['nodes'], links:graph['links']}    
+      this.loading = false;  
     });
   }
 }
