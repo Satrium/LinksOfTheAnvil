@@ -37,6 +37,10 @@
             left: 0
             right: 0
             text-align: center
+            padding: 5px
+            a,a:hover,a:active
+                color: white
+                font-weight: bold
 .sidebar.collapsed
     width: 50px    
     .user
@@ -45,6 +49,9 @@
             display: none
         #avatar
             width: 80%
+    .version-info
+        p:nth-child(1)
+            display: none
     .navigation
         ::ng-deep .mat-list-item
             .description
