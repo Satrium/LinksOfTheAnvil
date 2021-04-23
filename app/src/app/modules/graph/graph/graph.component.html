@@ -31,6 +31,13 @@
       <div class="links legend-list" *ngIf="displayLinkLegend">        
         <span class="legend-list-element" *ngFor="let color of linkColors | keyvalue" (click)="focusLinkType(color.key)"><span class="color-box" [style.background]="color.value.hex()"></span>{{color.key}}</span>
       </div>
+    </div>    
+    <div id="controls">
+      <p><b>Leftclick: </b> Rotate</p>
+      <p><b>Rightlick: </b> Pan</p>
+      <p><b>Middleclick/Scrollwheel: </b> Zoom</p>
+      <p><b>Leftclick on Node: </b> Highlight Node</p>
+      <p><b>Rightclick on Node: </b> Open Article</p>
+      <p id="highlight-notice" *ngIf="nodesHiglighted || linksHighlighted">Press ESC to stop highlighting parts of the graph</p>
     </div>
-    <div id="highlight-notice" *ngIf="nodesHiglighted || linksHighlighted">Press ESC to stop highlighting parts of the graph</div>
 </div>
