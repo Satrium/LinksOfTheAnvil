@@ -47,10 +47,11 @@ export class ExploreComponent implements OnInit {
             of(this.config)
         ]))
     ).subscribe(data => {
-      console.log("Test", data);
+      console.log("Test", data);      
       let graph = data[0]; let config = data[1];      
+      this.config = new GraphConfig(<any> config);
       this.loading = false;     
-      this.config$.next(new GraphConfig(<any> config)); 
+      this.config$.next(this.config); 
       this.graphData = {nodes: graph['nodes'], links:graph['links']}    
       this.loading = false;  
     });

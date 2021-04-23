@@ -4,56 +4,55 @@
     <mat-tab-group mat-align-tabs="center" [(selectedIndex)]="selectedTab" dynamicHeight>
       <mat-tab label="General">
         <h3>General Settings</h3>
-        <div>
-          <mat-slide-toggle [(ngModel)]="config.showTags" (change)="this.config$.next(this.config)">
-            Display Tags
-          </mat-slide-toggle>
-        </div>
-        <div>
-          <mat-slide-toggle [(ngModel)]="config.nodes.displayNodesWithNoLinks" (change)="this.config$.next(this.config)">
-            Display Nodes with no links
-          </mat-slide-toggle>
-        </div>
-        <div>
-          <mat-slide-toggle [(ngModel)]="config.nodes.displayDrafts" (change)="this.config$.next(this.config)">
-            Display Drafts
-          </mat-slide-toggle>
-        </div>
-        <div>
-          <mat-slide-toggle [(ngModel)]="config.nodes.displayWip" (change)="this.config$.next(this.config)">
-            Display Wip articles
-          </mat-slide-toggle>
-        </div>
-        <div>
-          <mat-slide-toggle [(ngModel)]="config.nodes.displayPrivate" (change)="this.config$.next(this.config)">
-            Display private articles
-          </mat-slide-toggle>
-        </div>
-        <mat-divider></mat-divider>
+        <div class="row">
+          <div class="column">
+            <mat-slide-toggle [(ngModel)]="config.showTags" (change)="this.config$.next(this.config)">
+              Display Tags
+            </mat-slide-toggle>
+            <mat-slide-toggle [(ngModel)]="config.nodes.displayNodesWithNoLinks" (change)="this.config$.next(this.config)">
+              Display Nodes with no links
+            </mat-slide-toggle>
+            <mat-slide-toggle [(ngModel)]="config.nodes.displayDrafts" (change)="this.config$.next(this.config)">
+              Display Drafts
+            </mat-slide-toggle>
+          </div>      
+          <div class="column">
+            <mat-slide-toggle [(ngModel)]="config.nodes.displayWip" (change)="this.config$.next(this.config)">
+              Display Wip articles
+            </mat-slide-toggle>
+            <mat-slide-toggle [(ngModel)]="config.nodes.displayPrivate" (change)="this.config$.next(this.config)">
+              Display private articles
+            </mat-slide-toggle>
+          </div>
+        </div>       
+        <mat-divider [inset]="true"></mat-divider>
         <h3>Visuals</h3>
-        <div class="slider-list">
-          <div>
-            <mat-slider min="0" max="1" step="0.01" value="0.75" thumbLabel [(ngModel)]="config.visuals.nodeRelSize" (ngModelChange)="this.config$.next(this.config)"></mat-slider>
-            <span> Node Size</span>
+        <div class="row margin-top">
+          <div class="column">
+            <div>
+              <mat-slider min="0" max="1" step="0.01" value="0.75" thumbLabel [(ngModel)]="config.visuals.nodeRelSize" (ngModelChange)="this.config$.next(this.config)"></mat-slider>
+              <span> Node Size</span>
+            </div>
+            <div>
+              <mat-slider min="0" max="1" step="0.01" value="0.6" thumbLabel [(ngModel)]="config.visuals.nodeOpacity" (ngModelChange)="this.config$.next(this.config)"></mat-slider>
+              <span> Node Opacity</span>
+            </div>
           </div>
-          <div>
-            <mat-slider min="0" max="1" step="0.01" value="0.6" thumbLabel [(ngModel)]="config.visuals.nodeOpacity" (ngModelChange)="this.config$.next(this.config)"></mat-slider>
-            <span> Node Opacity</span>
-          </div>
-          <div>
-            <mat-slider min="0" max="1" step="0.01" value="0.7" thumbLabel [(ngModel)]="config.visuals.linkOpacity" (ngModelChange)="this.config$.next(this.config)"></mat-slider>
-            <span> Link Opacity</span>
-          </div>
-          <mat-form-field>
-            <mat-label>Font size</mat-label>
-            <input matNativeControl type="number" [(ngModel)]="config.visuals.textHeight" (ngModelChange)="this.config$.next(this.config)">            
-          </mat-form-field>
+          <div class="column">
+            <div>
+              <mat-slider min="0" max="1" step="0.01" value="0.7" thumbLabel [(ngModel)]="config.visuals.linkOpacity" (ngModelChange)="this.config$.next(this.config)"></mat-slider>
+              <span> Link Opacity</span>
+            </div>
+            <mat-form-field>
+              <mat-label>Font size</mat-label>
+              <input matNativeControl type="number" [(ngModel)]="config.visuals.textHeight" (ngModelChange)="this.config$.next(this.config)">            
+            </mat-form-field>
+          </div>          
         </div>
-        
-       
       </mat-tab>
       <mat-tab label="Articles">
         <div>
+          <h3>General Article Options</h3>
           <mat-form-field>
             <mat-label>Node Coloring</mat-label>
             <mat-select [(ngModel)]="config.nodes.colorScheme" (ngModelChange)="this.config$.next(this.config)">
@@ -63,20 +62,44 @@
           </mat-form-field>
         </div>
         <mat-divider></mat-divider>
-        <mat-list dense>
-          <mat-list-item *ngFor="let key of keys(config.nodes.typeVisibility || {}).sort()">
-              <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.nodes.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
-                  <mat-button-toggle [value]="Visibility.OFF">Off</mat-button-toggle>
-                  <mat-button-toggle [value]="Visibility.HIDDEN">Hidden</mat-button-toggle>
-                  <mat-button-toggle [value]="Visibility.ON">On</mat-button-toggle>
-                </mat-button-toggle-group>
-                <span style="padding-left: 5px">{{key}}</span>
-          </mat-list-item>
-        </mat-list>
+        <h3>Article Types</h3>
+        <div class="explanation">
+          <p>You can toggle the state of various article types below.</p>
+          <p><b>ON: </b> The article will be visible and influence the generation of the graph</p>
+          <p><b>HIDDEN: </b> The article won't be visible, but influence the generation of the graph</p>
+          <p><b>OFF: </b> The article won't be visible and won't influence the generation of the graph</p>
+        </div>
+        <div class="row">
+          <div class="column">
+            <mat-list dense>
+              <mat-list-item *ngFor="let key of keys(config.nodes.typeVisibility || {}, true)">
+                  <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.nodes.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
+                      <mat-button-toggle [value]="Visibility.OFF">Off</mat-button-toggle>
+                      <mat-button-toggle [value]="Visibility.HIDDEN">Hidden</mat-button-toggle>
+                      <mat-button-toggle [value]="Visibility.ON">On</mat-button-toggle>
+                    </mat-button-toggle-group>
+                    <span style="padding-left: 5px">{{key}}</span>
+              </mat-list-item>
+            </mat-list>
+          </div>
+          <div class="column">
+            <mat-list dense>
+              <mat-list-item *ngFor="let key of keys(config.nodes.typeVisibility || {}, false)">
+                  <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.nodes.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
+                      <mat-button-toggle [value]="Visibility.OFF">Off</mat-button-toggle>
+                      <mat-button-toggle [value]="Visibility.HIDDEN">Hidden</mat-button-toggle>
+                      <mat-button-toggle [value]="Visibility.ON">On</mat-button-toggle>
+                    </mat-button-toggle-group>
+                    <span style="padding-left: 5px">{{key}}</span>
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </div>       
 
       </mat-tab>
       <mat-tab label="Links">
         <div>
+          <h3>General Link Options</h3>
           <mat-form-field>
             <mat-label>Link Coloring</mat-label>
             <mat-select [(ngModel)]="config.links.colorScheme" (ngModelChange)="this.config$.next(this.config)">
@@ -86,16 +109,40 @@
             </mat-select>
           </mat-form-field>
           <mat-divider></mat-divider>
-        <mat-list dense>
-          <mat-list-item *ngFor="let key of keys(config.links.typeVisibility || {}).sort()">
-              <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.links.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
-                  <mat-button-toggle [value]="Visibility.OFF">Off</mat-button-toggle>
-                  <mat-button-toggle [value]="Visibility.HIDDEN">Hidden</mat-button-toggle>
-                  <mat-button-toggle [value]="Visibility.ON">On</mat-button-toggle>
-                </mat-button-toggle-group>
-                <span style="padding-left: 5px">{{key}}</span>
-          </mat-list-item>
-        </mat-list>
+          <h3>Link Types</h3>
+          <div class="explanation">
+            <p>You can toggle the state of various link types below.</p>
+            <p><b>ON: </b> The link will be visible and influence the generation of the graph</p>
+            <p><b>HIDDEN: </b> The link won't be visible, but influence the generation of the graph</p>
+            <p><b>OFF: </b> The link won't be visible and won't influence the generation of the graph</p>
+          </div>
+        <div class="row">
+          <div class="column">
+            <mat-list dense>
+              <mat-list-item *ngFor="let key of keys(config.links.typeVisibility || {}, true)">
+                  <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.links.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
+                      <mat-button-toggle [value]="Visibility.OFF">Off</mat-button-toggle>
+                      <mat-button-toggle [value]="Visibility.HIDDEN">Hidden</mat-button-toggle>
+                      <mat-button-toggle [value]="Visibility.ON">On</mat-button-toggle>
+                    </mat-button-toggle-group>
+                    <span style="padding-left: 5px">{{key}}</span>
+              </mat-list-item>
+            </mat-list>
+          </div>
+          <div class="column">
+            <mat-list dense>
+              <mat-list-item *ngFor="let key of keys(config.links.typeVisibility || {}, false)">
+                  <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.links.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
+                      <mat-button-toggle [value]="Visibility.OFF">Off</mat-button-toggle>
+                      <mat-button-toggle [value]="Visibility.HIDDEN">Hidden</mat-button-toggle>
+                      <mat-button-toggle [value]="Visibility.ON">On</mat-button-toggle>
+                    </mat-button-toggle-group>
+                    <span style="padding-left: 5px">{{key}}</span>
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </div>
+        
         </div>
       </mat-tab>
     </mat-tab-group>

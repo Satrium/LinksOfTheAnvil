@@ -23,8 +23,14 @@ export class OptionsComponent{
   constructor() {
   }
 
-  keys(object){
-    return Object.keys(object);
+  keys(object, front:boolean){
+    let keys = Object.keys(object).sort();
+    let halfLength = Math.ceil(keys.length / 2);
+    if(front){
+      return keys.splice(0, halfLength)
+    }else{
+      return keys.splice(halfLength, keys.length);
+    }
   }
 
 }
