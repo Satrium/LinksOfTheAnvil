@@ -5,6 +5,7 @@ import { jLouvain } from 'jlouvain';
 export class GraphConfig extends GraphConfigModel{
 
   showTags:boolean = false;
+  addRootTag:boolean = false;
   nodes:NodeOptions = {
     defaultVisibility: Visibility.ON,
     displayNodesWithNoLinks: true,
@@ -25,9 +26,9 @@ export class GraphConfig extends GraphConfigModel{
   }
 
 
-  constructor(data:GraphConfig){
+  constructor(data:GraphConfig){    
     super();
-    Object.assign(this, data);
+    this.mergeDeep(this, data);
   }
 
   public apply(data:GraphData):GraphData{
@@ -50,7 +51,6 @@ export class GraphConfig extends GraphConfigModel{
 
     let nodes = new Set();
     data.nodes.forEach(x => {
-      delete x["color"];
       if(x.group === "tag"){
         if(this.showTags)x.visibility = Visibility.ON;
         else x.visibility = Visibility.OFF;
@@ -64,11 +64,12 @@ export class GraphConfig extends GraphConfigModel{
       }else{
         x.visibility = this.nodes.defaultVisibility;
       }
+
       if(x.visibility !== Visibility.OFF)nodes.add(x.id);
     });
     data.links.forEach(x => {
       if((!nodes.has((<GraphNode> x.source)?.id || x.source)) || (!nodes.has((<GraphNode> x.target)?.id || x.target)))x.visibility = Visibility.OFF;
-      else if(x.group in (this.links.typeVisibility) || {}) x.visibility = this.links.typeVisibility[x.group];
+      else if(x.group in (this.links?.typeVisibility ?? {})) x.visibility = this.links.typeVisibility[x.group];
       else x.visibility = this.links.defaultVisibility;
     });
     let community = jLouvain()
@@ -76,17 +77,39 @@ export class GraphConfig extends GraphConfigModel{
       .edges(<any>data.links.filter(x => x.visibility != Visibility.OFF && x.group != "tagged")
         .map(x => {return{"source": (<any>x.source).id || x.source, "target":(<any>x.target).id || x.target}}));
     let communityResult = community() as {[key:string]: number};
-    let counts = Object.entries(communityResult).reduce((sums, entry) => {sums[entry[1]] = (sums[entry[1]] || 0) + 1; return sums;}, {});
-    console.log("Community Result", communityResult, counts);
-    for(let key in communityResult){
-      if(counts[communityResult[key]] <= 1){
-        nodeDict[key].cluster = "Orphans"
-      }else{
-        nodeDict[key].cluster = "Cluster " + communityResult[key];
-      }      
-    }
+    if(communityResult){
+      let counts = Object.entries(communityResult).reduce((sums, entry) => {sums[entry[1]] = (sums[entry[1]] || 0) + 1; return sums;}, {});
+      for(let key in communityResult){
+        if(counts[communityResult[key]] <= 1){
+          nodeDict[key].cluster = "Orphans"
+        }else{
+          nodeDict[key].cluster = "Cluster " + communityResult[key];
+        }      
+      }
+    }    
     return data;
   }
 
+  private isObject(item) {
+    return (item && typeof item === 'object' && !Array.isArray(item));
+  }
+
+  private mergeDeep(target, ...sources) {
+    if (!sources.length) return target;
+    const source = sources.shift();
+  
+    if (this.isObject(target) && this.isObject(source)) {
+      for (const key in source) {
+        if (this.isObject(source[key])) {
+          if (!target[key]) Object.assign(target, { [key]: {} });
+          this.mergeDeep(target[key], source[key]);
+        } else {
+          Object.assign(target, { [key]: source[key] });
+        }
+      }
+    }
+  
+    return this.mergeDeep(target, ...sources);
+  }
 }
 

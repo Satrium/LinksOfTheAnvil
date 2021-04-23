@@ -1,0 +1,9 @@
+{
+    "id":"cluster",    
+    "showTags": true,
+    "nodes":{
+        "colorScheme": "cluster"
+    },"links":{
+        "colorScheme": "source"
+    }
+}

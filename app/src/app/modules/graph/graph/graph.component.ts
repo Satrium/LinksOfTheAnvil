@@ -95,30 +95,31 @@ export class GraphComponent implements OnInit, AfterViewInit {
     console.log(graphData);
     if(this.configSubscription)this.configSubscription.unsubscribe();
     this.configSubscription = this.config$.subscribe(x =>{
+      this.config = x;
       this.data = x.apply(graphData)
       console.log("Graph Update", x, graphData);
        // Get distinct groups for coloring
       this.generateColors(this.data.nodes, this.data.links, x.nodes.colorScheme, x.links.colorScheme);
-      console.log("Colors", this.nodeColors, this.linkColors);
       this.data.nodes.forEach(node => node["color"] = this.nodeColors[x.nodes.colorScheme === NodeColorScheme.CLUSTER?node["cluster"]:node["group"]]?.hex())
-      this.config = x;
+      
       this.Graph.graphData({nodes: this.data.nodes.filter(x => x.visibility != Visibility.OFF), links: this.data.links.filter(x => x.visibility != Visibility.OFF)});
       this.Graph
         .dagMode(<any>x.dagMode?.toString() || null)
-        .linkColor(link => this.config.links.colorScheme === LinkColorScheme.GROUP?this.linkColors[link["group"]].hex():
-          (this.config.links.colorScheme === LinkColorScheme.SOURCE?link.source["color"]:link.target["color"])
+        .linkColor(link => { return x.links.colorScheme === LinkColorScheme.GROUP?this.linkColors[link["group"]].hex():
+          // TODO: Please optimize this!
+          (x.links.colorScheme === LinkColorScheme.SOURCE?link.source["color"] || this.data.nodes.find(x => x.id == link.source)["color"]:link.target["color"] || this.data.nodes.find(x => x.id == link.target)["color"])}
         );
       this.searchFilteredNodes = this.searchField.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => typeof value === 'string' ? value : value.label),
-        map(name => name ? this.data.nodes.filter(option => option.name.toLowerCase().includes(name.toLowerCase())).slice(0,20) : this.data.nodes.slice(0, 20))
-      );
+        .pipe(
+          startWith(''),
+          map(value => typeof value === 'string' ? value : value.label),
+          map(name => name ? this.data.nodes.filter(option => option.name.toLowerCase().includes(name.toLowerCase())).slice(0,20) : this.data.nodes.slice(0, 20))
+        );
       // apply visual settings
       if(this.Graph.linkOpacity() != x.visuals?.linkOpacity)this.Graph.linkOpacity(x.visuals?.linkOpacity);
       if(this.Graph.nodeOpacity() != x.visuals?.nodeOpacity)this.Graph.nodeOpacity(x.visuals?.nodeOpacity);
       if(this.Graph.nodeRelSize() != x.visuals?.nodeRelSize)this.Graph.nodeRelSize(x.visuals?.nodeRelSize);
-      if(this.textHeight != x.visuals.textHeight)this.Graph.refresh();
+      this.Graph.refresh();
     });
   }
   
