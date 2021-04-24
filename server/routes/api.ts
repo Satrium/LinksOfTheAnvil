@@ -25,7 +25,7 @@ apiRouter.use(async (req:CustomRequest, res, next) => {
                 let currentUser = await (req.app.get("WA") as WorldAnvil).getCurrentUser(req.userToken);
                 if(currentUser){
                     let user = await (req.app.get("WA") as WorldAnvil).getUser(req.userToken, currentUser.id);
-                    await redis.set("user.", req.userToken, JSON.stringify(user));
+                    await redis.set("user." + req.userToken, JSON.stringify(user));
                     next();
                 }
             }catch(e){
