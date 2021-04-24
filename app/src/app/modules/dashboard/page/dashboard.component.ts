@@ -14,7 +14,7 @@ export class DashboardComponent implements OnInit {
   constructor(private data:DataService, private router:Router) { }
 
   ngOnInit(): void {
-    this.data.getGlobalPresets().subscribe(x => this.globalPresets = x);
+    // this.data.getGlobalPresets().subscribe(x => this.globalPresets = x);
   }
 
   openGlobalPreset(preset){
