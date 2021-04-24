@@ -1,2 +1,5 @@
 app
+server
+shared
 docker-compose.yml
+docker-compose.dev.yml

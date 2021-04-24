@@ -2,11 +2,11 @@
   "name": "anvilofconnections",
   "version": "1.0.0",
   "description": "A Visualization for connections between worldanvil articles",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "start": "node index.js",
     "debug": "node index.js --trace-warning",
-    "build": "cd app && ng build --prod",
+    "build": "tsc --project tsconfig.json --outDir ../dist",
     "serve:angular": "cd app && ng serve",
     "serve": "concurrently \"npm start\" \"npm run serve:angular\""
   },
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.16.1",
+    "@types/node-fetch": "^2.5.10",
     "concurrently": "^5.2.0",
     "tslint": "^5.12.1",
     "typescript": "^3.3.3"

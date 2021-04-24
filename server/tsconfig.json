@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "module": "commonjs",
+      "esModuleInterop": true,
+      "moduleResolution": "node",
+      "target": "es2020",
+      "sourceMap": true,
+      "outDir": "dist",
+      "typeRoots": ["../shared/worldanvil"],
+      "paths": {
+        "@global/*":["../shared/*"], 
+      },
+    },
+    "lib": ["es2015"],
+    "exclude": ["node_modules"]
+  }

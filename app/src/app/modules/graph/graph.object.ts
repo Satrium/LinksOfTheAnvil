@@ -1,6 +1,7 @@
 import { NodeOptions, Visibility, GraphConfigModel, GraphData, GraphNode, NodeColorScheme, LinkOptions, LinkColorScheme, VisualSettings } from './graph.model';
 
 import { jLouvain } from 'jlouvain';
+import { of } from 'rxjs';
 
 export class GraphConfig extends GraphConfigModel{
 
@@ -12,11 +13,13 @@ export class GraphConfig extends GraphConfigModel{
     colorScheme: NodeColorScheme.GROUP,
     displayDrafts: true,
     displayWip: true,
-    displayPrivate: true
+    displayPrivate: true,
+    typeVisibility: {}
   };
   links:LinkOptions = {
     defaultVisibility: Visibility.ON,
-    colorScheme: LinkColorScheme.GROUP
+    colorScheme: LinkColorScheme.GROUP,
+    typeVisibility: {}
   };
   visuals:VisualSettings = {
     nodeRelSize: 0.75,
@@ -62,15 +65,18 @@ export class GraphConfig extends GraphConfigModel{
       else if(x.group in (this.nodes?.typeVisibility ?? {})){
         x.visibility = this.nodes.typeVisibility[x.group];
       }else{
-        x.visibility = this.nodes.defaultVisibility;
+        x.visibility = this.nodes.defaultVisibility;        
+        this.nodes.typeVisibility[x.group] = this.nodes.defaultVisibility;
       }
-
       if(x.visibility !== Visibility.OFF)nodes.add(x.id);
     });
     data.links.forEach(x => {
       if((!nodes.has((<GraphNode> x.source)?.id || x.source)) || (!nodes.has((<GraphNode> x.target)?.id || x.target)))x.visibility = Visibility.OFF;
       else if(x.group in (this.links?.typeVisibility ?? {})) x.visibility = this.links.typeVisibility[x.group];
-      else x.visibility = this.links.defaultVisibility;
+      else{ 
+        x.visibility = this.links.defaultVisibility;
+        this.links.typeVisibility[x.group] = this.links.defaultVisibility;
+      }
     });
     let community = jLouvain()
       .nodes(data.nodes.filter(x => x.visibility != Visibility.OFF && x.group != "tag").map(x => x.id))

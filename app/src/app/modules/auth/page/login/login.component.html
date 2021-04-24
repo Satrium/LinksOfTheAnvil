@@ -8,18 +8,20 @@
         <input matInput type="text" [(ngModel)]="authService.authToken">
         <button mat-raised-button matSuffix color="primary" [disabled]="!authService.authToken" (click)="authenticate()">Login</button>       
     </mat-form-field>
+    <mat-divider></mat-divider>
     <mat-card-footer>
         <p class="help">
             <b>Where do I get an API Key?</b><br>
             <b>1. </b>Log into Worldanvil<br>
-            <b>2. </b>Head over to <a href="https://www.worldanvil.com/api/auth/key">https://www.worldanvil.com/api/auth/key</a><br>
+            <b>2. </b>Head over to <a target="_blank" href="https://www.worldanvil.com/api/auth/key">https://www.worldanvil.com/api/auth/key</a><br>
             <b>3. </b>Add a Title to the "Nickname/Title" field and click "Create new Key"<br>
-            <b>4. </b>Paste the generated Key into the field above and click "Login"<br>
-            <br>                       
-        </p>        
-        <div class="apikey-image" [class.big]="bigimage" (click)="bigimage = !bigimage" ><img  src="/assets/apikey.png"></div> 
-        <div class="version-info help">            
-            <p><b>Need Help?</b><br>Head over to the GitHub issue tracker over <a target="_blank" href="https://github.com/Satrium/LinksOfTheAnvil/issues">here</a> or hit my up on Discord: Satrium#8324</p>
-        </div>
+            <b>4. </b>Paste the generated Key into the field above and click "Login"<br>                                  
+        </p>               
+        <br>
+        <div class="apikey-image" [class.big]="bigimage" (click)="bigimage = !bigimage" ><img  src="/assets/apikey.png"></div>       
+        <mat-divider></mat-divider>
+        <p class="version-info help">            
+            <b>Need Help?</b><br>Head over to the GitHub issue tracker over <a target="_blank" href="https://github.com/Satrium/LinksOfTheAnvil/issues">here</a> or hit my up on Discord: Satrium#8324
+        </p>   
     </mat-card-footer>
 </mat-card-content>
