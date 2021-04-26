@@ -27,6 +27,10 @@ app.get('/', (req, res) => {
 
 app.use("/api", apiRouter);
 
+app.use((req, res) => {
+    res.sendFile(process.cwd()+"/dist/client/index.html");
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Webserver listening on port ${PORT}`)

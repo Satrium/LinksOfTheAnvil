@@ -1,4 +1,7 @@
+import { ElementVisibility } from "./graph.enum";
+
 export interface Graph{
+    worldname?: string;
     author: string;
     id: string;
     version: number;
@@ -9,20 +12,33 @@ export interface Graph{
 }
 
 export interface GraphLink{
-    group: string;
+    type: string;
     label: string;
-    source: string;
-    target: string;
+    source: string | GraphNode;
+    target: string | GraphNode;
+
+    // Display information
+    visibility?: ElementVisibility;
 }
 
 export interface GraphNode{
     id: string;
     name: string;
-    group: string;
-    link?: string;
+    type: string;
+    url?: string;
     tags?: string[];
     draft?: boolean;
     wip?: boolean;
     public?: boolean;
     wordcount?: number;    
+
+    // Display information
+    cluster?: string;
+    x?: number;
+    y?: number;
+    z?: number;
+    links?: any;
+    neighbors?: GraphNode[];
+    visibility?: ElementVisibility;
+    color?: any;
 }

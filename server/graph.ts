@@ -10,7 +10,8 @@ export async function generateGraph(WA:WorldAnvil, userToken:string, user:User, 
     
     // Get all articles
     var articleList = await WA.getAllWorldArticles(userToken, worldId);
-    console.log(`Loading ${articleList.length} articles`);
+    var world = await WA.getWorld(userToken, worldId);
+    console.log(`Loading ${articleList.length} articles for ${world.name}`);
     var articles = await Promise.allSettled(
         articleList.map(async (article) => WA.getArticle(userToken, article.id))
     )
@@ -18,7 +19,7 @@ export async function generateGraph(WA:WorldAnvil, userToken:string, user:User, 
 
     var allTags = new Set<string>();
     var categories = new Set<{id:string, name:string, link:string}>();
-    var graph:Graph = {version:GRAPH_DATA_VERSION,author:user.id,last_update: new Date(),id:worldId,links:[],nodes:[],last_article_update:{}}
+    var graph:Graph = {version:GRAPH_DATA_VERSION,author:user.id,last_update: new Date(),id:worldId,links:[],nodes:[],last_article_update:{}, worldname:world.name}
     for(let result of articles){
         if(result.status === "fulfilled"){
             let article = result.value;
@@ -33,18 +34,18 @@ export async function generateGraph(WA:WorldAnvil, userToken:string, user:User, 
         }        
     }
     allTags.forEach(tag => {
-        graph.nodes.push({"id":tag, "name":tag, "group":"tag"});
+        graph.nodes.push({"id":tag, "name":tag, "type":"tag"});
     });
     var ids = new Set<string>();
     graph.nodes.forEach(x => ids.add(x.id));
-    graph.links = graph.links.filter(x => ids.has(x.target));
+    graph.links = graph.links.filter(x => ids.has(x.target as string));
     return graph;
 }
 
 export async function updateGraph(graph:Graph, WA:WorldAnvil, userToken:string):Promise<Graph>{
     
     let articles = await WA.getAllWorldArticles(userToken, graph.id);
-    let globalTags = graph.nodes.filter(x => x.group === "tag").map(x => x.name);
+    let globalTags = graph.nodes.filter(x => x.type === "tag").map(x => x.name);
 
     let updates = new Set<string>();
     let deleted = new Set();
@@ -65,11 +66,11 @@ export async function updateGraph(graph:Graph, WA:WorldAnvil, userToken:string):
     }
 
     // Add related articles for updates as well
-    graph.links.filter(x => updates.has(x.source) && x.group !== "tagged").forEach(x => updates.add(x.target));
+    graph.links.filter(x => updates.has(x.source as string) && x.type !== "tagged").forEach(x => updates.add(x.target as string));
 
     // Delete nodes that no longer exist, their links and all links of articles that will get updated now
     if(deleted.size > 0)graph.nodes = graph.nodes.filter(x => deleted.has(x.id))
-    graph.links = graph.links.filter(x => !deleted.has(x.source) && !deleted.has(x.target) && !updates.has(x.source));
+    graph.links = graph.links.filter(x => !deleted.has(x.source) && !deleted.has(x.target) && !updates.has(x.source as string));
 
     // Update changed articles
     if(updates.size > 0){
@@ -79,7 +80,7 @@ export async function updateGraph(graph:Graph, WA:WorldAnvil, userToken:string):
                 let article = await WA.getArticle(userToken, id);
                 const {links, tags} = getConnections(article);
                 tags.forEach(t => {
-                    if(!globalTags.includes(t))graph.nodes.push({"id":t, "name":t, "group":"tag"});
+                    if(!globalTags.includes(t))graph.nodes.push({"id":t, "name":t, "type":"tag"});
                 });
                 graph.links.push(...links);
             })
@@ -94,7 +95,7 @@ export async function updateGraph(graph:Graph, WA:WorldAnvil, userToken:string):
             graph.nodes.push(getNodeFromArticle(articleDict[id]));
             const {links, tags} = getConnections(article);
             tags.forEach(t => {
-                if(!globalTags.includes(t))graph.nodes.push({"id":t, "name":t, "group":"tag"});
+                if(!globalTags.includes(t))graph.nodes.push({"id":t, "name":t, "type":"tag"});
             });
             graph.links.push(...links);
         }));
@@ -110,27 +111,27 @@ function getNodeFromArticle(article:Article): GraphNode{
     return {
         id: article.id,
         name: article.title,
-        group: article.template,
+        type: article.template,
         public:article.state == "public", 
         draft:article.is_draft,
         wip:article.is_wip, 
         wordcount:article.wordcount, 
-        link:article.url,
+        url:article.url,
         tags: article.tags?article.tags.split(","):[]
     };
 }
 
 function getConnections(article:Article):{links:GraphLink[], tags:Set<string>}{
-    let result = [];
+    let result:GraphLink[] = [];
     let tags = new Set<string>();
     let connections = [];
     if(article.tags) article.tags.split(",").forEach(tag => {
         tags.add(tag);
-        result.push({"source":article.id, "target":tag, "group":"tagged", "label":"tagged"});
+        result.push({"source":article.id, "target":tag, "type":"tagged", "label":"tagged"});
     });
 
     if(article.category){
-        result.push({"source":article.category.id, "target": article.id, "group":"category", "label":"category"})
+        result.push({"source":article.category.id, "target": article.id, "type":"category", "label":"category"})
     }
     
     if(article.content){
@@ -143,7 +144,7 @@ function getConnections(article:Article):{links:GraphLink[], tags:Set<string>}{
         } 
     }   
     [...new Set(connections)].forEach(connection => {
-        result.push({"source":article.id, "target":connection, "group":"mention", "label":"mention"});
+        result.push({"source":article.id, "target":connection, "type":"mention", "label":"mention"});
     }); 
     if(article.relations){
         for(let [key, value] of Object.entries(article.relations)){    
@@ -151,7 +152,7 @@ function getConnections(article:Article):{links:GraphLink[], tags:Set<string>}{
             if(value.type === 'singular')(value as ArticleRelation).items = ([(value as ArticleRelation).items] as ArticleRelationItem[]);
             for(let item of ((value as ArticleRelation).items as ArticleRelationItem[])){
                 if(item.type === "image")continue;
-                result.push({'source':article.id, "target": item.id, "label":key, "group":key})
+                result.push({'source':article.id, "target": item.id, "label":key, "type":key})
             }
         }
     }

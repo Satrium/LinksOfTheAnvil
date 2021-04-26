@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Graph } from '@global/graph';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +14,9 @@ export class DataService {
     return this.http.get("/api/user/worlds");
   }
 
-  public getGraph(worldId){
+  public getGraph(worldId):Observable<Graph>{
     console.log(worldId);
-    return this.http.get("/api/world/" + worldId);
+    return this.http.get<Graph>("/api/world/" + worldId);
   }
 
   public getGlobalPresets():Observable<Array<any>>{

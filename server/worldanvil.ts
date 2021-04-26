@@ -2,7 +2,7 @@ import { CurrentUser, User, UserWorlds } from '@global/worldanvil/user';
 import { Article} from '@global/worldanvil/article';
 import Bottleneck from 'bottleneck';
 import fetch from 'node-fetch';
-import { WorldArticles } from '@global/worldanvil/world';
+import { World, WorldArticles } from '@global/worldanvil/world';
 
 export class WorldAnvil{
 
@@ -61,6 +61,10 @@ export class WorldAnvil{
         }else{
             return worldArticles.articles.concat((await this.getAllWorldArticles(userToken, worldId,offset + parseInt(worldArticles.limit))));
         }
+    }
+
+    public async getWorld(userToken, worldId):Promise<World>{
+        return this.request(`world/${worldId}`, userToken);
     }
 }
 

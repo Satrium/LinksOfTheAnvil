@@ -1,8 +1,9 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, HostListener, ContentChild, TemplateRef } from '@angular/core';
-import { GraphConfig } from '../graph.object';
+import { GraphConfig } from '@global/graph.object';
 import ForceGraph3D, { ForceGraph3DInstance } from '3d-force-graph';
 import { Observable, Subscription } from 'rxjs';
-import { GraphData, GraphNode, Visibility, LinkColorScheme, NodeColorScheme, GraphLink } from '../graph.model';
+import { Graph, GraphNode, GraphLink } from '@global/graph';
+import { ElementVisibility, LinkColorScheme, NodeColorScheme } from '@global/graph.enum';
 import distinctColors from 'distinct-colors';
 import SpriteText from 'three-spritetext';
 import { Sprite, Vector3 } from 'three';
@@ -30,7 +31,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
   private config: GraphConfig;
   private Graph: ForceGraph3DInstance;
 
-  private data: GraphData;
+  private data: Graph;
 
   private configSubscription:Subscription;
 
@@ -60,17 +61,17 @@ export class GraphComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.Graph = ForceGraph3D({controlType: "orbit"})(this.graphContainer.nativeElement)
       .graphData({nodes:[], links:[]})
-      .nodeVisibility(node => (<GraphNode>node).visibility != Visibility.HIDDEN)
-      .linkVisibility(link => (<GraphLink>link).visibility != Visibility.HIDDEN)
-      .nodeColor(node => this.nodesHiglighted && !this.highlightNodes.has(node)?"#242424":node["color"])
-      .linkWidth((link:any) => this.getLinkWidth(link))
+      .nodeVisibility((node:GraphNode) => node.visibility != ElementVisibility.HIDDEN)
+      .linkVisibility((link:GraphLink) => (<GraphLink>link).visibility != ElementVisibility.HIDDEN)
+      .nodeColor((node:GraphNode) => this.nodesHiglighted && !this.highlightNodes.has(node)?"#242424":node.color)
+      .linkWidth((link:GraphLink) => this.getLinkWidth(link))
       .enableNodeDrag(false)
       .nodeThreeObjectExtend(true)
-      .nodeVal(node => (this.nodesHiglighted && !this.highlightNodes.has(node)?node["wordcount"]/4:node["wordcount"]) || 50)
-      .linkDirectionalArrowLength(link => link["bidirectional"]?0:3.5)
+      .nodeVal((node:GraphNode) => (this.nodesHiglighted && !this.highlightNodes.has(node)?node.wordcount/4:node.wordcount) || 50)
+      .linkDirectionalArrowLength((link:GraphLink) => link["bidirectional"]?0:3.5)
       .linkDirectionalArrowRelPos(1)     
-      .onNodeRightClick(node => {if(node.hasOwnProperty("link"))window.open(node["link"], "_blank");}) 
-      .nodeThreeObject((node:any)=>{
+      .onNodeRightClick((node:GraphNode) => {if(node.url)window.open(node.url, "_blank");}) 
+      .nodeThreeObject((node:GraphNode)=>{
         const obj = new SpriteText(node.name);
         obj.position.add(new Vector3(0, 8, 0));
         obj.textHeight = this.config?.visuals?.textHeight || 4;        
@@ -84,14 +85,14 @@ export class GraphComponent implements OnInit, AfterViewInit {
           obj.color = "#808080"
         }
         return obj;
-      }).onNodeClick((node:any) => {
+      }).onNodeClick((node:GraphNode) => {
         this.focusNode(node);
       });
-      (this.Graph.d3Force('link') as any).distance(link => link.group === "mention" ? 150: 40).d3Force('charge').strength(-120);
+      (this.Graph.d3Force('link') as any).distance((link:GraphLink) => link.type === "mention" ? 150: 40).d3Force('charge').strength(-120);
   }
 
   @Input()
-  public set graphData(graphData:GraphData){
+  public set graphData(graphData:Graph){
     console.log(graphData);
     if(this.configSubscription)this.configSubscription.unsubscribe();
     this.configSubscription = this.config$.subscribe(x =>{
@@ -100,14 +101,14 @@ export class GraphComponent implements OnInit, AfterViewInit {
       console.log("Graph Update", x, graphData);
        // Get distinct groups for coloring
       this.generateColors(this.data.nodes, this.data.links, x.nodes.colorScheme, x.links.colorScheme);
-      this.data.nodes.forEach(node => node["color"] = this.nodeColors[x.nodes.colorScheme === NodeColorScheme.CLUSTER?node["cluster"]:node["group"]]?.hex())
+      this.data.nodes.forEach((node:GraphNode) => node.color = this.nodeColors[x.nodes.colorScheme === NodeColorScheme.CLUSTER?node.cluster:node.type]?.hex())
       
-      this.Graph.graphData({nodes: this.data.nodes.filter(x => x.visibility != Visibility.OFF), links: this.data.links.filter(x => x.visibility != Visibility.OFF)});
+      this.Graph.graphData({nodes: this.data.nodes.filter(x => x.visibility != ElementVisibility.OFF), links: this.data.links.filter(x => x.visibility != ElementVisibility.OFF)});
       this.Graph
         .dagMode(<any>x.dagMode?.toString() || null)
-        .linkColor(link => { return x.links.colorScheme === LinkColorScheme.GROUP?this.linkColors[link["group"]].hex():
+        .linkColor((link:GraphLink) => { return x.links.colorScheme === LinkColorScheme.GROUP?this.linkColors[link.type].hex():
           // TODO: Please optimize this!
-          (x.links.colorScheme === LinkColorScheme.SOURCE?link.source["color"] || this.data.nodes.find(x => x.id == link.source)["color"]:link.target["color"] || this.data.nodes.find(x => x.id == link.target)["color"])}
+          (x.links.colorScheme === LinkColorScheme.SOURCE?(link.source as GraphNode).color || (this.data.nodes.find(x => x.id == link.source) as GraphNode).color:(link.target as GraphNode).color || (this.data.nodes.find(x => x.id == link.target) as GraphNode).color)}
         );
       this.searchFilteredNodes = this.searchField.valueChanges
         .pipe(
@@ -159,7 +160,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     
   }
 
-  focusNodeType(type){
+  focusNodeType(type:string){
     this.highlightLinks.clear();
     this.highlightNodes.clear();
     this.linksHighlighted = true;
@@ -169,18 +170,18 @@ export class GraphComponent implements OnInit, AfterViewInit {
       this.data.nodes.filter(x => x.cluster === type).forEach(node =>  this.highlightNodes.add(node));
       this.data.links.filter(x => this.highlightNodes.has(x.source)).forEach(link => this.highlightLinks.add(link));
     }else{
-      this.data.nodes.filter(x => x.group === type).forEach(node =>  this.highlightNodes.add(node));
+      this.data.nodes.filter(x => x.type === type).forEach(node =>  this.highlightNodes.add(node));
     }
     this.Graph.refresh();
   }
 
-  focusLinkType(type){
+  focusLinkType(type:string){
     this.highlightLinks.clear();
     this.highlightNodes.clear();
     this.linksHighlighted = true;
     this.nodesHiglighted = true;
     this.nodeSelected = true;
-    this.data.links.filter(x => x.group === type).forEach(link => {
+    this.data.links.filter(x => x.type === type).forEach(link => {
       this.highlightNodes.add(link.source);
       this.highlightNodes.add(link.target);
       this.highlightLinks.add(link);
@@ -193,7 +194,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     this.highlightNodes.clear();
     this.linksHighlighted = true;
     this.nodesHiglighted = true;
-    this.data.nodes.filter(node => node["wordcount"] <= 50).forEach(link => {
+    this.data.nodes.filter(node => node.wordcount <= 50).forEach(link => {
       this.highlightNodes.add(link);
     });
     this.Graph.refresh();
@@ -221,11 +222,11 @@ export class GraphComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private generateColors(nodes, links, nodeScheme:NodeColorScheme, linkScheme:LinkColorScheme){
+  private generateColors(nodes:GraphNode[], links:GraphLink[], nodeScheme:NodeColorScheme, linkScheme:LinkColorScheme){
     // Nodes
     let nodeGroups = new Set();    
     this.nodeColors = {}
-    nodes.forEach(node => nodeGroups.add(nodeScheme === NodeColorScheme.GROUP?node["group"]:node["cluster"]));
+    nodes.forEach(node => nodeGroups.add(nodeScheme === NodeColorScheme.GROUP?node.type:node.cluster));
     nodeGroups.delete(undefined);
     let colors = distinctColors({count: nodeGroups.size, chromaMin: 20, lightMin: 20});
     let counter = 0;
@@ -237,7 +238,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     //Links
     let linkGroups = new Set();
     this.linkColors = {}
-    links.forEach(link => linkGroups.add(link["group"]));
+    links.forEach(link => linkGroups.add(link.type));
     linkGroups.delete(undefined);
     colors = distinctColors({count: linkGroups.size, chromaMin: 20, lightMin: 20});
     counter = 0;
@@ -249,7 +250,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     console.log(nodeGroups, this.nodeColors, linkGroups, this.linkColors);
   }
 
-  private getLinkWidth(link){
+  private getLinkWidth(link:GraphLink){
     var width = 1;
     if(this.linksHighlighted){
       if(this.highlightLinks.has(link)){
@@ -258,7 +259,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
         width = 0.1;
       }
     }
-    return width / (link.group === "mention"?2:1);
+    return width / (link.type === "mention"?2:1);
   }
 
   searchBarDisplay(node): string {
