@@ -1,4 +1,5 @@
 import Bottleneck from 'bottleneck';
+import { connectDatabase } from './database';
 import express from 'express';
 import { apiRouter } from './routes/api';
 import { WorldAnvil } from './worldanvil';
@@ -32,6 +33,8 @@ app.use((req, res) => {
 });
 
 const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Webserver listening on port ${PORT}`)
+connectDatabase(() => {
+    app.listen(PORT, () => {
+        console.log(`Webserver listening on port ${PORT}`)
+    });
 });
