@@ -7,7 +7,6 @@
       "target": "es2020",
       "sourceMap": true,
       "outDir": "dist",
-      "typeRoots": ["../shared/worldanvil"],
       "paths": {
         "@global/*":["../shared/*"], 
       },

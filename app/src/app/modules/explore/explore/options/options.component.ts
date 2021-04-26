@@ -1,8 +1,8 @@
 import { Component, OnInit, Inject, Input } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { GraphConfig } from '@modules/graph/graph.object';
-import { NodeColorScheme, LinkColorScheme, Visibility } from '@modules/graph/graph.model';
+import { GraphConfig } from '@global/graph.object';
+import { NodeColorScheme, LinkColorScheme, ElementVisibility } from '@global/graph.enum';
 
 @Component({
   selector: 'app-graph-options',
@@ -13,7 +13,7 @@ export class OptionsComponent{
 
   NodeColorScheme = NodeColorScheme
   LinkColorScheme = LinkColorScheme
-  Visibility = Visibility
+  ElementVisibility = ElementVisibility
 
   @Input() config$: BehaviorSubject<GraphConfig>;
   @Input() config: GraphConfig;

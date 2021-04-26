@@ -1,12 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { GraphConfig } from '@modules/graph/graph.object';
+import { GraphConfig } from '@global/graph.object';
 import { Observable, from, BehaviorSubject, of, combineLatest } from 'rxjs';
 import { environment } from '@env';
 import { DataService } from '@data/service/data.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { tap, switchMap, startWith, map, catchError } from 'rxjs/operators';
-import { GraphData } from '@modules/graph/graph.model';
+import { Graph } from '@global/graph';
 import { MatDialog } from '@angular/material/dialog';
 import { OptionsComponent } from './options/options.component';
 
@@ -27,7 +27,7 @@ export class ExploreComponent implements OnInit {
 
   loading = false;
 
-  graphData:GraphData;
+  graphData:Graph;
 
   constructor(private data:DataService, private route: ActivatedRoute,
     private _snackBar: MatSnackBar) {}
@@ -52,7 +52,7 @@ export class ExploreComponent implements OnInit {
       this.config = new GraphConfig(<any> config);
       this.loading = false;     
       this.config$.next(this.config); 
-      this.graphData = {nodes: graph['nodes'], links:graph['links']}    
+      this.graphData = graph;  
       this.loading = false;  
     });
   }

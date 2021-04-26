@@ -74,9 +74,9 @@
             <mat-list dense>
               <mat-list-item *ngFor="let key of keys(config.nodes.typeVisibility || {}, true)">
                   <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.nodes.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
-                      <mat-button-toggle [value]="Visibility.OFF">Off</mat-button-toggle>
-                      <mat-button-toggle [value]="Visibility.HIDDEN">Hidden</mat-button-toggle>
-                      <mat-button-toggle [value]="Visibility.ON">On</mat-button-toggle>
+                      <mat-button-toggle [value]="ElementVisibility.OFF">Off</mat-button-toggle>
+                      <mat-button-toggle [value]="ElementVisibility.HIDDEN">Hidden</mat-button-toggle>
+                      <mat-button-toggle [value]="ElementVisibility.ON">On</mat-button-toggle>
                     </mat-button-toggle-group>
                     <span style="padding-left: 5px">{{key}}</span>
               </mat-list-item>
@@ -86,9 +86,9 @@
             <mat-list dense>
               <mat-list-item *ngFor="let key of keys(config.nodes.typeVisibility || {}, false)">
                   <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.nodes.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
-                      <mat-button-toggle [value]="Visibility.OFF">Off</mat-button-toggle>
-                      <mat-button-toggle [value]="Visibility.HIDDEN">Hidden</mat-button-toggle>
-                      <mat-button-toggle [value]="Visibility.ON">On</mat-button-toggle>
+                      <mat-button-toggle [value]="ElementVisibility.OFF">Off</mat-button-toggle>
+                      <mat-button-toggle [value]="ElementVisibility.HIDDEN">Hidden</mat-button-toggle>
+                      <mat-button-toggle [value]="ElementVisibility.ON">On</mat-button-toggle>
                     </mat-button-toggle-group>
                     <span style="padding-left: 5px">{{key}}</span>
               </mat-list-item>
@@ -121,9 +121,9 @@
             <mat-list dense>
               <mat-list-item *ngFor="let key of keys(config.links.typeVisibility || {}, true)">
                   <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.links.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
-                      <mat-button-toggle [value]="Visibility.OFF">Off</mat-button-toggle>
-                      <mat-button-toggle [value]="Visibility.HIDDEN">Hidden</mat-button-toggle>
-                      <mat-button-toggle [value]="Visibility.ON">On</mat-button-toggle>
+                      <mat-button-toggle [value]="ElementVisibility.OFF">Off</mat-button-toggle>
+                      <mat-button-toggle [value]="ElementVisibility.HIDDEN">Hidden</mat-button-toggle>
+                      <mat-button-toggle [value]="ElementVisibility.ON">On</mat-button-toggle>
                     </mat-button-toggle-group>
                     <span style="padding-left: 5px">{{key}}</span>
               </mat-list-item>
@@ -133,9 +133,9 @@
             <mat-list dense>
               <mat-list-item *ngFor="let key of keys(config.links.typeVisibility || {}, false)">
                   <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.links.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
-                      <mat-button-toggle [value]="Visibility.OFF">Off</mat-button-toggle>
-                      <mat-button-toggle [value]="Visibility.HIDDEN">Hidden</mat-button-toggle>
-                      <mat-button-toggle [value]="Visibility.ON">On</mat-button-toggle>
+                      <mat-button-toggle [value]="ElementVisibility.OFF">Off</mat-button-toggle>
+                      <mat-button-toggle [value]="ElementVisibility.HIDDEN">Hidden</mat-button-toggle>
+                      <mat-button-toggle [value]="ElementVisibility.ON">On</mat-button-toggle>
                     </mat-button-toggle-group>
                     <span style="padding-left: 5px">{{key}}</span>
               </mat-list-item>
