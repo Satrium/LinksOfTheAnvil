@@ -33,8 +33,12 @@ app.use((req, res) => {
 });
 
 const PORT = 3000;
-connectDatabase(() => {
-    app.listen(PORT, () => {
-        console.log(`Webserver listening on port ${PORT}`)
-    });
+connectDatabase().then(x => {
+    if(x){
+        app.listen(PORT, () => {
+            console.log(`Webserver listening on port ${PORT}`)
+        });
+    }else{
+        console.error("Could not connect to database");
+    }
 });

@@ -2,83 +2,41 @@
   
 import * as r from 'rethinkdb';
 
+const TABLES = ["worlds", "presets"];
 
-let firstTry:Date = null
-let retried = false;
-export function connectDatabase(callback){
-    if(firstTry === null)firstTry = new Date();
-    try{
-        r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"}, 
-        (err, conn) => 
-        {
-            if(err){
-                console.error("Could not open a connection to the database");
-                if(+(new Date()) - +firstTry < 1000 * 30){
-                    console.error("Retrying");
-                    setTimeout(() => connectDatabase(callback), 200);
+export async function connectDatabase():Promise<boolean>{
+    let date = new Date();
+    // Try to connect to the database for 30 seconds
+    while(+(new Date()) - +date < 1000 * 30){
+        try{
+            let con = await r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015});
+            const db = process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil";
+            let tables = [];
+            try{
+                tables = await r.db(db).tableList().run(con);
+            }catch(e){
+                if(e.msg.includes("Database `" + db + "` does not exist.")){
+                    console.log(`Database ${db} does not exist. Creating it.`);
+                    await r.dbCreate(db).run(con);
                 }else{
-                    console.error("Retried for over 30s, the database is down. Exiting");
-                    console.error(err.message);
-                    process.exit(1);
+                    console.error("RethinkDB Error2", e);
                 }
-            }else{               
-                try{
-                    onStartup(err, conn, callback);
-                }catch(e){
-                    if(+(new Date()) - +firstTry < 1000 * 30){
-                        console.error("Retrying");
-                        setTimeout(() => connectDatabase(callback), 1000);
-                    }else{
-                        console.error("Retried for over 30s, the database is down. Exiting");
-                        console.error(err.message);
-                        process.exit(1);
-                    }
+            }   
+            for(let table of TABLES){
+                if(!tables.includes(table)){
+                    console.log(`Table ${table} does not exist. Creating it`);
+                    await r.db(db).tableCreate(table).run(con);
                 }
             }
-        }            
-        );
-    }catch{
-
-    }   
+            return true;
+        }catch(e){
+            console.error("RethinkDB Error", e.msg, e);
+        }
+        await sleep(500);
+    }
+    return false;
 }
 
-function onStartup(err, conn, callback){
-    if (err) {
-        console.error("Could not open a connection to initialize the database");
-        console.error(err.message);
-        process.exit(1);
-    }
-
-    r.table('worlds').run(conn).then((err, result) => {
-        console.log("Database is initialized, starting web server");
-        callback();
-    }).error(err => {
-        if(!err.message.includes("does not exist")){
-            if(+(new Date()) - +firstTry < 1000 * 30){
-                console.error("Retrying");
-                setTimeout(() => connectDatabase(callback), 1000);
-            }else{
-                console.error("Retried for over 30s, the database is down. Exiting");
-                console.error(err.message);
-                process.exit(1);
-            }
-            return;
-        }
-        console.log("Initializing Database");
-        r.dbCreate("linksOfTheAnvil").run(conn).finally(() => {
-            r.tableCreate("presets").run(conn);
-            return r.tableCreate("worlds").run(conn);
-        }).then(result => {
-            console.log("Database is initialized, starting web server");
-            callback();
-        }).error(err => {
-            if(err){
-                console.error("Error while initializing database");
-                console.error(err);
-                process.exit(1);
-            }
-            console.log("Database is initialized, starting web server");
-            callback();
-        });
-    });
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
