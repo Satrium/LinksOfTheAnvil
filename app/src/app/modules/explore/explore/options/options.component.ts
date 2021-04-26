@@ -7,13 +7,13 @@ import { NodeColorScheme, LinkColorScheme, ElementVisibility } from '@global/gra
 @Component({
   selector: 'app-graph-options',
   templateUrl: './options.component.html',
-  styleUrls: ['./options.component.sass']
+  styleUrls: ['./options.component.sass'],
 })
 export class OptionsComponent{
 
-  NodeColorScheme = NodeColorScheme
-  LinkColorScheme = LinkColorScheme
-  ElementVisibility = ElementVisibility
+  NodeColorScheme = NodeColorScheme;
+  LinkColorScheme = LinkColorScheme;
+  ElementVisibility = ElementVisibility;
 
   @Input() config$: BehaviorSubject<GraphConfig>;
   @Input() config: GraphConfig;

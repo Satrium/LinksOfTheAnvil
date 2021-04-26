@@ -1,12 +1,14 @@
 import { DagMode, ElementVisibility, LinkColorScheme, NodeColorScheme } from "./graph.enum";
 
+
 export class GraphConfigModel {
+    id?: string;
     showTags:boolean;
     addRootTag:boolean;
     nodes:NodeOptions;
     links?:LinkOptions;
     dagMode?:DagMode;
-    visuals: VisualSettings;
+    visuals?: VisualSettings;
 }
 
 export interface NodeOptions{
