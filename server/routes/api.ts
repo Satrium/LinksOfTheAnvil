@@ -5,6 +5,10 @@ import * as asyncRedis from 'async-redis';
 import * as r from 'rethinkdb';
 import { WorldAnvil } from '../worldanvil';
 import { generateGraph, updateGraph } from '../graph';
+import { GraphConfigModel } from '@global/graph.config';
+import { ElementVisibility, LinkColorScheme, NodeColorScheme } from '@global/graph.enum';
+import { PRESETS } from './presets';
+
 
 export const apiRouter = Router();
 const redis = asyncRedis.createClient({host: process.env.REDIS_HOST || "localhost", port: process.env.REDIS_PORT || 6379});
@@ -13,7 +17,7 @@ const DATA_VERSION = 2;
 
 export type CustomRequest = Request & {userToken: string; user: User;}
 
-apiRouter.use(async (req:CustomRequest, res, next) => {
+const auth = async (req:CustomRequest, res, next) => {
     if(req.header("x-auth-token")){
         req.userToken = req.header("x-auth-token");
         let cache = await redis.get("user." + req.userToken);
@@ -37,18 +41,18 @@ apiRouter.use(async (req:CustomRequest, res, next) => {
     }else{
         return res.status(401);
     }
-});
+}
 
-apiRouter.get('/auth', (req:CustomRequest,res) => {
+apiRouter.get('/auth', auth, (req:CustomRequest,res) => {
     res.json(req.user);
 });
 
-apiRouter.get('/user/worlds', async (req:CustomRequest, res) => {
+apiRouter.get('/user/worlds', auth, async (req:CustomRequest, res) => {
     let worlds = await (req.app.get("WA") as WorldAnvil).getUserWorlds(req.userToken, req.user.id);
     return res.json(worlds);
 });
 
-apiRouter.get('/world/:id', async (req:CustomRequest, res) => {
+apiRouter.get('/world/:id', auth, async (req:CustomRequest, res) => {
     let con = await r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"});
     let graph = await r.table("worlds").get(req.params.id).run(con) as Graph;
     if(graph){
@@ -73,5 +77,19 @@ apiRouter.get('/world/:id', async (req:CustomRequest, res) => {
         graph = await generateGraph(req.app.get("WA") as WorldAnvil, req.userToken,req.user,req.params.id);
         await r.table('worlds').insert(graph).run(con);
         res.json(graph);        
+    }
+});
+
+/** Global Presets */
+
+apiRouter.get("/preset", (req, res) => {
+    return res.json(Object.values(PRESETS).map(x => { const {config, ...value} = x; return value}));
+});
+
+apiRouter.get("/preset/:id", (req, res) => {
+    if(PRESETS[req.params.id]){
+        return res.json(PRESETS[req.params.id].config);
+    }else{
+        return res.status(404).send();
     }
 });

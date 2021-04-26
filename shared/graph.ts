@@ -1,4 +1,4 @@
-import { ElementVisibility } from "./graph.enum";
+import { ElementVisibility } from './graph.enum';
 
 export interface Graph{
     worldname?: string;

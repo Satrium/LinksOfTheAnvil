@@ -4,13 +4,18 @@
       "module": "commonjs",
       "esModuleInterop": true,
       "moduleResolution": "node",
+      "declaration": false,
+      "downlevelIteration": true,
+      "experimentalDecorators": true,
+      "resolveJsonModule": true,
       "target": "es2020",
       "sourceMap": true,
       "outDir": "dist",
+      "importHelpers": true,
       "paths": {
         "@global/*":["../shared/*"], 
       },
     },
-    "lib": ["es2015"],
+    "lib": ["es2018"],
     "exclude": ["node_modules"]
   }

@@ -18,12 +18,16 @@ export async function generateGraph(WA:WorldAnvil, userToken:string, user:User, 
     console.log("Loaded articles");
 
     var allTags = new Set<string>();
-    var categories = new Set<{id:string, name:string, link:string}>();
+    // var categories = new Set<{id:string, name:string, link:string}>();
     var graph:Graph = {version:GRAPH_DATA_VERSION,author:user.id,last_update: new Date(),id:worldId,links:[],nodes:[],last_article_update:{}, worldname:world.name}
     for(let result of articles){
         if(result.status === "fulfilled"){
             let article = result.value;
-            if(article.category) categories.add({id:article.category.id,name:article.category.title, link:article.category.url})
+            if(!article){
+                console.error(`Could not load article because it's null`);
+                continue;
+            };
+            // if(article.category) categories.add({id:article.category.id,name:article.category.title, link:article.category.url})
             graph.nodes.push(getNodeFromArticle(article));
             graph.last_article_update[article.id] = article.update_date?.date || article.last_update?.date;
             const {links, tags} = getConnections(article);
@@ -91,6 +95,8 @@ export async function updateGraph(graph:Graph, WA:WorldAnvil, userToken:string):
     if(Object.keys(articleDict).length > 0){
         await Promise.allSettled(Object.keys(articleDict).map(async id => {
             let article = await WA.getArticle(userToken, id);
+            // If there is a private article by another author, it will return empty. This might be a bug in Aragorn
+            if(!article)return;
             graph.last_article_update[id] = articleDict[id].update_date?.date || articleDict[id].last_update?.date;
             graph.nodes.push(getNodeFromArticle(articleDict[id]));
             const {links, tags} = getConnections(article);
