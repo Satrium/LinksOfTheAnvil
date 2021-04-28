@@ -6,6 +6,8 @@ import { Preset } from '@global/graph.config';
 import { map } from 'rxjs/operators';
 import { World } from '@global/worldanvil/world';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { SelectionComponent } from '@shared/components/selection/selection.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,7 +28,7 @@ export class DashboardComponent implements OnInit {
 
   displayedColumns: string[] = ['owner', 'name', 'description', 'actions'];
 
-  constructor(private data:DataService, private router:Router, private _snackBar: MatSnackBar) { }
+  constructor(private data:DataService, private router:Router, private _snackBar: MatSnackBar,public dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.worlds$ = this.data.getWorlds();
@@ -46,6 +48,14 @@ export class DashboardComponent implements OnInit {
     }, err => {
       this._snackBar.open(`Deletion of preset ${preset.name} failed`,null, {duration: 5000, panelClass:'panel-error'});
       this.deletionPresetSelected = null
+    });
+  }
+
+  openSelection(world, preset){
+    const dialogRef = this.dialog.open(SelectionComponent, {data:{world, preset}, minWidth:"50vw"});
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+      this.router.navigate(["explore", result.world.id], {queryParams:{preset:result.preset.id}});
     });
   }
 }

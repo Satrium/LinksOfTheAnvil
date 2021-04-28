@@ -11,7 +11,7 @@ export const PRESETS:{[key:string]:Preset} = {
         description: "Find clusters of related articles in your world",
         config: {
             name: "cluster",            
-            addRootTag: true,
+            addRootTag: false,
             showTags: true,
             nodes: {
                 colorScheme: NodeColorScheme.CLUSTER,

@@ -135,7 +135,7 @@ apiRouter.delete("/preset/:id", auth, async (req:CustomRequest, res) => {
 
 apiRouter.get("/preset/:id", auth, async (req:CustomRequest, res) => {
     if(PRESETS[req.params.id]){
-        return res.json(PRESETS[req.params.id].config);
+        return res.json(PRESETS[req.params.id]);
     }else{
         let con = await r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"});
         let preset = await r.table("presets").get(req.params.id).run(con) as GraphConfigModel;

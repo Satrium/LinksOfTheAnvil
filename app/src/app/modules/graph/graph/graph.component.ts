@@ -98,7 +98,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
     //this.Graph.controls()["enableRotate"] = false;
     if(this.configSubscription)this.configSubscription.unsubscribe();
     this.configSubscription = this.config$.subscribe(x =>{
-      console.log("Controls", this.Graph.controls());
       switch(x.visuals?.displayMode){
         case DisplayMode.TWO_DIMENSIONS:
           this.Graph.controls()["enableRotate"] = false;

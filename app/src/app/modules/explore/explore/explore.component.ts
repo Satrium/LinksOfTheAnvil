@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { GraphConfig } from '@global/graph.object';
-import { Observable, from, BehaviorSubject, of, combineLatest } from 'rxjs';
+import { Observable, from, BehaviorSubject, of, combineLatest, ReplaySubject } from 'rxjs';
 import { environment } from '@env';
 import { DataService } from '@data/service/data.service';
 import { ActivatedRoute } from '@angular/router';
@@ -21,7 +21,7 @@ export class ExploreComponent implements OnInit {
   isConfigOpen = false;
 
   preset: Preset;
-  config$: BehaviorSubject<GraphConfig>;
+  config$: ReplaySubject<GraphConfig>;
 
   @ViewChild('graph') graph;
   @ViewChild('options') options:OptionsComponent;
@@ -34,7 +34,7 @@ export class ExploreComponent implements OnInit {
     private _snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
-    this.config$ = new BehaviorSubject(new GraphConfig(<any> environment.defaultConfig));   
+    this.config$ = new ReplaySubject(1);   
     
     combineLatest([this.route.params, this.route.queryParams]).pipe(
       map(x => ({"params":x[0], "query":x[1]})),
@@ -46,8 +46,7 @@ export class ExploreComponent implements OnInit {
             this.data.getPreset(query.query?.preset).pipe(tap(console.log, console.error),catchError(x => of(null))):
             of(null)
         ]))
-    ).subscribe(data => {
-      console.log("Test", data);      
+    ).subscribe(data => { 
       let graph = data[0]; let preset = data[1] as Preset;      
       if(preset){
         this.preset = preset;
@@ -59,7 +58,6 @@ export class ExploreComponent implements OnInit {
           config: new GraphConfig(<any> environment.defaultConfig)
         }
       }
-      this.loading = false;     
       this.config$.next(this.preset.config as GraphConfig); 
       this.graphData = graph;  
       this.loading = false;  

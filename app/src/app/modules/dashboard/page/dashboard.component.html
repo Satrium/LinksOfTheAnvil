@@ -4,7 +4,7 @@
         <div *ngFor="let world of worlds.worlds" class="world">
             <h2>{{world.name}}</h2>
             <div>
-                <button mat-raised-button color="primary">Open Graph</button>
+                <button mat-icon-button color="primary" matTooltip="Show Graph" (click)="openSelection(world, null)"><mat-icon>launch</mat-icon></button>     
             </div>
         </div>
     </div>
@@ -55,7 +55,7 @@
                         *ngIf="element.owner !== 'global' && deletionPresetSelected === element.id">
                         <mat-icon>close</mat-icon>
                     </button>
-                    <button mat-icon-button color="primary" matTooltip="Launch Preset"><mat-icon>launch</mat-icon></button>                    
+                    <button mat-icon-button color="primary" matTooltip="Launch Preset" (click)="openSelection(null, element)"><mat-icon>launch</mat-icon></button>                    
                 </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
