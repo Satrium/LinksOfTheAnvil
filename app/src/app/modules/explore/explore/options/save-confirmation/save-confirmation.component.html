@@ -1,0 +1,9 @@
+<h1 mat-dialog-title>{{data.name}}</h1>
+<div mat-dialog-content>
+  <p>What's your favorite animal?</p>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button color="accent" [mat-dialog-close]="false">Create New</button>
+  <button *ngIf="data.id && ! (data.owner === 'global') && !(data.id === 'default')" mat-raised-button color="primary" [mat-dialog-close]="true" cdkFocusInitial>Overwrite</button>
+  <button mat-raised-button [mat-dialog-close]="undefined" cdkFocusInitial>Abort</button>
+</div>

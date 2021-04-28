@@ -99,11 +99,10 @@ apiRouter.post("/preset", auth, async (req:CustomRequest, res) => {
         preset.owner = req.user.id;
         preset.id = uuidv4();
         await r.table("presets").insert(preset).run(con);
-        return res.status(201).send();
+        return res.status(201).json(preset).send();
     }else{
         return res.status(400).send();
     }
-    // TODO: Limit amount of presets!
 });
 
 apiRouter.put("/preset/:id", auth, async (req:CustomRequest, res) => {
@@ -116,10 +115,22 @@ apiRouter.put("/preset/:id", auth, async (req:CustomRequest, res) => {
         preset.owner = req.user.id;
        
         await r.table("presets").insert(preset, {conflict:"replace"}).run(con);
-        return res.status(201).send();
+        return res.status(201).json(preset).send();
     }else{
         return res.status(400).send();
     }
+})
+
+apiRouter.delete("/preset/:id", auth, async (req:CustomRequest, res) => {    
+    let con = await r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"});
+    let preset = await r.table("presets").get(req.params.id).run(con) as GraphConfigModel;
+
+    if(preset && preset.owner === req.user.id){
+        await r.table("presets").get(req.params.id).delete().run(con);
+        return res.status(200).send();
+    }else{
+        return res.status(404).send();
+    }    
 });
 
 apiRouter.get("/preset/:id", auth, async (req:CustomRequest, res) => {

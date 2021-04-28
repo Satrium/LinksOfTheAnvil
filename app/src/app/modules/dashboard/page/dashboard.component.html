@@ -1,21 +1,73 @@
 <div class="row">
-    <div class="text-center">
-        <h1>Presets</h1>
-        <p>These are default presets, to help you getting started. They showcase various possibilities of this tool. Feel free to use and modify them as you see fit.</p>
-    </div>
-    <div class="list">
-        <div class="list-entry" *ngFor="let preset of globalPresets" [ngStyle]="{ 'background-image': 'url(assets/' + preset.img + ')'}" (click)="openGlobalPreset(preset)">
-            <h3>{{preset.name}}</h3>
-            <span class="blurb">{{preset.description}}</span>
+    <h1>Your Worlds</h1>
+    <div *ngIf="worlds$ | async as worlds" class="world-list">
+        <div *ngFor="let world of worlds.worlds" class="world">
+            <h2>{{world.name}}</h2>
+            <div>
+                <button mat-raised-button color="primary">Open Graph</button>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <h1>Your Presets</h1>
-    <div style="text-align: center;">
-        <h2>Coming Soon!</h2>
-        <h4>In the future you will be able to create sharable Graphs from here.</h4>
-        <h4>In the meantime check out the presets above or the <a routerLink="/explore">explore</a> feature</h4>
+<div class="preset-shared-list">
+    <div class="row">
+        <h1>Your Presets</h1>
+        <mat-table *ngIf="presets$ | async as userPresets" [dataSource]="userPresets" class="mat-elevation-z8" matSort>            
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="description">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Description</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.description}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="owner">
+                <mat-header-cell class="public" *matHeaderCellDef mat-sort-header></mat-header-cell>
+                <mat-cell class="public" *matCellDef="let element">
+                    <mat-icon *ngIf="element.owner === 'global'" matTooltip="Global Preset">public</mat-icon>
+                    <mat-icon *ngIf="element.owner !== 'global'" matTooltip="My Preset">lock</mat-icon>
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+                <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>
+                <mat-cell class="actions" *matCellDef="let element">
+                    <button 
+                        mat-icon-button 
+                        color="warn" 
+                        matTooltip="Delete"
+                        (click)="deletionPresetSelected = element.id"
+                        *ngIf="element.owner !== 'global' && deletionPresetSelected !== element.id">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                    <button 
+                        mat-icon-button 
+                        color="warn" 
+                        matTooltip="Confirm Deletion"
+                        (click)="deletePreset(element)"
+                        *ngIf="element.owner !== 'global' && deletionPresetSelected === element.id">
+                        <mat-icon>check</mat-icon>
+                    </button>
+                    <button 
+                        mat-icon-button 
+                        matTooltip="Abort Deletion"
+                        (click)="deletionPresetSelected = null"
+                        *ngIf="element.owner !== 'global' && deletionPresetSelected === element.id">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <button mat-icon-button color="primary" matTooltip="Launch Preset"><mat-icon>launch</mat-icon></button>                    
+                </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>        
+    </div>
+    <div class="row">
+        <h1>Shared Graphs</h1>        
+        <div style="text-align: center;">
+            <h2>Coming Soon!</h2>
+            <h4>In the future you will be able to create sharable Graphs from here.</h4>
+            <h4>In the meantime check out the presets above or the <a routerLink="/explore">explore</a> feature</h4>
+        </div>
     </div>
 </div>

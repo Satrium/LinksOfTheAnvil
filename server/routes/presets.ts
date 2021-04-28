@@ -26,7 +26,7 @@ export const PRESETS:{[key:string]:Preset} = {
         id: "default",
         name: "Articles & Connections",
         description: "Get an overview of articles and connections in your world",
-        owner: "gloabl",
+        owner: "global",
         img: "default.png"     
     }
 }

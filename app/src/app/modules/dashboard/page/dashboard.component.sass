@@ -40,3 +40,30 @@
                 padding: 5px
                 font-style: italic
                 color: #f3f3f3
+
+.world-list
+    display: grid
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr))
+
+    .world
+        h2
+            margin-bottom: 0
+            font-size: 1.2em
+        border: 1px solid gray
+        padding: 10px
+        display: flex
+        justify-content: space-between
+        align-items: center
+
+.preset-shared-list
+    display: grid
+    grid-template-columns: repeat(auto-fit, minmax(600px, 1fr))  
+    div
+        &:nth-child(1)
+            border-right: 1px solid gray
+    .public
+        width: 70px
+        flex: unset
+    .actions
+        display: flex
+        justify-content: flex-end

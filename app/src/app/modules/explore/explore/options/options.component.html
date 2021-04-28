@@ -154,6 +154,7 @@
           <mat-label>Description</mat-label>
           <input matNativeControl [(ngModel)]="preset.description">            
         </mat-form-field>
+        <div>{{preset.id}}</div>
         <button mat-raised-button color="primary" (click)="savePreset()">Save</button>
       </mat-tab>
     </mat-tab-group>
