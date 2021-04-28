@@ -1,10 +1,4 @@
-<<<<<<< HEAD
 **/node_modules
 **/dist
-=======
-node_modules
-app/node_modules
-dist
->>>>>>> master
 **/.npm
 .vscode

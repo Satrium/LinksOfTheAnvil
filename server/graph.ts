@@ -122,7 +122,7 @@ function getNodeFromArticle(article:Article): GraphNode{
         draft:article.is_draft,
         wip:article.is_wip, 
         wordcount:article.wordcount, 
-        url:article.url,
+        url:article.url || null,
         tags: article.tags?article.tags.split(","):[]
     };
 }

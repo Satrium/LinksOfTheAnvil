@@ -77,6 +77,7 @@ apiRouter.get('/world/:id', auth, async (req:CustomRequest, res) => {
     }else{
         // Trigger full load
         graph = await generateGraph(req.app.get("WA") as WorldAnvil, req.userToken,req.user,req.params.id);
+        console.log(graph.nodes.filter(x => !x.url));
         await r.table('worlds').insert(graph).run(con);
         res.json(graph);        
     }
