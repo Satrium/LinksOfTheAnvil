@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import * as presetSchema from '../schema/preset.schema.json';
 import {validate} from 'jsonschema';
+import { ElementVisibility } from '@global/graph.enum';
 
 export const apiRouter = Router();
 const redis = asyncRedis.createClient({host: process.env.REDIS_HOST || "localhost", port: process.env.REDIS_PORT || 6379});
@@ -99,12 +100,44 @@ apiRouter.post("/preset", auth, async (req:CustomRequest, res) => {
         let preset = req.body as Preset;
         preset.owner = req.user.id;
         preset.id = uuidv4();
+        preset = parsePreset(preset);
         await r.table("presets").insert(preset).run(con);
         return res.status(201).json(preset).send();
     }else{
         return res.status(400).send();
     }
 });
+
+function parsePreset(preset:Preset):Preset{
+    // Node Visibility
+    if(preset?.config?.nodes?.typeVisibility && Object.keys(preset?.config?.nodes?.typeVisibility).length > 0){
+        let counter:{[key:number]: number} = {}
+        for(const [key, value] of Object.entries(preset?.config?.nodes?.typeVisibility)){
+            if(!(value in counter))counter[value] = 1;
+            else counter[value]++;
+        }
+        let type = parseInt(Object.keys(counter).sort((a,b) => counter[b] - counter[a])[0]);
+        preset.config.nodes.defaultVisibility = type;
+        for(const [key, value] of Object.entries(preset?.config?.nodes?.typeVisibility))
+            if(value === type)delete preset.config.nodes.typeVisibility[key];
+        console.log(counter, type);
+    }
+
+    // Type visibility
+    if(preset?.config?.links?.typeVisibility && Object.keys(preset?.config?.links?.typeVisibility).length > 0){
+        let counter:{[key:number]: number} = {}
+        for(const [key, value] of Object.entries(preset?.config?.links?.typeVisibility)){
+            if(!(value in counter))counter[value] = 1;
+            else counter[value]++;
+        }
+        let type = parseInt(Object.keys(counter).sort((a,b) => counter[b] - counter[a])[0]);
+        preset.config.links.defaultVisibility = type;
+        for(const [key, value] of Object.entries(preset?.config?.links?.typeVisibility))
+            if(value === type)delete preset.config.links.typeVisibility[key];
+        console.log(counter, type);
+    }
+    return preset;
+}
 
 apiRouter.put("/preset/:id", auth, async (req:CustomRequest, res) => {
     if(req.body && validate(req.body, presetSchema).valid && req.body.config && req.body.id === req.params.id){
@@ -114,7 +147,7 @@ apiRouter.put("/preset/:id", auth, async (req:CustomRequest, res) => {
         if(!oldPreset) return res.status(404).send();
         if(oldPreset.owner !== req.user.id) return res.status(401).send();
         preset.owner = req.user.id;
-       
+        preset = parsePreset(preset);
         await r.table("presets").insert(preset, {conflict:"replace"}).run(con);
         return res.status(201).json(preset).send();
     }else{
