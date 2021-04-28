@@ -24,7 +24,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatGridListModule } from '@angular/material/grid-list'
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   declarations: [],
@@ -52,7 +55,10 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatFormFieldModule,
     MatAutocompleteModule,
     MatExpansionModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatGridListModule,
+    MatSortModule,
+    MatTableModule
   ],
   exports: [
     MatButtonModule,
@@ -78,7 +84,10 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatFormFieldModule,
     MatAutocompleteModule,
     MatExpansionModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatGridListModule,
+    MatSortModule,
+    MatTableModule
   ]
 })
 export class MaterialModule {}

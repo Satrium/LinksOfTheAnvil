@@ -1,0 +1,183 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "DagMode": {
+            "enum": [
+                "",
+                "bu",
+                "lr",
+                "radialin",
+                "radialout",
+                "rl",
+                "td",
+                "zin",
+                "zour"
+            ],
+            "type": "string"
+        },
+        "DisplayMode": {
+            "enum": [
+                0,
+                1
+            ],
+            "type": "number"
+        },
+        "ElementVisibility": {
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "type": "number"
+        },
+        "GraphConfigModel": {
+            "properties": {
+                "addRootTag": {
+                    "type": "boolean"
+                },
+                "dagMode": {
+                    "$ref": "#/definitions/DagMode"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "links": {
+                    "$ref": "#/definitions/LinkOptions"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nodes": {
+                    "$ref": "#/definitions/NodeOptions"
+                },
+                "owner": {
+                    "type": "string"
+                },
+                "showTags": {
+                    "type": "boolean"
+                },
+                "visuals": {
+                    "$ref": "#/definitions/VisualSettings"
+                }
+            },
+            "required": [
+                "addRootTag",
+                "showTags"
+            ],
+            "type": "object"
+        },
+        "LinkColorScheme": {
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "type": "number"
+        },
+        "LinkOptions": {
+            "properties": {
+                "colorScheme": {
+                    "$ref": "#/definitions/LinkColorScheme"
+                },
+                "defaultVisibility": {
+                    "$ref": "#/definitions/ElementVisibility"
+                },
+                "typeVisibility": {
+                    "additionalProperties": {
+                        "$ref": "#/definitions/ElementVisibility"
+                    },
+                    "type": "object"
+                }
+            },
+            "required": [
+                "defaultVisibility"
+            ],
+            "type": "object"
+        },
+        "NodeColorScheme": {
+            "enum": [
+                0,
+                1
+            ],
+            "type": "number"
+        },
+        "NodeOptions": {
+            "properties": {
+                "colorScheme": {
+                    "$ref": "#/definitions/NodeColorScheme"
+                },
+                "defaultVisibility": {
+                    "$ref": "#/definitions/ElementVisibility"
+                },
+                "displayDrafts": {
+                    "type": "boolean"
+                },
+                "displayNodesWithNoLinks": {
+                    "type": "boolean"
+                },
+                "displayPrivate": {
+                    "type": "boolean"
+                },
+                "displayWip": {
+                    "type": "boolean"
+                },
+                "typeVisibility": {
+                    "additionalProperties": {
+                        "$ref": "#/definitions/ElementVisibility"
+                    },
+                    "type": "object"
+                }
+            },
+            "required": [
+                "defaultVisibility"
+            ],
+            "type": "object"
+        },
+        "VisualSettings": {
+            "properties": {
+                "displayMode": {
+                    "$ref": "#/definitions/DisplayMode"
+                },
+                "linkOpacity": {
+                    "type": "number"
+                },
+                "nodeOpacity": {
+                    "type": "number"
+                },
+                "nodeRelSize": {
+                    "type": "number"
+                },
+                "textHeight": {
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "properties": {
+        "config": {
+            "$ref": "#/definitions/GraphConfigModel"
+        },
+        "description": {
+            "type": "string"
+        },
+        "id": {
+            "type": "string"
+        },
+        "img": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "owner": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "description",
+        "name"
+    ],
+    "type": "object"
+}
+

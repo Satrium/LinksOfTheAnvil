@@ -1,6 +1,6 @@
 import { jLouvain } from 'jlouvain';
 import { GraphConfigModel, LinkOptions, NodeOptions, VisualSettings } from './graph.config'
-import { ElementVisibility, LinkColorScheme, NodeColorScheme } from './graph.enum';
+import { DisplayMode, ElementVisibility, LinkColorScheme, NodeColorScheme } from './graph.enum';
 import { Graph, GraphNode } from './graph';
 
 export class GraphConfig extends GraphConfigModel{
@@ -26,6 +26,7 @@ export class GraphConfig extends GraphConfigModel{
     linkOpacity: 0.6,
     nodeOpacity: 0.7,
     textHeight: 4,
+    displayMode: DisplayMode.NORMAL
   }
 
 
@@ -53,10 +54,12 @@ export class GraphConfig extends GraphConfigModel{
     });
 
     let nodes = new Set();
+    let rootTagAdded = this.addRootTag && this.showTags && data.nodes.filter(x => x.id === "root-tag").length === 0;
     data.nodes.forEach(x => {
       if(x.type === "tag"){
         if(this.showTags)x.visibility = ElementVisibility.ON;
         else x.visibility = ElementVisibility.OFF;
+        if(rootTagAdded)data.links.push({label:"Tagged",source:"root-tag",target:x.id,type:"tagged"});
       }
       else if(!this.nodes.displayDrafts && x.draft)x.visibility = ElementVisibility.OFF
       else if(!this.nodes.displayWip && x.wip)x.visibility = ElementVisibility.OFF
@@ -70,6 +73,11 @@ export class GraphConfig extends GraphConfigModel{
       }
       if(x.visibility !== ElementVisibility.OFF)nodes.add(x.id);
     });
+    if(rootTagAdded){
+      let rootTag = {type:"tag",id:"root-tag",name:"Root Tag", visibility: this.showTags?ElementVisibility.ON:ElementVisibility.OFF};
+      data.nodes.push(rootTag);
+      nodes.add(rootTag.id);
+    }
     data.links.forEach(x => {
       if((!nodes.has((<GraphNode> x.source)?.id || x.source)) || (!nodes.has((<GraphNode> x.target)?.id || x.target)))x.visibility = ElementVisibility.OFF;
       else if(x.type in (this.links?.typeVisibility ?? {})) x.visibility = this.links.typeVisibility[x.type];

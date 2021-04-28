@@ -1,26 +1,26 @@
 <mat-card>
   <mat-card-title>Options</mat-card-title>
-  <mat-card-content *ngIf="config">
+  <mat-card-content *ngIf="preset">
     <mat-tab-group mat-align-tabs="center" [(selectedIndex)]="selectedTab" dynamicHeight>
       <mat-tab label="General">
         <h3>General Settings</h3>
         <div class="row">
           <div class="column">
-            <mat-slide-toggle [(ngModel)]="config.showTags" (change)="this.config$.next(this.config)">
+            <mat-slide-toggle [(ngModel)]="preset.config.showTags" (change)="emitConfigChanged()">
               Display Tags
             </mat-slide-toggle>
-            <mat-slide-toggle [(ngModel)]="config.nodes.displayNodesWithNoLinks" (change)="this.config$.next(this.config)">
+            <mat-slide-toggle [(ngModel)]="preset.config.nodes.displayNodesWithNoLinks" (change)="emitConfigChanged()">
               Display Nodes with no links
             </mat-slide-toggle>
-            <mat-slide-toggle [(ngModel)]="config.nodes.displayDrafts" (change)="this.config$.next(this.config)">
+            <mat-slide-toggle [(ngModel)]="preset.config.nodes.displayDrafts" (change)="emitConfigChanged()">
               Display Drafts
             </mat-slide-toggle>
           </div>      
           <div class="column">
-            <mat-slide-toggle [(ngModel)]="config.nodes.displayWip" (change)="this.config$.next(this.config)">
+            <mat-slide-toggle [(ngModel)]="preset.config.nodes.displayWip" (change)="emitConfigChanged()">
               Display Wip articles
             </mat-slide-toggle>
-            <mat-slide-toggle [(ngModel)]="config.nodes.displayPrivate" (change)="this.config$.next(this.config)">
+            <mat-slide-toggle [(ngModel)]="preset.config.nodes.displayPrivate" (change)="emitConfigChanged()">
               Display private articles
             </mat-slide-toggle>
           </div>
@@ -30,22 +30,22 @@
         <div class="row margin-top">
           <div class="column">
             <div>
-              <mat-slider min="0" max="1" step="0.01" value="0.75" thumbLabel [(ngModel)]="config.visuals.nodeRelSize" (ngModelChange)="this.config$.next(this.config)"></mat-slider>
+              <mat-slider min="0" max="1" step="0.01" value="0.75" thumbLabel [(ngModel)]="preset.config.visuals.nodeRelSize" (ngModelChange)="emitConfigChanged()"></mat-slider>
               <span> Node Size</span>
             </div>
             <div>
-              <mat-slider min="0" max="1" step="0.01" value="0.6" thumbLabel [(ngModel)]="config.visuals.nodeOpacity" (ngModelChange)="this.config$.next(this.config)"></mat-slider>
+              <mat-slider min="0" max="1" step="0.01" value="0.6" thumbLabel [(ngModel)]="preset.config.visuals.nodeOpacity" (ngModelChange)="emitConfigChanged()"></mat-slider>
               <span> Node Opacity</span>
             </div>
           </div>
           <div class="column">
             <div>
-              <mat-slider min="0" max="1" step="0.01" value="0.7" thumbLabel [(ngModel)]="config.visuals.linkOpacity" (ngModelChange)="this.config$.next(this.config)"></mat-slider>
+              <mat-slider min="0" max="1" step="0.01" value="0.7" thumbLabel [(ngModel)]="preset.config.visuals.linkOpacity" (ngModelChange)="emitConfigChanged()"></mat-slider>
               <span> Link Opacity</span>
             </div>
             <mat-form-field>
               <mat-label>Font size</mat-label>
-              <input matNativeControl type="number" [(ngModel)]="config.visuals.textHeight" (ngModelChange)="this.config$.next(this.config)">            
+              <input matNativeControl type="number" [(ngModel)]="preset.config.visuals.textHeight" (ngModelChange)="emitConfigChanged()">            
             </mat-form-field>
           </div>          
         </div>
@@ -55,7 +55,7 @@
           <h3>General Article Options</h3>
           <mat-form-field>
             <mat-label>Node Coloring</mat-label>
-            <mat-select [(ngModel)]="config.nodes.colorScheme" (ngModelChange)="this.config$.next(this.config)">
+            <mat-select [(ngModel)]="preset.config.nodes.colorScheme" (ngModelChange)="emitConfigChanged()">
               <mat-option [value]="NodeColorScheme.GROUP">Type</mat-option>
               <mat-option [value]="NodeColorScheme.CLUSTER">Cluster</mat-option>
             </mat-select>
@@ -72,8 +72,8 @@
         <div class="row">
           <div class="column">
             <mat-list dense>
-              <mat-list-item *ngFor="let key of keys(config.nodes.typeVisibility || {}, true)">
-                  <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.nodes.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
+              <mat-list-item *ngFor="let key of keys(preset.config.nodes.typeVisibility || {}, true)">
+                  <mat-button-toggle-group #group [name]="key" [(ngModel)]="preset.config.nodes.typeVisibility[key]" (ngModelChange)="emitConfigChanged()">
                       <mat-button-toggle [value]="ElementVisibility.OFF">Off</mat-button-toggle>
                       <mat-button-toggle [value]="ElementVisibility.HIDDEN">Hidden</mat-button-toggle>
                       <mat-button-toggle [value]="ElementVisibility.ON">On</mat-button-toggle>
@@ -84,8 +84,8 @@
           </div>
           <div class="column">
             <mat-list dense>
-              <mat-list-item *ngFor="let key of keys(config.nodes.typeVisibility || {}, false)">
-                  <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.nodes.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
+              <mat-list-item *ngFor="let key of keys(preset.config.nodes.typeVisibility || {}, false)">
+                  <mat-button-toggle-group #group [name]="key" [(ngModel)]="preset.config.nodes.typeVisibility[key]" (ngModelChange)="emitConfigChanged()">
                       <mat-button-toggle [value]="ElementVisibility.OFF">Off</mat-button-toggle>
                       <mat-button-toggle [value]="ElementVisibility.HIDDEN">Hidden</mat-button-toggle>
                       <mat-button-toggle [value]="ElementVisibility.ON">On</mat-button-toggle>
@@ -102,7 +102,7 @@
           <h3>General Link Options</h3>
           <mat-form-field>
             <mat-label>Link Coloring</mat-label>
-            <mat-select [(ngModel)]="config.links.colorScheme" (ngModelChange)="this.config$.next(this.config)">
+            <mat-select [(ngModel)]="preset.config.links.colorScheme" (ngModelChange)="emitConfigChanged()">
               <mat-option [value]="LinkColorScheme.GROUP">Type</mat-option>
               <mat-option [value]="LinkColorScheme.SOURCE">Source</mat-option>
               <mat-option [value]="LinkColorScheme.TARGET">Target</mat-option>
@@ -119,8 +119,8 @@
         <div class="row">
           <div class="column">
             <mat-list dense>
-              <mat-list-item *ngFor="let key of keys(config.links.typeVisibility || {}, true)">
-                  <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.links.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
+              <mat-list-item *ngFor="let key of keys(preset.config.links.typeVisibility || {}, true)">
+                  <mat-button-toggle-group #group [name]="key" [(ngModel)]="preset.config.links.typeVisibility[key]" (ngModelChange)="emitConfigChanged()">
                       <mat-button-toggle [value]="ElementVisibility.OFF">Off</mat-button-toggle>
                       <mat-button-toggle [value]="ElementVisibility.HIDDEN">Hidden</mat-button-toggle>
                       <mat-button-toggle [value]="ElementVisibility.ON">On</mat-button-toggle>
@@ -131,8 +131,8 @@
           </div>
           <div class="column">
             <mat-list dense>
-              <mat-list-item *ngFor="let key of keys(config.links.typeVisibility || {}, false)">
-                  <mat-button-toggle-group #group [name]="key" [(ngModel)]="config.links.typeVisibility[key]" (ngModelChange)="this.config$.next(this.config)">
+              <mat-list-item *ngFor="let key of keys(preset.config.links.typeVisibility || {}, false)">
+                  <mat-button-toggle-group #group [name]="key" [(ngModel)]="preset.config.links.typeVisibility[key]" (ngModelChange)="emitConfigChanged()">
                       <mat-button-toggle [value]="ElementVisibility.OFF">Off</mat-button-toggle>
                       <mat-button-toggle [value]="ElementVisibility.HIDDEN">Hidden</mat-button-toggle>
                       <mat-button-toggle [value]="ElementVisibility.ON">On</mat-button-toggle>
@@ -144,6 +144,18 @@
         </div>
         
         </div>
+      </mat-tab>
+      <mat-tab label="Save / Share">
+        <mat-form-field>
+          <mat-label>Preset Name</mat-label>
+          <input matNativeControl [(ngModel)]="preset.name">            
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Description</mat-label>
+          <input matNativeControl [(ngModel)]="preset.description">            
+        </mat-form-field>
+        <div>{{preset.id}}</div>
+        <button mat-raised-button color="primary" (click)="savePreset()">Save</button>
       </mat-tab>
     </mat-tab-group>
   </mat-card-content>

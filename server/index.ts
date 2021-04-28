@@ -3,6 +3,7 @@ import { connectDatabase } from './database';
 import express from 'express';
 import { apiRouter } from './routes/api';
 import { WorldAnvil } from './worldanvil';
+import bodyParser from 'body-parser';
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.set("WA", new WorldAnvil(process.env.APP_KEY, new Bottleneck({
 })))
 
 app.use(express.static(process.cwd() + "/dist/client"));
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
     res.send("Hello World");

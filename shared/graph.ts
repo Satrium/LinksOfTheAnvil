@@ -41,4 +41,5 @@ export interface GraphNode{
     neighbors?: GraphNode[];
     visibility?: ElementVisibility;
     color?: any;
+    label?: any;
 }

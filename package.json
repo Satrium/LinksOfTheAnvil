@@ -8,7 +8,7 @@
     "debug": "node index.js --trace-warning",
     "build": "cd app && ng build --prod",
     "serve:angular": "cd app && ng serve",
-    "serve": "concurrently \"npm start\" \"npm run serve:angular\""
+    "serve": "concurrently \"npm start\" \"npm run serve:angular\""    
   },
   "author": "Anton Pohli",
   "license": "MIT",
@@ -16,8 +16,8 @@
     "async-redis": "^1.1.7",
     "bottleneck": "^2.19.5",
     "express": "^4.17.1",
-    "node-fetch": "^2.6.1",
     "jlouvain": "^2.0.0",
+    "node-fetch": "^2.6.1",
     "rethinkdb": "^2.4.2",
     "ws": "^7.3.0"
   },
