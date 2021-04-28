@@ -25,8 +25,8 @@ export class GraphConfig extends GraphConfigModel{
     nodeRelSize: 0.75,
     linkOpacity: 0.6,
     nodeOpacity: 0.7,
-    textHeight: 4,
-    displayMode: DisplayMode.NORMAL
+    displayMode: DisplayMode.NORMAL,
+    textHeight: 10,
   }
 
 

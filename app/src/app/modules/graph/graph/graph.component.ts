@@ -73,8 +73,12 @@ export class GraphComponent implements OnInit, AfterViewInit {
       .onNodeRightClick((node:GraphNode) => {if(node.url)window.open(node.url, "_blank");}) 
       .nodeThreeObject((node:GraphNode)=>{
         const obj = new SpriteText(node.name);
-        obj.position.add(new Vector3(0, 8, 0));
-        obj.textHeight = this.config?.visuals?.textHeight || 4;        
+        let nodesize = (this.nodesHiglighted && !this.highlightNodes.has(node)?node["wordcount"]/4:node["wordcount"]) || 50;
+        nodesize *= this.Graph.nodeRelSize();
+        let radius = Math.pow(((3*nodesize) / (4*Math.PI) * 1.05), 1/3);
+        obj.position.add(new Vector3(0, radius + (this.config?.visuals?.textHeight || 10), 0));
+        let textHeight = (this.config?.visuals?.textHeight || 10) * Math.min((this.nodesHiglighted && !this.highlightNodes.has(node)?node["wordcount"]/4:node["wordcount"]) || 50, 1000) / 1000;
+        obj.textHeight = Math.max(textHeight, 2);        
         if(this.highlightNodes.has(node)){
           obj.textHeight *= 2;
           obj.backgroundColor = "#808080";
