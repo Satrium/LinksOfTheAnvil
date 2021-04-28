@@ -26,3 +26,8 @@ export enum LinkColorScheme{
   SOURCE =1, 
   TARGET = 2,
 }
+
+export enum DisplayMode{
+  NORMAL = 0,
+  TWO_DIMENSIONS = 1
+}

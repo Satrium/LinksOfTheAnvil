@@ -15,7 +15,12 @@ const routes: Routes = [
     path:'auth',
     component: CardLayoutComponent,
     loadChildren: () => import('@modules/auth/auth.module').then(m => m.AuthModule)
-  },{
+  },
+  {
+    path:'share',
+    loadChildren: () => import('@modules/share/share.module').then(m => m.ShareModule)
+  },
+  {
     path:'',
     component: DefaultLayoutComponent,
     canActivate: [AuthGuard],

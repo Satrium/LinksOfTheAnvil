@@ -1,8 +1,10 @@
-import { Component, OnInit, Inject, Input } from '@angular/core';
+import { Component,  Input } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { GraphConfig } from '@global/graph.object';
 import { NodeColorScheme, LinkColorScheme, ElementVisibility } from '@global/graph.enum';
+import { DataService } from '@data/service/data.service';
+import { Preset } from '@global/graph.config';
 
 @Component({
   selector: 'app-graph-options',
@@ -16,12 +18,11 @@ export class OptionsComponent{
   ElementVisibility = ElementVisibility;
 
   @Input() config$: BehaviorSubject<GraphConfig>;
-  @Input() config: GraphConfig;
+  @Input() preset: Preset;
+
+  constructor(private data:DataService){}
 
   selectedTab = 0;
-
-  constructor() {
-  }
 
   keys(object, front:boolean){
     let keys = Object.keys(object).sort();
@@ -31,6 +32,14 @@ export class OptionsComponent{
     }else{
       return keys.splice(halfLength, keys.length);
     }
+  }
+
+  savePreset(){
+    this.data.savePreset(this.preset).subscribe(console.log, console.error);
+  }
+
+  emitConfigChanged(){
+    this.config$.next(this.preset.config as GraphConfig);
   }
 
 }

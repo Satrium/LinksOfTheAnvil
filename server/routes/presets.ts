@@ -1,23 +1,17 @@
-import { GraphConfigModel } from '@global/graph.config';
-import { ElementVisibility, NodeColorScheme, LinkColorScheme } from '../../shared/graph.enum';
+import { Preset } from '@global/graph.config';
+import { ElementVisibility, NodeColorScheme, LinkColorScheme, DisplayMode } from '../../shared/graph.enum';
 
-export interface Preset{
-    id: string;
-    name: string;
-    description: string;
-    img?: string;
-    config?: GraphConfigModel;
-}
 
 export const PRESETS:{[key:string]:Preset} = {
     "cluster": {
         id: "cluster",
         name: "Cluster",
-        img: "cluster.png",
+        img: "cluster.png",      
+        owner: "global",  
         description: "Find clusters of related articles in your world",
         config: {
-            id: "cluster",
-            addRootTag: false,
+            name: "cluster",            
+            addRootTag: true,
             showTags: true,
             nodes: {
                 colorScheme: NodeColorScheme.CLUSTER,
@@ -32,6 +26,7 @@ export const PRESETS:{[key:string]:Preset} = {
         id: "default",
         name: "Articles & Connections",
         description: "Get an overview of articles and connections in your world",
+        owner: "gloabl",
         img: "default.png"     
     }
 }

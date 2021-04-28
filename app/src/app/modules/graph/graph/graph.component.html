@@ -20,7 +20,7 @@
         <mat-list-item (click)="highlightStubs()">
           <mat-icon matTooltip="Highlight Stubs">construction</mat-icon>
         </mat-list-item>     
-        <ng-container *ngTemplateOutlet="sidebarTemplate.template"></ng-container>
+        <ng-container *ngTemplateOutlet="sidebarTemplate?.template"></ng-container>
       </mat-list>           
     </div>
     <div id="legend" *ngIf="displayNodeLegend || displayLinkLegend">

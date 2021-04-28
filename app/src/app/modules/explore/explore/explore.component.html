@@ -1,5 +1,5 @@
 <div id="options" [hidden]="!isConfigOpen" (click)="isConfigOpen = false">
-  <app-graph-options [config]="this.config" [config$]="this.config$" (click)="$event.stopPropagation()" #options></app-graph-options>
+  <app-graph-options [preset]="this.preset" [config$]="this.config$" (click)="$event.stopPropagation()" #options></app-graph-options>
 </div>
 <div id="loading" *ngIf="loading">
   <div class="outer-wrapper">

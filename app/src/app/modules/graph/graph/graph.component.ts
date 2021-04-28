@@ -3,7 +3,7 @@ import { GraphConfig } from '@global/graph.object';
 import ForceGraph3D, { ForceGraph3DInstance } from '3d-force-graph';
 import { Observable, Subscription } from 'rxjs';
 import { Graph, GraphNode, GraphLink } from '@global/graph';
-import { ElementVisibility, LinkColorScheme, NodeColorScheme } from '@global/graph.enum';
+import { DisplayMode, ElementVisibility, LinkColorScheme, NodeColorScheme } from '@global/graph.enum';
 import distinctColors from 'distinct-colors';
 import SpriteText from 'three-spritetext';
 import { Sprite, Vector3 } from 'three';
@@ -89,13 +89,28 @@ export class GraphComponent implements OnInit, AfterViewInit {
         this.focusNode(node);
       });
       (this.Graph.d3Force('link') as any).distance((link:GraphLink) => link.type === "mention" ? 150: 40).d3Force('charge').strength(-120);
+      
+      
   }
 
   @Input()
   public set graphData(graphData:Graph){
-    console.log(graphData);
+    //this.Graph.controls()["enableRotate"] = false;
     if(this.configSubscription)this.configSubscription.unsubscribe();
     this.configSubscription = this.config$.subscribe(x =>{
+      console.log("Controls", this.Graph.controls());
+      switch(x.visuals?.displayMode){
+        case DisplayMode.TWO_DIMENSIONS:
+          this.Graph.controls()["enableRotate"] = false;
+          this.Graph.numDimensions(2);
+          
+          break;        
+        case DisplayMode.NORMAL:
+        default:
+          this.Graph.controls()["enableRotate"] = true;
+          this.Graph.numDimensions(3);
+          break;
+      }
       this.config = x;
       this.data = x.apply(graphData)
       console.log("Graph Update", x, graphData);
@@ -108,13 +123,13 @@ export class GraphComponent implements OnInit, AfterViewInit {
         .dagMode(<any>x.dagMode?.toString() || null)
         .linkColor((link:GraphLink) => { return x.links.colorScheme === LinkColorScheme.GROUP?this.linkColors[link.type].hex():
           // TODO: Please optimize this!
-          (x.links.colorScheme === LinkColorScheme.SOURCE?(link.source as GraphNode).color || (this.data.nodes.find(x => x.id == link.source) as GraphNode).color:(link.target as GraphNode).color || (this.data.nodes.find(x => x.id == link.target) as GraphNode).color)}
+          (x.links.colorScheme === LinkColorScheme.SOURCE?(link.source as GraphNode)?.color || (this.data.nodes.find(x => x.id == link.source) as GraphNode)?.color:(link.target as GraphNode)?.color || (this.data.nodes.find(x => x.id == link.target) as GraphNode)?.color)}
         );
       this.searchFilteredNodes = this.searchField.valueChanges
         .pipe(
           startWith(''),
           map(value => typeof value === 'string' ? value : value.label),
-          map(name => name ? this.data.nodes.filter(option => option.name.toLowerCase().includes(name.toLowerCase())).slice(0,20) : this.data.nodes.slice(0, 20))
+          map(name => name ? this.data.nodes.filter(option => option.visibility === ElementVisibility.ON && option.name.toLowerCase().includes(name.toLowerCase())).slice(0,20) : this.data.nodes.slice(0, 20))
         );
       // apply visual settings
       if(this.Graph.linkOpacity() != x.visuals?.linkOpacity)this.Graph.linkOpacity(x.visuals?.linkOpacity);
@@ -262,7 +277,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
     return width / (link.type === "mention"?2:1);
   }
 
-  searchBarDisplay(node): string {
-    return node && node.label ? node.label : '';
+  searchBarDisplay(node:GraphNode): string {
+    return node && node.visibility === ElementVisibility.ON && node.label ? node.label : '';
   }
 }

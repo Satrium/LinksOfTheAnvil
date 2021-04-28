@@ -8,17 +8,23 @@
     "debug": "node index.js --trace-warning",
     "build": "tsc --project tsconfig.json --outDir ../dist",
     "serve:angular": "cd app && ng serve",
-    "serve": "concurrently \"npm start\" \"npm run serve:angular\""
+    "serve": "concurrently \"npm start\" \"npm run serve:angular\"",
+    "schema": "typescript-json-schema ./tsconfig.json Preset --required --out schema/preset.schema.json "
   },
   "author": "Anton Pohli",
   "license": "MIT",
   "dependencies": {
     "async-redis": "^1.1.7",
+    "body-parser": "^1.19.0",
     "bottleneck": "^2.19.5",
     "express": "^4.17.1",
-    "node-fetch": "^2.6.1",
+    "fp-ts": "^2.10.4",
+    "io-ts": "^2.2.16",
     "jlouvain": "^2.0.0",
+    "jsonschema": "^1.4.0",
+    "node-fetch": "^2.6.1",
     "rethinkdb": "^2.4.2",
+    "uuid": "^8.3.2",
     "ws": "^7.3.0"
   },
   "devDependencies": {
@@ -26,6 +32,8 @@
     "@types/node-fetch": "^2.5.10",
     "concurrently": "^5.2.0",
     "tslint": "^5.12.1",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3",
+    "typescript-json-schema": "^0.50.0",
+    "typescript-json-validator": "^2.4.2"
   }
 }

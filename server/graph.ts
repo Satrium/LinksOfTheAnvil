@@ -1,7 +1,7 @@
 import { Graph, GraphLink, GraphNode } from "@global/graph";
 import { Article, ArticleRelation, ArticleRelationItem } from "@global/worldanvil/article";
 import { User } from "@global/worldanvil/user";
-import { WorldAnvil } from "worldanvil";
+import { WorldAnvil } from "./worldanvil";
 
 export const GRAPH_DATA_VERSION = 2;
 const linkRegex = /(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}/gi;
