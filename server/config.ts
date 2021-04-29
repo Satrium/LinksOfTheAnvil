@@ -6,7 +6,7 @@ convict.addFormats(convict_format_with_validator);
 const config = convict({
     env: {
         doc: 'The application environment.',
-        format: ['production', 'pre-production', 'development', 'test'],
+        format: ['production', 'preproduction', 'development', 'test'],
         default: 'development',
         env: 'NODE_ENV'
     }, url: {
