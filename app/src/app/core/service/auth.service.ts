@@ -11,11 +11,21 @@ import { map, tap } from 'rxjs/operators';
 })
 export class AuthService{
 
+  private _token:string;
+
   public get authToken(): string{
-    return localStorage.getItem("apikey");
+    try{
+      return localStorage.getItem("apikey");
+    }catch{
+      return this._token;
+    }    
   }
   public set authToken(value:string){
-    localStorage.setItem("apikey", value);
+    try{
+      localStorage.setItem("apikey", value);
+    }catch{
+      this._token = value;
+    }    
   }
 
   private hasUserLoadingTriggered = false;
