@@ -1,24 +1,16 @@
-<h1 mat-dialog-title>World and Preset Selection</h1>
+<h1 mat-dialog-title *ngIf="!data.world && !data.preset">World and Preset Selection</h1>
+<h1 mat-dialog-title *ngIf="!data.world && data.preset">World Selection</h1>
+<h1 mat-dialog-title *ngIf="data.world && !data.preset">Preset Selection</h1>
 <div mat-dialog-content>
     <div class="text-center">
         <span *ngIf="data.world"><b>Selected World: </b>{{data.world.name}}</span>
         <span *ngIf="data.preset"><b>Selected Preset: </b>{{data.preset.name}}</span>
     </div>
     <div *ngIf="!data.world">
-        <h3>Please Select a World</h3>
-        <div *ngIf="worlds$ | async as worlds" class="world-list">
-            <div *ngFor="let world of worlds.worlds" class="world" (click)="selectWorld(world)">
-                <h2>{{world.name}}</h2>
-            </div>
-        </div>
+        <app-world-selection [worlds$]="worlds$" (select)="selectWorld($event)"></app-world-selection>
     </div>
     <mat-divider></mat-divider>    
     <div *ngIf="!data.preset">
-        <h3>Please Select a Preset</h3>
-        <div *ngIf="presets$ | async as presets" class="world-list">
-            <div *ngFor="let preset of presets" class="world" (click)="selectPreset(preset)">
-                <h2>{{preset.name}}</h2>
-            </div>
-        </div>
+        <app-preset-selection [presets$]="presets$" (select)="selectPreset($event)"></app-preset-selection>        
     </div>
 </div>

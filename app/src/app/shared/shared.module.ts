@@ -3,13 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from './material.module';
-import { WorldSelectionComponent } from './component/world-selection/world-selection.component';
 import { SelectionComponent } from './components/selection/selection.component';
-
+import { PresetSelectionComponent } from './components/selection/preset-selection/preset-selection.component';
+import { SelectionButtonsDirective } from './components/selection/selection-buttons.directive';
+import { WorldSelectionComponent } from './components/selection/world-selection/world-selection.component';
 
 
 @NgModule({
-  declarations: [WorldSelectionComponent, SelectionComponent],
+  declarations: [
+    WorldSelectionComponent, 
+    SelectionComponent, 
+    PresetSelectionComponent, 
+    SelectionButtonsDirective],
   imports: [
     CommonModule,
     FormsModule,
@@ -23,7 +28,9 @@ import { SelectionComponent } from './components/selection/selection.component';
     ReactiveFormsModule,
 
     WorldSelectionComponent,
-    SelectionComponent
+    SelectionComponent,
+    PresetSelectionComponent, 
+    SelectionButtonsDirective
   ], entryComponents:[SelectionComponent]
 })
 export class SharedModule { }
