@@ -39,9 +39,14 @@ services:
     image: rethinkdb:2.4.0
     networks:
       - worldanvil-dev
+    volumes:
+      - rethinkdb-data:/data
 
 networks:
   proxy:
     external: true
   worldanvil-dev:
     external: true
+
+volumes:
+  rethinkdb-data:

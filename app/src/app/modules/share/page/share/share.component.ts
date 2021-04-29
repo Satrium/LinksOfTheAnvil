@@ -19,13 +19,15 @@ export class ShareComponent implements OnInit {
   config$: BehaviorSubject<GraphConfig>;
 
   constructor(private data:DataService, private router: ActivatedRoute) {
-    this.config$ = new BehaviorSubject(new GraphConfig(<any> environment.defaultConfig))
+    
    }
 
   ngOnInit(): void {
+    this.config$ = new BehaviorSubject(new GraphConfig(<any> environment.defaultConfig))
     this.router.params.pipe(
       switchMap(x => this.data.getSharedGraph(x["id"]))
-    ).subscribe((graph:SharedGraph) =>{      
+    ).subscribe((graph:SharedGraph) => {
+      console.log(graph);      
       this.graphData = graph.graph;
       this.config$.next(new GraphConfig(graph.preset.config as GraphConfig));      
     });

@@ -45,6 +45,7 @@ export class DataService {
   }
 
   public getSharedGraph(id: string):Observable<SharedGraph>{
+    console.log("Get shared graph")
     return this.http.get<SharedGraph>(`/api/shared/${id}`)
   }
 }
