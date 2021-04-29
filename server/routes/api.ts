@@ -6,12 +6,15 @@ import * as r from 'rethinkdb';
 import { WorldAnvil } from '../worldanvil';
 import { generateGraph, updateGraph } from '../graph';
 import { GraphConfigModel, Preset } from '@global/graph.config';
+import { SharedGraph, SharedGraphInfo } from '@global/share'
 import { PRESETS } from './presets';
 import { v4 as uuidv4 } from 'uuid'
 
 import * as presetSchema from '../schema/preset.schema.json';
 import {validate} from 'jsonschema';
 import config from '../config';
+import { World } from '@global/worldanvil/world';
+import { GraphConfig } from '../../shared/graph.object';
 
 console.log(config.get("port"));
 export const apiRouter = Router();
@@ -185,3 +188,24 @@ apiRouter.get("/preset/:id", auth, async (req:CustomRequest, res) => {
         else return res.status(404).send();
     }
 });
+
+apiRouter.get("/shared/:id", async(req, res) => {
+    let con = await r.connect(RETHINK_DB);
+
+    let shared = await r.table("shared").get(req.params.id).run(con) as SharedGraphInfo;
+    if(!shared) return res.status(404).send();
+
+    let preset = await r.table("presets").get(shared.preset).run(con) as Preset;
+    if(!preset) return res.status(404).send();
+
+    let world = await r.table("worlds").get(shared.world).run(con) as Graph;
+    if(!world) return res.status(404).send();
+
+    let graph = new GraphConfig(preset.config as GraphConfig).apply(world, false, true);
+
+    delete graph.last_article_update;
+    let result: SharedGraph = {preset, graph};
+    console.log(result);
+    return res.json(result);
+});
+

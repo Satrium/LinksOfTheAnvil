@@ -4,6 +4,7 @@ import { DataService } from '@data/service/data.service';
 import { environment } from '@env';
 import { Graph } from '@global/graph';
 import { GraphConfig } from '@global/graph.object';
+import { SharedGraph } from '@global/share';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -15,7 +16,7 @@ import { map, switchMap } from 'rxjs/operators';
 export class ShareComponent implements OnInit {
 
   graphData: Graph;
-  config$: Observable<GraphConfig>;
+  config$: BehaviorSubject<GraphConfig>;
 
   constructor(private data:DataService, private router: ActivatedRoute) {
     this.config$ = new BehaviorSubject(new GraphConfig(<any> environment.defaultConfig))
@@ -23,10 +24,10 @@ export class ShareComponent implements OnInit {
 
   ngOnInit(): void {
     this.router.params.pipe(
-      switchMap(x => this.data.getGraph(x.id))
-    ).subscribe((graph:Graph) =>{
-      console.log(graph);
-      this.graphData = graph;      
+      switchMap(x => this.data.getSharedGraph(x["id"]))
+    ).subscribe((graph:SharedGraph) =>{      
+      this.graphData = graph.graph;
+      this.config$.next(new GraphConfig(graph.preset.config as GraphConfig));      
     });
   }
 

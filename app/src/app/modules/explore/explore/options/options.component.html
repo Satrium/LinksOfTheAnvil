@@ -155,6 +155,9 @@
           <input matNativeControl [(ngModel)]="preset.description">            
         </mat-form-field>
         <div>{{preset.id}}</div>
+        <mat-slide-toggle [(ngModel)]="preset.config.share.displayNodeLegend">
+          Display Node Legend
+        </mat-slide-toggle>
         <button mat-raised-button color="primary" (click)="savePreset()">Save</button>
       </mat-tab>
     </mat-tab-group>

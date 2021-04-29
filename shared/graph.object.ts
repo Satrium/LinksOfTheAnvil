@@ -1,5 +1,5 @@
 import { jLouvain } from 'jlouvain';
-import { GraphConfigModel, LinkOptions, NodeOptions, VisualSettings } from './graph.config'
+import { GraphConfigModel, LinkOptions, NodeOptions, ShareSettings, VisualSettings } from './graph.config'
 import { DisplayMode, ElementVisibility, LinkColorScheme, NodeColorScheme } from './graph.enum';
 import { Graph, GraphNode } from './graph';
 
@@ -28,6 +28,7 @@ export class GraphConfig extends GraphConfigModel{
     displayMode: DisplayMode.NORMAL,
     textHeight: 10,
   }
+  share:ShareSettings = {};
 
 
   constructor(data:GraphConfig){    
@@ -35,11 +36,11 @@ export class GraphConfig extends GraphConfigModel{
     this.mergeDeep(this, data);
   }
 
-  public apply(data:Graph):Graph{
+  public apply(data:Graph, addLink=true, deleteNotVisible=false):Graph{
     console.log(this);
     let nodeDict = {};
     data.nodes.forEach(x => nodeDict[x.id] = x);
-    data.links.forEach(link => {
+    if(addLink) data.links.forEach(link => {
       const a = nodeDict[( (<GraphNode> link.source)?.id || <string>link.source)];
       const b = nodeDict[( (<GraphNode> link.target)?.id || <string>link.target)];
       if(!a || !b)return;
@@ -78,6 +79,9 @@ export class GraphConfig extends GraphConfigModel{
       data.nodes.push(rootTag);
       nodes.add(rootTag.id);
     }
+    if(deleteNotVisible){
+      data.nodes = data.nodes.filter(x => x.visibility !== ElementVisibility.OFF);
+    }
     data.links.forEach(x => {
       if((!nodes.has((<GraphNode> x.source)?.id || x.source)) || (!nodes.has((<GraphNode> x.target)?.id || x.target)))x.visibility = ElementVisibility.OFF;
       else if(x.type in (this.links?.typeVisibility ?? {})) x.visibility = this.links.typeVisibility[x.type];
@@ -86,6 +90,9 @@ export class GraphConfig extends GraphConfigModel{
         this.links.typeVisibility[x.type] = this.links.defaultVisibility;
       }
     });
+    if(deleteNotVisible){
+      data.links = data.links.filter(x => x.visibility !== ElementVisibility.OFF);
+    }
     let community = jLouvain()
       .nodes(data.nodes.filter(x => x.visibility != ElementVisibility.OFF && x.type != "tag").map(x => x.id))
       .edges(<any>data.links.filter(x => x.visibility != ElementVisibility.OFF && x.type != "tagged")

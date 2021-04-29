@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Graph } from '@global/graph';
 import { GraphConfigModel, Preset } from '@global/graph.config';
+import { SharedGraph } from '@global/share';
 import { World } from '@global/worldanvil/world';
 
 @Injectable({
@@ -41,5 +42,9 @@ export class DataService {
 
   public deletePreset(id:string){
     return this.http.delete(`/api/preset/${id}`);
+  }
+
+  public getSharedGraph(id: string):Observable<SharedGraph>{
+    return this.http.get<SharedGraph>(`/api/shared/${id}`)
   }
 }

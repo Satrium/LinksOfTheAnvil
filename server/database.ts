@@ -3,7 +3,7 @@
 import * as r from 'rethinkdb';
 import config from './config';
 
-const TABLES = ["worlds", "presets"];
+const TABLES = ["worlds", "presets", "shared"];
 
 export async function connectDatabase():Promise<boolean>{
     let date = new Date();

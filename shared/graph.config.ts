@@ -20,6 +20,7 @@ export class GraphConfigModel {
     links?:LinkOptions;
     dagMode?:DagMode;
     visuals?: VisualSettings;
+    share?: ShareSettings;
 }
 
 export interface NodeOptions{
@@ -43,5 +44,15 @@ export interface VisualSettings{
     nodeOpacity?: number;
     nodeRelSize?: number;
     textHeight?: number;
-    displayMode?: DisplayMode
+    displayMode?: DisplayMode;
+}
+
+export interface ShareSettings{
+    displayTopBar?: boolean;
+    displaySearch?: boolean;
+    displayNodeLegendButton?: boolean;
+    displayLinkLegendButton?: boolean;
+    displayControls?: boolean;
+    displayNodeLegend?: boolean;
+    displayLinkLegend?: boolean;
 }

@@ -21,6 +21,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
   @ContentChild(GraphSidebarDirective) sidebarTemplate;
   @Input() config$: Observable<GraphConfig>;
+  @Input() shared:boolean = false;
 
   nodeColors = {};
   linkColors = {};
@@ -28,7 +29,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
   displayNodeLegend = false;
   displayLinkLegend = false;
 
-  private config: GraphConfig;
+  config: GraphConfig;
   private Graph: ForceGraph3DInstance;
 
   private data: Graph;
@@ -139,6 +140,11 @@ export class GraphComponent implements OnInit, AfterViewInit {
       if(this.Graph.nodeOpacity() != x.visuals?.nodeOpacity)this.Graph.nodeOpacity(x.visuals?.nodeOpacity);
       if(this.Graph.nodeRelSize() != x.visuals?.nodeRelSize)this.Graph.nodeRelSize(x.visuals?.nodeRelSize);
       this.Graph.refresh();
+
+      if(this.shared){
+        this.displayLinkLegend = this.config.share.displayLinkLegend;
+        this.displayNodeLegend = this.config.share.displayNodeLegend;
+      }
     });
   }
   

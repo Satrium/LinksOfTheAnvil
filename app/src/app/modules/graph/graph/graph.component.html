@@ -1,6 +1,6 @@
 <div id="wrapper">
     <div #graph></div>
-    <div id="sidebar">
+    <div id="sidebar" *ngIf="!shared || this.config?.share?.displayTopBar">
       <mat-form-field class="searchbar" appearance="fill">
         <mat-label>Search Articles</mat-label>
         <input type="text" matInput [formControl]="searchField" [matAutocomplete]="auto">
@@ -32,7 +32,7 @@
         <span class="legend-list-element" *ngFor="let color of linkColors | keyvalue" (click)="focusLinkType(color.key)"><span class="color-box" [style.background]="color.value.hex()"></span>{{color.key}}</span>
       </div>
     </div>    
-    <div id="controls">
+    <div id="controls" *ngIf="!shared || this.config?.share?.displayTopBar">
       <p><b>Leftclick: </b> Rotate</p>
       <p><b>Rightlick: </b> Pan</p>
       <p><b>Middleclick/Scrollwheel: </b> Zoom</p>
