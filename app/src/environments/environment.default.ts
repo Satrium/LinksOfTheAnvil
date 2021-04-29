@@ -1,4 +1,4 @@
-import * as global from "../../../config.json"
+import * as packageinfo from "../../../package.json"
 
 const defaultGraphConfig = {
 
@@ -7,5 +7,5 @@ const defaultGraphConfig = {
 export const environment = {
   production: false,
   defaultConfig: defaultGraphConfig,
-  global: global["default"]
+  version: packageinfo.version
 };

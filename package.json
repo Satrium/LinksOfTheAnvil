@@ -1,12 +1,19 @@
 {
-  "name": "anvilofconnections",
-  "version": "1.0.0",
+  "name": "linksoftheanvil",
+  "version": "0.3.1",
   "description": "A Visualization for connections between worldanvil articles",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "debug": "node index.js --trace-warning",
-    "build": "cd app && ng build --prod",
+    "build": "npm run build:server && npm run build:angular",
+    "build:angular": "cd app && npm run build:prod",
+    "build:server": "npm run schema && tsc --project server/tsconfig.json --outDir ./dist",
+    "schema": "typescript-json-schema ./server/tsconfig.json Preset --required --out server/schema/preset.schema.json",
+    "install:all": "npm install && npm run install:angular",
+    "install:angular": "cd app && npm install",
+    "ci:all": "npm ci && npm run ci:angular",
+    "ci:angular": "cd app && npm ci --cache .npm --prefer-offline",
     "serve:angular": "cd app && ng serve",
     "serve": "concurrently \"npm start\" \"npm run serve:angular\""
   },
@@ -29,8 +36,12 @@
   },
   "devDependencies": {
     "@types/express": "^4.16.1",
+    "@types/node-fetch": "^2.5.10",
     "concurrently": "^5.2.0",
-    "tslint": "^5.12.1",
-    "typescript": "^3.3.3"
+    "ts-node": "~8.3.0",
+    "tslint": "~6.1.0",
+    "typescript": "~3.8.3",
+    "typescript-json-schema": "^0.50.0",
+    "typescript-json-validator": "^2.4.2"
   }
 }

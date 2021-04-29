@@ -30,6 +30,47 @@
             ],
             "type": "number"
         },
+        "GraphConfig": {
+            "properties": {
+                "addRootTag": {
+                    "default": false,
+                    "type": "boolean"
+                },
+                "dagMode": {
+                    "$ref": "#/definitions/DagMode"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "links": {
+                    "$ref": "#/definitions/LinkOptions"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nodes": {
+                    "$ref": "#/definitions/NodeOptions"
+                },
+                "owner": {
+                    "type": "string"
+                },
+                "showTags": {
+                    "default": false,
+                    "type": "boolean"
+                },
+                "visuals": {
+                    "$ref": "#/definitions/VisualSettings"
+                }
+            },
+            "required": [
+                "addRootTag",
+                "links",
+                "nodes",
+                "showTags",
+                "visuals"
+            ],
+            "type": "object"
+        },
         "GraphConfigModel": {
             "properties": {
                 "addRootTag": {
@@ -156,7 +197,14 @@
     },
     "properties": {
         "config": {
-            "$ref": "#/definitions/GraphConfigModel"
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/GraphConfig"
+                },
+                {
+                    "$ref": "#/definitions/GraphConfigModel"
+                }
+            ]
         },
         "description": {
             "type": "string"
@@ -175,7 +223,6 @@
         }
     },
     "required": [
-        "description",
         "name"
     ],
     "type": "object"

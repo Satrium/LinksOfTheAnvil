@@ -8,7 +8,7 @@
       "downlevelIteration": true,
       "experimentalDecorators": true,
       "resolveJsonModule": true,
-      "target": "es2020",
+      "target": "esnext",
       "sourceMap": true,
       "outDir": "dist",
       "importHelpers": true,

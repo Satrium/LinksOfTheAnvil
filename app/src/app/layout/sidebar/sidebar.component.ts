@@ -9,7 +9,7 @@ import { environment } from '@env';
 })
 export class SidebarComponent implements OnInit {
 
-  version = environment.global.version + (!environment.production?"-dev":"");
+  version = environment.version + (!environment.production?"-dev":"");
   collapsed = false;
 
   constructor(private auth:AuthService) { }

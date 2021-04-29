@@ -17,13 +17,9 @@ build:
   image: trion/ng-cli-karma:${CLI_VERSION}
   stage: build
   script:
-    - npm ci --cache .npm --prefer-offline
-    - cd app
-    - npm ci --cache .npm --prefer-offline
-    - npm run build:prod
-    - cd ../server
-    - npm ci --cache .npm --prefer-offline
-    - npm run build
+    - npm run ci:all
+    - npm run build:all
+
   artifacts:
     expire_in: 1 day
     paths:
@@ -44,8 +40,6 @@ deploy:
   image: docker:stable
   services: 
   - docker:dind
-  tags:
-    - deploy
   only:
     - master
   environment:
