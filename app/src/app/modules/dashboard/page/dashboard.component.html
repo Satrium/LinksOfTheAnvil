@@ -37,12 +37,13 @@
                         (click)="deletionPresetSelected = null"
                         *ngIf="element.owner !== 'global' && deletionPresetSelected === element.id">
                         <mat-icon>close</mat-icon>
-                    </button>
+                    </button>                    
             </ng-template>
         </app-preset-selection>   
     </div>
     <div class="row">
-        <h1>Shared Graphs</h1>        
+        <h1>Shared Graphs</h1>      
+        <button mat-raised-button matTooltip="Create shareable graph" (click)="createShareableGraph()">Create Shared Graph</button>  
         <div style="text-align: center;">
             <h2>Coming Soon!</h2>
             <h4>In the future you will be able to create sharable Graphs from here.</h4>

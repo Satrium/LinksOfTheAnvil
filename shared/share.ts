@@ -1,11 +1,17 @@
 import { Graph } from "./graph";
 import { Preset } from "./graph.config";
 
+export interface SharedGraphInfoResponse{
+    url: string;
+    graphInfo: SharedGraphInfo;
+}
+
 export interface SharedGraphInfo{
-    id: string;
+    id?: string;
     preset: string;
     world: string;
-    authToken?: string;
+    owner?: string;
+    authToken?: string;    
 }
 
 export interface SharedGraph{

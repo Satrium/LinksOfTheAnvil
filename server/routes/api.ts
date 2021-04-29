@@ -6,7 +6,7 @@ import * as r from 'rethinkdb';
 import { WorldAnvil } from '../worldanvil';
 import { generateGraph, updateGraph } from '../graph';
 import { GraphConfigModel, Preset } from '@global/graph.config';
-import { SharedGraph, SharedGraphInfo } from '@global/share'
+import { SharedGraph, SharedGraphInfo, SharedGraphInfoResponse } from '@global/share'
 import { PRESETS } from './presets';
 import { v4 as uuidv4 } from 'uuid'
 
@@ -209,3 +209,24 @@ apiRouter.get("/shared/:id", async(req, res) => {
     return res.json(result);
 });
 
+apiRouter.post("/shared", auth, async (req: CustomRequest, res) => {
+    if(!req.body) return res.status(400).send();
+    // TODO: Validate JSON
+    let shared = req.body as SharedGraphInfo;
+
+    let con = await r.connect(RETHINK_DB);
+
+    let preset = await r.table("presets").get(shared.preset).run(con) as Preset;
+    if(!preset) return res.status(404).send();
+    if(preset.owner !== req.user.id) return res.status(403).send();
+
+    let world = await r.table("worlds").get(shared.world).run(con) as Graph;
+    if(!world) return res.status(404).send();
+    if(world.author !== req.user.id) return res.status(403).send();
+
+    shared.owner = req.user.id;
+    shared.id = uuidv4();
+    await r.table("shared").insert(shared).run(con);
+    let result: SharedGraphInfoResponse = {graphInfo: shared, url:config.get("schema") + "://" + config.get("url") + "/share/" + shared.id}
+    return res.json(result).send();
+});

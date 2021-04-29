@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>Create Shared Graph</h2>
+<mat-dialog-content class="mat-typography">
+    <mat-horizontal-stepper linear #stepper>        
+        <mat-step [completed]="!!world" errorMessage="You need to select a world">
+            <ng-template matStepLabel *ngIf="!!world">World: {{world.name}}</ng-template>
+            <ng-template matStepLabel *ngIf="!world">Select a World</ng-template>
+            <mat-divider></mat-divider>
+            <app-world-selection [worlds$]="worlds$" (select)="worldSelected($event)"></app-world-selection>
+            <div mat-dialog-actions>
+                <button mat-button [mat-dialog-close]="null">Abort</button>
+            </div>
+        </mat-step>
+        <mat-step [completed]="!!preset" errorMessage="You need to select a preset">
+            <ng-template matStepLabel *ngIf="!!preset">Preset: {{preset.name}}</ng-template>
+            <ng-template matStepLabel *ngIf="!preset">Select a Preset</ng-template>
+            <mat-divider></mat-divider>
+            <app-preset-selection [presets$]="presets$" (select)="presetSelected($event)"></app-preset-selection>
+            <div mat-dialog-actions>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button [mat-dialog-close]="null">Abort</button>                
+            </div>
+          </mat-step>
+          <mat-step>
+            <ng-template matStepLabel>Settings</ng-template>
+            <mat-divider></mat-divider>
+            <div class="toggle-section">
+                <mat-slide-toggle [(ngModel)]="autoUpdate">Auto Update</mat-slide-toggle>
+                <p class="note">If you enable this option, we will save your API key on the server, to keep your graph up to date.</p>
+            </div>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button [mat-dialog-close]="null">Abort</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </mat-step>
+          <mat-step [completed]="!!shared">
+            <ng-template matStepLabel>Review</ng-template>
+            <mat-divider></mat-divider>
+            <div>
+                <h2>Basic Information</h2>
+                <p><b>World: </b>{{world?.name}}</p>
+                <p><b>Preset: </b>{{preset?.name}}</p>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="autoUpdate">
+                <h2>API Key</h2>
+                <p>You have selected to keep your graph up to date. To do this, we will store your API Key on our server</p>
+                <p><b>Your Key: </b><span class="api-key">{{this.auth.authToken}}</span></p>
+            </div>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button [mat-dialog-close]="null">Abort</button>
+              <button mat-button (click)="shareGraph()">Publish</button>
+            </div>
+          </mat-step>
+          <mat-step>
+            <ng-template matStepLabel>Done</ng-template>
+              <p>Graph sucessfully shared!</p>
+              <a [routerLink]="['share', shared?.graphInfo?.id]" [mat-dialog-close]="null">{{shared?.url}}</a>
+              <button mat-button [mat-dialog-close]="null">Close</button>
+          </mat-step>
+    </mat-horizontal-stepper>
+</mat-dialog-content>

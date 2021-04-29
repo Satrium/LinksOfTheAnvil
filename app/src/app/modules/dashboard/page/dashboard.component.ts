@@ -8,6 +8,7 @@ import { World } from '@global/worldanvil/world';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { SelectionComponent } from '@shared/components/selection/selection.component';
+import { ShareGraphComponent } from '../share-graph/share-graph.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -57,5 +58,9 @@ export class DashboardComponent implements OnInit {
       console.log(result);
       this.router.navigate(["explore", result.world.id], {queryParams:{preset:result.preset.id}});
     });
+  }
+
+  createShareableGraph(){
+    const dialogRef = this.dialog.open(ShareGraphComponent, {disableClose: true, minWidth:"50vw"});
   }
 }

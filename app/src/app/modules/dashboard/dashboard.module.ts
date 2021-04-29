@@ -4,6 +4,9 @@ import { DashboardComponent } from './page/dashboard.component';
 import { Routes, RouterModule } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { SharedModule } from '@shared/shared.module';
+import { ShareGraphComponent } from './share-graph/share-graph.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import {MatStepperModule} from '@angular/material/stepper';
 
 
 const routes: Routes = [
@@ -12,12 +15,14 @@ const routes: Routes = [
 
 
 @NgModule({
-  declarations: [DashboardComponent],
+  declarations: [DashboardComponent, ShareGraphComponent],
   imports: [
     CommonModule,
     SharedModule,
     MatTableModule,
+    MatDialogModule,
+    MatStepperModule,
     RouterModule.forChild(routes)
-  ]
+  ], entryComponents:[ShareGraphComponent]
 })
 export class DashboardModule { }

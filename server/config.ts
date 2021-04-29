@@ -12,9 +12,13 @@ const config = convict({
     }, url: {
         doc: 'The URL the application is running as',
         format: 'url',
-        default: 'localhost',
+        default: 'localhost:4200',
         env: 'URL'
-    }, port: {
+    }, schema:{
+        format: ["https", "http"],
+        default: "https"
+    },
+    port: {
         doc: 'Port of the node server',
         format: 'port',
         default: 3000,
