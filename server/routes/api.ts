@@ -11,12 +11,18 @@ import { v4 as uuidv4 } from 'uuid'
 
 import * as presetSchema from '../schema/preset.schema.json';
 import {validate} from 'jsonschema';
-import { ElementVisibility } from '@global/graph.enum';
+import config from '../config';
 
+console.log(config.get("port"));
 export const apiRouter = Router();
-const redis = asyncRedis.createClient({host: process.env.REDIS_HOST || "localhost", port: process.env.REDIS_PORT || 6379});
+const redis = asyncRedis.createClient({host: config.get("redis.host"), port: config.get("redis.port")});
 
 const DATA_VERSION = 2;
+const RETHINK_DB = {
+    "host": config.get("rethinkdb.host"), 
+    "port": config.get("rethinkdb.port"), 
+    "db": config.get("rethinkdb.db")
+}
 
 export type CustomRequest = Request & {userToken: string; user: User;}
 
@@ -56,7 +62,7 @@ apiRouter.get('/user/worlds', auth, async (req:CustomRequest, res) => {
 });
 
 apiRouter.get('/world/:id', auth, async (req:CustomRequest, res) => {
-    let con = await r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"});
+    let con = await r.connect(RETHINK_DB);
     let graph = await r.table("worlds").get(req.params.id).run(con) as Graph;
     if(graph){
         if(graph.author !== req.user.id)return res.status(403);
@@ -86,14 +92,14 @@ apiRouter.get('/world/:id', auth, async (req:CustomRequest, res) => {
 
 /** Global Presets */
 apiRouter.get("/preset", auth, async (req:CustomRequest, res) => {
-    let con = await r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"});
+    let con = await r.connect(RETHINK_DB);
     let presets = await (await r.table("presets").filter({owner: req.user.id}).run(con)).toArray() as Preset[];
     console.log(presets);
     return res.json(Object.values(PRESETS).concat(presets).map(x => { const {config, ...value} = x; return value}));
 });
 
 apiRouter.post("/preset", auth, async (req:CustomRequest, res) => {
-    let con = await r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"});
+    let con = await r.connect(RETHINK_DB);
     let presetCount = await r.table("presets").filter({owner: req.user.id}).count().run(con);
     console.log(!req.body.id, validate(req.body, presetSchema));
     if(req.body && validate(req.body, presetSchema).valid && req.body.config && !req.body.id){
@@ -142,7 +148,7 @@ function parsePreset(preset:Preset):Preset{
 apiRouter.put("/preset/:id", auth, async (req:CustomRequest, res) => {
     if(req.body && validate(req.body, presetSchema).valid && req.body.config && req.body.id === req.params.id){
         let preset = req.body as Preset;
-        let con = await r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"});
+        let con = await r.connect(RETHINK_DB);
         let oldPreset = await r.table("presets").get(req.params.id).run(con);
         if(!oldPreset) return res.status(404).send();
         if(oldPreset.owner !== req.user.id) return res.status(401).send();
@@ -156,7 +162,7 @@ apiRouter.put("/preset/:id", auth, async (req:CustomRequest, res) => {
 })
 
 apiRouter.delete("/preset/:id", auth, async (req:CustomRequest, res) => {    
-    let con = await r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"});
+    let con = await r.connect(RETHINK_DB);
     let preset = await r.table("presets").get(req.params.id).run(con) as GraphConfigModel;
 
     if(preset && preset.owner === req.user.id){
@@ -171,7 +177,7 @@ apiRouter.get("/preset/:id", auth, async (req:CustomRequest, res) => {
     if(PRESETS[req.params.id]){
         return res.json(PRESETS[req.params.id]);
     }else{
-        let con = await r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015, "db":process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil"});
+        let con = await r.connect(RETHINK_DB);
         let preset = await r.table("presets").get(req.params.id).run(con) as GraphConfigModel;
         if(preset && preset.owner === req.user.id){
             res.json(preset);

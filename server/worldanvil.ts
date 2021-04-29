@@ -3,10 +3,14 @@ import { Article} from '@global/worldanvil/article';
 import Bottleneck from 'bottleneck';
 import fetch from 'node-fetch';
 import { World, WorldArticles } from '@global/worldanvil/world';
+import * as packageinfo from '../package.json';
+import config from './config';
+
 
 export class WorldAnvil{
 
-    private static BASE_URL = "https://www.worldanvil.com/api/aragorn/";
+    private static BASE_URL = config.get("worldanvil.baseUrl");
+    private static APP_URL = config.get("url");
 
     private _appToken: string;
     private _limiter: Bottleneck;
@@ -20,7 +24,8 @@ export class WorldAnvil{
         let headers = {
             'x-application-key': this._appToken,
             'x-auth-token': userToken,
-            'Content-Type': "application/json"
+            'Content-Type': "application/json",
+            'User-Agent': `${packageinfo.name} (${WorldAnvil.APP_URL}, ${packageinfo.version})`
         }
         
         let response = await this._limiter.schedule(() => {

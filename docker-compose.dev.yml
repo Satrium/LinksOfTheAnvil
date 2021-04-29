@@ -7,10 +7,7 @@ services:
       - worldanvil-dev
     environment:
       APP_KEY: "${APP_KEY}"
-      NODE_ENV: "production"
-      REDIS_HOST: "redis"
-      REDIS_PORT: 6379
-      RETHINK_DB_HOST: "rethinkdb"
+      NODE_ENV: "preproduction"
     deploy:
       mode: replicated
       replicas: 1

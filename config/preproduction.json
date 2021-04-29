@@ -1,0 +1,14 @@
+{
+    "url":"linksdev.satrium.dev",
+    "redis":{
+        "host": "redis"
+    }, "rethinkdb":{
+        "host": "rethinkdb"
+    }, "ratelimit":{
+        "reservoir": 50,
+        "reservoirIncreaseInterval": 500,
+        "reservoirIncreaseAmount": 10,
+        "maxConcurrent": 5,
+        "minTime": 50
+    }
+}

@@ -1,6 +1,7 @@
 
   
 import * as r from 'rethinkdb';
+import config from './config';
 
 const TABLES = ["worlds", "presets"];
 
@@ -9,7 +10,11 @@ export async function connectDatabase():Promise<boolean>{
     // Try to connect to the database for 30 seconds
     while(+(new Date()) - +date < 1000 * 30){
         try{
-            let con = await r.connect({"host": process.env.RETHINK_DB_HOST || "localhost", "port":process.env.RETHINK_DB_PORT || 28015});
+            let con = await r.connect({
+                "host": config.get("rethinkdb.host"), 
+                "port": config.get("rethinkdb.port"), 
+                "db": config.get("rethinkdb.db")
+            });
             const db = process.env.RETHINK_DB_DATABASE || "linksOfTheAnvil";
             let tables = [];
             try{

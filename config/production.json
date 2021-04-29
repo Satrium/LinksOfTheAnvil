@@ -1,0 +1,14 @@
+{
+    "url":"linksoftheanvil.satrium.dev",
+    "redis":{
+        "host": "redis"
+    }, "rethinkdb":{
+        "host": "rethinkdb"
+    }, "ratelimit":{
+        "reservoir": 100,
+        "reservoirIncreaseInterval": 500,
+        "reservoirIncreaseAmount": 20,
+        "maxConcurrent": 20,
+        "minTime": 50
+    }
+}
