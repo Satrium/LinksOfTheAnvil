@@ -18,7 +18,7 @@ build:
   stage: build
   script:
     - npm run ci:all
-    - npm run build:all
+    - npm run build
 
   artifacts:
     expire_in: 1 day
