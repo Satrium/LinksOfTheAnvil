@@ -154,10 +154,13 @@
           <mat-label>Description</mat-label>
           <input matNativeControl [(ngModel)]="preset.description">            
         </mat-form-field>
-        <div>{{preset.id}}</div>
-        <mat-slide-toggle [(ngModel)]="preset.config.share.displayNodeLegend">
+        <mat-form-field>
+          <mat-label>ID</mat-label>
+          <input matNativeControl disabled [(ngModel)]="preset.id">            
+        </mat-form-field>
+        <!-- <mat-slide-toggle [(ngModel)]="preset.config.share.displayNodeLegend">
           Display Node Legend
-        </mat-slide-toggle>
+        </mat-slide-toggle> -->
         <button mat-raised-button color="primary" (click)="savePreset()">Save</button>
       </mat-tab>
     </mat-tab-group>

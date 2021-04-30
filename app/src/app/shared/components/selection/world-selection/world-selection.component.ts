@@ -14,7 +14,7 @@ export class WorldSelectionComponent implements OnInit {
   select = new EventEmitter<World>();
 
   @Input()
-  icon: string = "launch";
+  icon: string = "flip_to_front";
 
   @Input()
   tooltip: string = "Show Graph"

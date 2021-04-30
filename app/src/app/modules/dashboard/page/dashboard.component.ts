@@ -75,6 +75,14 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  openNewTab(parts:string[]){
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree(parts)
+    );
+  
+    window.open(url, '_blank');
+  }
+
   createShareableGraph(){
     const dialogRef = this.dialog.open(ShareGraphComponent, {disableClose: true, width:"80vw"});
   }

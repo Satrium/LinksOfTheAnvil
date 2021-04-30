@@ -4,7 +4,7 @@
         <div *ngFor="let world of worlds" class="world">
             <h2>{{world.name}}</h2>
             <div>
-                <button mat-icon-button color="primary" matTooltip="Show Graph" (click)="openSelection(world, null)"><mat-icon>launch</mat-icon></button>     
+                <button mat-icon-button color="primary" matTooltip="Show Graph" (click)="openSelection(world, null)"><mat-icon>flip_to_front</mat-icon></button>     
             </div>
         </div>
     </div>
@@ -68,9 +68,9 @@
             <ng-container matColumnDef="actions">
                 <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>                
                 <mat-cell class="actions" *matCellDef="let element">    
-                    <mat-icon *ngIf="element.authToken" matTooltip="Auto update enabled">update</mat-icon>
-                    <mat-icon *ngIf="!element.authToken" matTooltip="Auto update disabled">update_disabled</mat-icon>
-                    <button [routerLink]="['/','share', element.id]" mat-icon-button color="primary" matTooltip="Open Link"><mat-icon>launch</mat-icon></button>                    
+                    <mat-icon  *ngIf="element.authToken" matTooltip="Auto update enabled">update</mat-icon>
+                    <mat-icon class="icon-red" *ngIf="!element.authToken" matTooltip="Auto update disabled">update_disabled</mat-icon>
+                    <button (click)="openNewTab(['/','share', element.id])" mat-icon-button color="primary" matTooltip="Open Link"><mat-icon>launch</mat-icon></button>                    
                 </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="sharedGraphColumns"></mat-header-row>

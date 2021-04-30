@@ -16,7 +16,7 @@ export class PresetSelectionComponent implements OnInit {
   select = new EventEmitter<Preset>();
 
   @Input()
-  icon: string = "launch";
+  icon: string = "flip_to_front";
 
   @Input()
   tooltip: string = "Launch Preset"
