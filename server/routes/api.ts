@@ -80,6 +80,7 @@ apiRouter.get('/world/:id', auth, async (req:CustomRequest, res) => {
         else{
             // Update Graph
             graph = await updateGraph(graph,req.app.get("WA") as WorldAnvil,req.userToken);
+            console.log(graph.nodes.filter(x => !x.type));
             await r.table('worlds').update(graph).run(con);
             res.json(graph);
         }
@@ -195,7 +196,12 @@ apiRouter.get("/shared/:id", async(req, res) => {
     let shared = await r.table("shared").get(req.params.id).run(con) as SharedGraphInfo;
     if(!shared) return res.status(404).send();
 
-    let preset = await r.table("presets").get(shared.preset).run(con) as Preset;
+    let preset;
+    if(shared.preset in PRESETS){
+        preset = PRESETS[shared.preset];
+    }else{
+        preset = await r.table("presets").get(shared.preset).run(con) as Preset;
+    }
     if(!preset) return res.status(404).send();
 
     let world = await r.table("worlds").get(shared.world).run(con) as Graph;
@@ -209,6 +215,12 @@ apiRouter.get("/shared/:id", async(req, res) => {
     return res.json(result);
 });
 
+apiRouter.get("/shared", auth, async (req:CustomRequest, res) => {
+    let con = await r.connect(RETHINK_DB);
+    let shared = await r.table("shared").filter({owner: req.user.id}).run(con);
+    return res.json(await shared.toArray()).send();
+});
+
 apiRouter.post("/shared", auth, async (req: CustomRequest, res) => {
     if(!req.body) return res.status(400).send();
     // TODO: Validate JSON
@@ -216,9 +228,15 @@ apiRouter.post("/shared", auth, async (req: CustomRequest, res) => {
 
     let con = await r.connect(RETHINK_DB);
 
-    let preset = await r.table("presets").get(shared.preset).run(con) as Preset;
-    if(!preset) return res.status(404).send();
-    if(preset.owner !== req.user.id) return res.status(403).send();
+    let preset: Preset;
+    if(shared.preset in PRESETS){
+        console.log(PRESETS);
+        preset = PRESETS[shared.preset];
+    }else{
+        preset = await r.table("presets").get(shared.preset).run(con) as Preset;
+        if(!preset) return res.status(404).send();
+        if(preset.owner !== req.user.id) return res.status(403).send();
+    }    
 
     let world = await r.table("worlds").get(shared.world).run(con) as Graph;
     if(!world) return res.status(404).send();
@@ -226,6 +244,8 @@ apiRouter.post("/shared", auth, async (req: CustomRequest, res) => {
 
     shared.owner = req.user.id;
     shared.id = uuidv4();
+    shared.creationDate = new Date();
+    shared.modificationDate = new Date();
     await r.table("shared").insert(shared).run(con);
     let result: SharedGraphInfoResponse = {graphInfo: shared, url:config.get("schema") + "://" + config.get("url") + "/share/" + shared.id}
     return res.json(result).send();

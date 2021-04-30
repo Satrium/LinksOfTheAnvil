@@ -4,6 +4,10 @@
             <mat-icon>menu</mat-icon>
           </button>
     </div>    
+    <div class="development" *ngIf="development">
+        <span class="full">This is a development version. Things might break and stuff won't get saved. Use at your own risk</span>
+        <span class="short">DEV</span>
+    </div>
     <div *ngIf="user$ | async as user" class="user">        
         <img id="avatar" [src]="user.avatar?.url || 'https://www.worldanvil.com/images/placeholder-avatar.png'">
         <h1 class="name">{{user.username}}</h1>

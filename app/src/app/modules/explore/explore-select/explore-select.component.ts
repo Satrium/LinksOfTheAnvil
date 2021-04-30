@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from '@data/service/data.service';
 import { World } from '@global/worldanvil/world';
 import { Observable } from 'rxjs/internal/Observable';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-explore-select',
@@ -17,7 +18,7 @@ export class ExploreSelectComponent implements OnInit {
   constructor(private router:Router, private active:ActivatedRoute, private data:DataService) { }
 
   ngOnInit(): void {
-    this.worlds$ = this.data.getWorlds();
+    this.worlds$ = this.data.getWorlds().pipe(map(x => x.worlds));
     this.active.queryParams.subscribe(x => this.preset = x["preset"]);
   }
 

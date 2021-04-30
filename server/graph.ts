@@ -117,7 +117,7 @@ function getNodeFromArticle(article:Article): GraphNode{
     return {
         id: article.id,
         name: article.title,
-        type: article.template,
+        type: article.template ?? article["template_type"],
         public:article.state == "public", 
         draft:article.is_draft,
         wip:article.is_wip, 

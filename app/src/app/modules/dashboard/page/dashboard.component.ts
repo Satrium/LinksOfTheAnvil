@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '@data/service/data.service';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, zip } from 'rxjs';
 import { Preset } from '@global/graph.config';
-import { map } from 'rxjs/operators';
+import { map, share, skipWhile } from 'rxjs/operators';
 import { World } from '@global/worldanvil/world';
+import { normalizeArray } from '@global/utils'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { SelectionComponent } from '@shared/components/selection/selection.component';
 import { ShareGraphComponent } from '../share-graph/share-graph.component';
+import { SharedGraph, SharedGraphInfo } from '@global/share';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,18 +24,31 @@ export class DashboardComponent implements OnInit {
   worlds$:Observable<World[]>
 
   presets$: Observable<Preset[]>;
-  globalPresets$: Observable<Preset[]>;
-  userPresets$: Observable<Preset[]>;
+  sharedGraphInfo$: Observable<SharedGraphInfo[]>;
 
   deletionPresetSelected: string;
 
   displayedColumns: string[] = ['owner', 'name', 'description', 'actions'];
-
+  sharedGraphColumns: string[] = ['world','preset', 'modificationDate', 'actions'];
   constructor(private data:DataService, private router:Router, private _snackBar: MatSnackBar,public dialog: MatDialog) { }
 
   ngOnInit(): void {
-    this.worlds$ = this.data.getWorlds();
+    this.worlds$ = this.data.getWorlds().pipe(map(x => x.worlds));
     this.presets$ = this.data.getPresets();
+    this.sharedGraphInfo$ = zip(
+      this.worlds$, this.presets$, this.data.getSharedGraphs()
+    ).pipe(
+      map(([worlds, presets, shared]) => {
+        let worldDict = normalizeArray(worlds,"id");
+        let presetDict = normalizeArray(presets, "id");
+        shared.forEach(x => {
+          x.worldInstance = worldDict[x.world];
+          x.presetInstance = presetDict[x.preset];
+        });
+        console.log(shared);
+        return shared;
+      })
+    );
   }
 
   openGlobalPreset(preset){

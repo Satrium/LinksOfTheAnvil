@@ -4,6 +4,7 @@ import { DataService } from '@data/service/data.service';
 import { Preset } from '@global/graph.config';
 import { World } from '@global/worldanvil/world';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface PreSelection{
   world: World;
@@ -24,7 +25,7 @@ export class SelectionComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: PreSelection, private dataService:DataService) { }
 
   ngOnInit(): void {
-    this.worlds$ = this.dataService.getWorlds();
+    this.worlds$ = this.dataService.getWorlds().pipe(map(x => x.worlds));
     this.presets$ = this.dataService.getPresets();
   }
 

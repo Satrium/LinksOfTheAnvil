@@ -8,6 +8,7 @@ import { Preset } from '@global/graph.config';
 import { SharedGraphInfo, SharedGraphInfoResponse } from '@global/share';
 import { World } from '@global/worldanvil/world';
 import { Observable } from 'rxjs/internal/Observable';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-share-graph',
@@ -32,7 +33,7 @@ export class ShareGraphComponent implements OnInit {
   constructor(private data:DataService, public auth:AuthService) {}
 
   ngOnInit() {
-    this.worlds$ = this.data.getWorlds();
+    this.worlds$ = this.data.getWorlds().pipe(map(x => x.worlds));
     this.presets$ = this.data.getPresets();    
   }
 
@@ -47,7 +48,7 @@ export class ShareGraphComponent implements OnInit {
   }
 
   shareGraph(){
-    let shared:SharedGraphInfo = {world: this.world.id, preset: this.preset.id}
+    let shared:SharedGraphInfo = {world: this.world.id, preset: this.preset.id, creationDate: null, modificationDate: null}
     if(this.autoUpdate){
       shared.authToken = this.auth.authToken;
     }

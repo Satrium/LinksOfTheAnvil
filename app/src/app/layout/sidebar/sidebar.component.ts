@@ -9,13 +9,15 @@ import { environment } from '@env';
 })
 export class SidebarComponent implements OnInit {
 
+  development:boolean = false;
   version = environment.version + (!environment.production?"-dev":"");
   collapsed = false;
 
   constructor(private auth:AuthService) { }
 
   ngOnInit(): void {
-    console.log("Environment",environment)
+    this.development = window.location.hostname !== "linksoftheanvil.satrium.de";
+    console.log(window.location.hostname);
   }
 
   public get user$(){

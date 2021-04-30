@@ -5,6 +5,8 @@ import { Graph } from '@global/graph';
 import { GraphConfigModel, Preset } from '@global/graph.config';
 import { SharedGraph, SharedGraphInfo, SharedGraphInfoResponse } from '@global/share';
 import { World } from '@global/worldanvil/world';
+import { UserWorlds } from '@global/worldanvil/user';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +15,8 @@ export class DataService {
 
   constructor(private http:HttpClient) { }
 
-  public getWorlds():Observable<World[]>{
-    return this.http.get<World[]>("/api/user/worlds");
+  public getWorlds():Observable<UserWorlds>{
+    return this.http.get<UserWorlds>("/api/user/worlds");
   }
 
   public getGraph(worldId):Observable<Graph>{
@@ -44,8 +46,23 @@ export class DataService {
     return this.http.delete(`/api/preset/${id}`);
   }
 
+  public getSharedGraphs():Observable<SharedGraphInfo[]>{
+    return this.http.get<SharedGraphInfo[]>("/api/shared").pipe(
+      map(x => {
+        x.forEach(y => {y.creationDate = new Date(y.creationDate); y.modificationDate = new Date(y.modificationDate)});
+        return x;
+      })
+    );
+  }
+
   public postSharedGraph(graph:SharedGraphInfo):Observable<SharedGraphInfoResponse>{
-    return this.http.post<SharedGraphInfoResponse>("/api/shared", graph);   
+    return this.http.post<SharedGraphInfoResponse>("/api/shared", graph).pipe(
+      map(x => {
+        x.graphInfo.creationDate = new Date(x.graphInfo.creationDate);
+        x.graphInfo.modificationDate = new Date(x.graphInfo.modificationDate);
+        return x;
+      })
+    );   
   }
 
   public getSharedGraph(id: string):Observable<SharedGraph>{

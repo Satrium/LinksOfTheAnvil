@@ -1,7 +1,7 @@
 <div class="row">
     <h1>Your Worlds</h1>
     <div *ngIf="worlds$ | async as worlds" class="world-list">
-        <div *ngFor="let world of worlds.worlds" class="world">
+        <div *ngFor="let world of worlds" class="world">
             <h2>{{world.name}}</h2>
             <div>
                 <button mat-icon-button color="primary" matTooltip="Show Graph" (click)="openSelection(world, null)"><mat-icon>launch</mat-icon></button>     
@@ -44,10 +44,33 @@
     <div class="row">
         <h1>Shared Graphs</h1>      
         <button mat-raised-button matTooltip="Create shareable graph" (click)="createShareableGraph()">Create Shared Graph</button>  
-        <div style="text-align: center;">
-            <h2>Coming Soon!</h2>
-            <h4>In the future you will be able to create sharable Graphs from here.</h4>
-            <h4>In the meantime check out the presets above or the <a routerLink="/explore">explore</a> feature</h4>
-        </div>
+        <mat-table *ngIf="sharedGraphInfo$ | async as sharedGraph" [dataSource]="sharedGraph" class="mat-elevation-z8" matSort>
+            <ng-container matColumnDef="world">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.worldInstance.name}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="preset">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Preset</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.presetInstance.name}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="modificationDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Modification Date</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.modificationDate | date:'short'}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="creationDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Creation Date</mat-header-cell>
+                <mat-cell *matCellDef="let element">{{element.creationDate | date:'short' }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+                <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>                
+                <mat-cell class="actions" *matCellDef="let element">    
+                    <mat-icon *ngIf="element.authToken" matTooltip="Auto update enabled">update</mat-icon>
+                    <mat-icon *ngIf="!element.authToken" matTooltip="Auto update disabled">update_disabled</mat-icon>
+                    <button [routerLink]="['/','share', element.id]" mat-icon-button color="primary" matTooltip="Open Link"><mat-icon>launch</mat-icon></button>                    
+                </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="sharedGraphColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: sharedGraphColumns;"></mat-row>
+        </mat-table>
     </div>
 </div>

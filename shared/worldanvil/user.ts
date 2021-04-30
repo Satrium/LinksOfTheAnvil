@@ -1,4 +1,4 @@
-import { WorldInfo } from "./world";
+import { World, WorldInfo } from "./world";
 
 export interface CurrentUser{
     id: string;
@@ -20,5 +20,5 @@ export interface UserAvatar{
 export interface UserWorlds{
     id: string;
     username: string;
-    worlds: WorldInfo[];
+    worlds: World[];
 }
