@@ -4,60 +4,87 @@
         <mat-step [completed]="!!world" errorMessage="You need to select a world">
             <ng-template matStepLabel *ngIf="!!world">World: {{world.name}}</ng-template>
             <ng-template matStepLabel *ngIf="!world">Select a World</ng-template>
-            <mat-divider></mat-divider>
-            <app-world-selection [worlds$]="worlds$" (select)="worldSelected($event)"></app-world-selection>
+            <app-world-selection [worlds$]="worlds$" [icon]="'navigate_next'" [allowClick]="true" (select)="worldSelected($event)"></app-world-selection>
             <div mat-dialog-actions>
-                <button mat-button [mat-dialog-close]="null">Abort</button>
+                <button mat-raised-button [mat-dialog-close]="null" color="warn">Abort</button>
             </div>
         </mat-step>
         <mat-step [completed]="!!preset" errorMessage="You need to select a preset">
             <ng-template matStepLabel *ngIf="!!preset">Preset: {{preset.name}}</ng-template>
             <ng-template matStepLabel *ngIf="!preset">Select a Preset</ng-template>
-            <mat-divider></mat-divider>
-            <app-preset-selection [presets$]="presets$" (select)="presetSelected($event)"></app-preset-selection>
+            <app-preset-selection [presets$]="presets$" [icon]="'navigate_next'" (select)="presetSelected($event)" [allowClick]="true"></app-preset-selection>
             <div mat-dialog-actions>
-                <button mat-button matStepperPrevious>Back</button>
-                <button mat-button [mat-dialog-close]="null">Abort</button>                
+                <button mat-raised-button matStepperPrevious>Back</button>
+                <button mat-raised-button [mat-dialog-close]="null" color="warn">Abort</button>                
             </div>
           </mat-step>
           <mat-step>
             <ng-template matStepLabel>Settings</ng-template>
-            <mat-divider></mat-divider>
             <div class="toggle-section">
                 <mat-slide-toggle [(ngModel)]="autoUpdate">Auto Update</mat-slide-toggle>
                 <p class="note">If you enable this option, we will save your API key on the server, to keep your graph up to date.</p>
             </div>
-            <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button [mat-dialog-close]="null">Abort</button>
-              <button mat-button matStepperNext>Next</button>
+            <div mat-dialog-actions>
+              <button mat-raised-button matStepperPrevious>Back</button>
+              <button mat-raised-button [mat-dialog-close]="null" color="warn">Abort</button>
+              <button mat-raised-button matStepperNext>Next</button>
             </div>
           </mat-step>
           <mat-step [completed]="!!shared">
             <ng-template matStepLabel>Review</ng-template>
-            <mat-divider></mat-divider>
-            <div>
-                <h2>Basic Information</h2>
-                <p><b>World: </b>{{world?.name}}</p>
-                <p><b>Preset: </b>{{preset?.name}}</p>
-            </div>
-            <mat-divider></mat-divider>
-            <div *ngIf="autoUpdate">
-                <h2>API Key</h2>
-                <p>You have selected to keep your graph up to date. To do this, we will store your API Key on our server</p>
-                <p><b>Your Key: </b><span class="api-key">{{this.auth.authToken}}</span></p>
-            </div>
-            <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button [mat-dialog-close]="null">Abort</button>
-              <button mat-button (click)="shareGraph()">Publish</button>
+            <div class="wrapper">
+              <div class="info">
+                <div>
+                  <h2>Basic Information</h2>
+                  <p><b>World: </b>{{world?.name}}</p>
+                  <p><b>Preset: </b>{{preset?.name}}</p>
+                </div>
+                <div class="update">
+                  <h2>Update</h2>
+                  <div *ngIf="autoUpdate">
+                    <mat-icon>update</mat-icon><p>We will keep this graph regularily up to date. Your API key has been stored on our server</p>
+                  </div>
+                  <div *ngIf="!autoUpdate">
+                    <mat-icon>update_disabled</mat-icon><p>This graph will always reflect the latest version you have laoaded in the explorer view. It won't be kept up to date.</p>
+                  </div>
+                </div>
+                <div class="warnings">
+                  <div class="warning" *ngIf="preset?.config?.nodes?.displayDrafts"><h3>Warning</h3>This graph will show non published articles</div>
+                  <div class="warning" *ngIf="preset?.config?.nodes?.displayPrivate"><h3>Warning</h3>This graph will show private articles</div>
+                </div>
+              </div>
+              <div class="graph">
+                <h2>Preview</h2>
+                <div class="graph-inner"><app-graph  [graphData]="graph$ | async" [config$]="config$" [shared]="true" [height]="400" [width]="400"></app-graph></div>                
+              </div>              
+            </div>         
+            
+            
+            <div mat-dialog-actions>
+              <button mat-raised-button matStepperPrevious>Back</button>
+              <button mat-raised-button [mat-dialog-close]="null" color="warn">Abort</button>
+              <button mat-raised-button (click)="shareGraph()" color="primary">Publish</button>
             </div>
           </mat-step>
           <mat-step>
-            <ng-template matStepLabel>Done</ng-template>
-              <p>Graph sucessfully shared!</p>
-              <a [routerLink]="['share', shared?.graphInfo?.id]" [mat-dialog-close]="null">{{shared?.url}}</a>
-              <button mat-button [mat-dialog-close]="null">Close</button>
+            <ng-template matStepLabel>Done</ng-template>                 
+              <div class="text-center sucess">
+                <h1>Graph sucessfully shared!</h1> 
+                <span><a [routerLink]="['share', shared?.graphInfo?.id]" [mat-dialog-close]="null">{{shared?.url}}</a></span>
+                <p>
+                  If you want to display this graph in your world on World Anvil, you will have to use an iframe statblock to do so, for now.
+                </p><p> 
+                  Head over <a href="https://www.worldanvil.com/heroes/world/list?type=world">here</a> to create one.
+                  Select Generic (ifram) from the top right dropdown menu, paste the link above into the "PAGE URL" field and give it a recognizable "TITLE"
+                </p>
+                <p>
+                  To embed this graph into an article, you now only have to paste the block code into one. Have fun!
+                </p>
+                
+              </div>                    
+              <div mat-dialog-actions>
+                <button mat-raised-button [mat-dialog-close]="null">Close</button>
+              </div>
           </mat-step>
     </mat-horizontal-stepper>
 </mat-dialog-content>

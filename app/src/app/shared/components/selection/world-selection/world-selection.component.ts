@@ -14,6 +14,15 @@ export class WorldSelectionComponent implements OnInit {
   select = new EventEmitter<World>();
 
   @Input()
+  icon: string = "launch";
+
+  @Input()
+  tooltip: string = "Show Graph"
+
+  @Input()
+  allowClick: boolean = false;
+
+  @Input()
   worlds$:Observable<World[]>
 
   constructor() { }

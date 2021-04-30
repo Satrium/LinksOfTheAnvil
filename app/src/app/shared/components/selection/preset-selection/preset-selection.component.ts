@@ -16,6 +16,15 @@ export class PresetSelectionComponent implements OnInit {
   select = new EventEmitter<Preset>();
 
   @Input()
+  icon: string = "launch";
+
+  @Input()
+  tooltip: string = "Launch Preset"
+
+  @Input()
+  allowClick: boolean = false;
+
+  @Input()
   displayedColumns: string[] = ['owner', 'name', 'description', 'actions'];
 
   @Input()

@@ -7,6 +7,7 @@ import { SharedModule } from '@shared/shared.module';
 import { ShareGraphComponent } from './share-graph/share-graph.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import {MatStepperModule} from '@angular/material/stepper';
+import { GraphModule } from '@modules/graph/graph.module';
 
 
 const routes: Routes = [
@@ -22,6 +23,7 @@ const routes: Routes = [
     MatTableModule,
     MatDialogModule,
     MatStepperModule,
+    GraphModule,
     RouterModule.forChild(routes)
   ], entryComponents:[ShareGraphComponent]
 })

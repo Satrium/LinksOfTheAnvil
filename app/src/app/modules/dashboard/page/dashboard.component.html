@@ -1,5 +1,5 @@
 <div class="row">
-    <h1>Your Worlds</h1>
+    <div class="header"><h1>Your Worlds</h1></div>
     <div *ngIf="worlds$ | async as worlds" class="world-list">
         <div *ngFor="let world of worlds" class="world">
             <h2>{{world.name}}</h2>
@@ -12,7 +12,7 @@
 
 <div class="preset-shared-list">
     <div class="row">
-        <h1>Your Presets</h1>
+        <div class="header"><h1>Your Presets</h1></div>
         <app-preset-selection (select)="openSelection(null, $event)" [presets$]="presets$">
             <ng-template let-element="element" appSelectionActions>
                 <button 
@@ -42,8 +42,12 @@
         </app-preset-selection>   
     </div>
     <div class="row">
-        <h1>Shared Graphs</h1>      
-        <button mat-raised-button matTooltip="Create shareable graph" (click)="createShareableGraph()">Create Shared Graph</button>  
+        <div class="header">
+            <h1>Shared Graphs</h1>    
+            <button mat-raised-button matTooltip="Create shareable graph" (click)="createShareableGraph()" color="accent">Create New</button>  
+        </div>
+          
+        
         <mat-table *ngIf="sharedGraphInfo$ | async as sharedGraph" [dataSource]="sharedGraph" class="mat-elevation-z8" matSort>
             <ng-container matColumnDef="world">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>

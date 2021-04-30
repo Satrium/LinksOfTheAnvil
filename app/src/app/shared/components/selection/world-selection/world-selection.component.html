@@ -1,8 +1,8 @@
 <div *ngIf="worlds$ | async as worlds" class="world-list">
-    <div *ngFor="let world of worlds" class="world">
+    <div *ngFor="let world of worlds" class="world" (click)="allowClick?selected(world):null" [class.allowClick]="allowClick">
         <h2>{{world.name}}</h2>
         <div>
-            <button mat-icon-button color="primary" (click)="selected(world)" matTooltip="Show Graph"><mat-icon>launch</mat-icon></button>     
+            <button mat-icon-button color="primary" (click)="selected(world)" [matTooltip]="tooltip"><mat-icon>{{icon}}</mat-icon></button>     
         </div>
     </div>
 </div>

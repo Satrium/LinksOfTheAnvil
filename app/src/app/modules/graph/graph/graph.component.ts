@@ -22,6 +22,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
   @ContentChild(GraphSidebarDirective) sidebarTemplate;
   @Input() config$: Observable<GraphConfig>;
   @Input() shared:boolean = false;
+  @Input() height: number;
+  @Input() width: number;
 
   nodeColors = {};
   linkColors = {};
@@ -61,6 +63,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.Graph = ForceGraph3D({controlType: "orbit"})(this.graphContainer.nativeElement)
+      .height(this.height)
+      .width(this.width)
       .graphData({nodes:[], links:[]})
       .nodeVisibility((node:GraphNode) => node.visibility != ElementVisibility.HIDDEN)
       .linkVisibility((link:GraphLink) => (<GraphLink>link).visibility != ElementVisibility.HIDDEN)
@@ -100,6 +104,7 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
   @Input()
   public set graphData(graphData:Graph){
+    console.log(graphData, this.config$);
     //this.Graph.controls()["enableRotate"] = false;
     if(this.configSubscription)this.configSubscription.unsubscribe();
     this.configSubscription = this.config$.subscribe(x =>{

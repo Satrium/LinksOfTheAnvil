@@ -76,6 +76,6 @@ export class DashboardComponent implements OnInit {
   }
 
   createShareableGraph(){
-    const dialogRef = this.dialog.open(ShareGraphComponent, {disableClose: true, minWidth:"50vw"});
+    const dialogRef = this.dialog.open(ShareGraphComponent, {disableClose: true, width:"80vw"});
   }
 }

@@ -7,3 +7,54 @@
     display: inline-block
     &:hover
         background: transparent
+
+.info
+    display: grid
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
+    h2
+        text-align: center
+    div
+        padding: 10px
+        &.update
+            div
+                display: flex
+                align-items: center
+                p
+                    margin: 0
+                    padding-left: 10px
+    .warning
+        border: 2px solid #fcba03
+        background: #fcba034a
+        border-radius: 15px
+        text-align: center
+        margin: 5px
+        h3
+            font-weight: bold
+            margin: 0
+
+.sucess
+    span
+        border: 1px solid green
+        background: #0080003d
+        padding: 20px
+        display: inline-block
+        margin-bottom: 25px
+
+.wrapper
+    display: flex
+    .graph
+        width: 400px
+        .graph-inner            
+            height: 400px
+    .info
+        flex: 1  
+
+.mat-dialog-actions
+    justify-content: center
+
+::ng-deep .mat-horizontal-stepper-header-container
+    border-bottom: 1px solid gray
+    margin-bottom: 10px
+
+::ng-deep .mat-horizontal-content-container
+    padding: 0 0 30px 0 !important

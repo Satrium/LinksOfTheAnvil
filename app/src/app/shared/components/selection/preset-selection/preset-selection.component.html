@@ -20,10 +20,10 @@
             <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>
             <mat-cell class="actions" *matCellDef="let element">
                 <ng-container *ngTemplateOutlet="actionsTemplate?.template; context:{element:element}"></ng-container>                
-                <button mat-icon-button color="primary" matTooltip="Launch Preset" (click)="selected(element)"><mat-icon>launch</mat-icon></button>                    
+                <button mat-icon-button color="primary" [matTooltip]="tooltip" (click)="selected(element)"><mat-icon>{{icon}}</mat-icon></button>                    
             </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="allowClick?selected(row):null" [class.allow-click]="allowClick"></mat-row>
     </mat-table>        
 </div>
