@@ -8,6 +8,7 @@ export interface Preset{
     description?: string;
     img?: string;
     config?: GraphConfigModel | GraphConfig;    
+    creationDate?: Date;
 }
 
 export class GraphConfigModel {

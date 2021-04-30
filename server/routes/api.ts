@@ -157,6 +157,7 @@ apiRouter.put("/preset/:id", auth, async (req:CustomRequest, res) => {
         if(!oldPreset) return res.status(404).send();
         if(oldPreset.owner !== req.user.id) return res.status(401).send();
         preset.owner = req.user.id;
+        preset.creationDate = new Date();
         preset = parsePreset(preset);
         await r.table("presets").insert(preset, {conflict:"replace"}).run(con);
         return res.status(201).json(preset).send();
