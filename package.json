@@ -23,7 +23,7 @@
     "async-redis": "^1.1.7",
     "body-parser": "^1.19.0",
     "bottleneck": "^2.19.5",
-    "convict": "^6.0.1",
+    "convict": "^6.2.3",
     "convict-format-with-validator": "^6.0.1",
     "express": "^4.17.1",
     "fp-ts": "^2.10.4",
